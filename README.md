@@ -17,8 +17,6 @@ Java developers who want a blog today have two choices. Run a separate platform 
 WordPress next to their app, or build posts, tags, feeds and sitemaps by hand. Beansprout is
 the third choice: add a dependency to the app you already have.
 
-**Status:** early. Nothing is released yet. [PRODUCT.md](PRODUCT.md) has the plan.
-
 ## Guides
 
 - [Start a new blog](docs/new-blog.md): a new app, your first post, pictures, drafts and scheduling.
@@ -30,24 +28,18 @@ Java 25 and Spring Boot 4.1.2. Pages render with [JTE](https://jte.gg).
 
 ## Add it to your app
 
-Nothing is on Maven Central yet, so install it locally first:
-
-```bash
-./mvnw install -DskipTests
-```
-
-Then add the starter and the default theme, Longhand:
+Add the starter and the default theme, Longhand:
 
 ```xml
 <dependency>
     <groupId>dev.danvega</groupId>
     <artifactId>beansprout-spring-boot-starter</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 <dependency>
     <groupId>dev.danvega</groupId>
     <artifactId>beansprout-theme-longhand</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
@@ -111,7 +103,7 @@ Open `http://localhost:8080/blog`.
 | `beansprout-spring-boot-starter` | The dependency you add. It has no code of its own. |
 | `beansprout-theme-longhand` | The look: Longhand's templates and stylesheet. |
 | `beansprout-sample` | A small Spring Boot app that uses all of the above. |
-| `verification` | Build checks for the repo itself, such as "every requirement has a test". |
+| `verification` | Checks the build runs on the repo itself, such as no leftover TODOs in the code. |
 
 Core has no Spring on purpose. A future MCP server or a static site export can reuse it without
 a web server.

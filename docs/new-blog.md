@@ -18,27 +18,19 @@ Download it and unzip it.
 
 ## 2. Add Beansprout
 
-Beansprout is not on Maven Central yet. Until it is, clone this repo and install it into your
-local Maven repository:
-
-```bash
-git clone https://github.com/danvega/beansprout.git
-cd beansprout && ./mvnw install -DskipTests
-```
-
-Then add two dependencies to your app's `pom.xml`. The starter is the blog. The theme is how it
+Add two dependencies to your app's `pom.xml`. The starter is the blog. The theme is how it
 looks.
 
 ```xml
 <dependency>
     <groupId>dev.danvega</groupId>
     <artifactId>beansprout-spring-boot-starter</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 <dependency>
     <groupId>dev.danvega</groupId>
     <artifactId>beansprout-theme-longhand</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 

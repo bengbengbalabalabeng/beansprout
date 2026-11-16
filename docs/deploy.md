@@ -3,11 +3,6 @@
 A Beansprout blog is an ordinary Spring Boot app. It needs no database, so any host that runs a
 Java app or a Docker image will do. This guide uses [Railway](https://railway.com).
 
-> **Before the first release:** Beansprout is not on Maven Central yet. Railway builds your app
-> from source, so its build cannot download Beansprout, and this guide does not work yet. It will
-> once Beansprout is published. Until then, run the blog on a machine where you ran
-> `./mvnw install` in this repo.
-
 ## 1. Add a Dockerfile
 
 Put this `Dockerfile` next to your `pom.xml`. It builds the jar with a full JDK, then runs it on a
