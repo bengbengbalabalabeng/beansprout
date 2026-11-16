@@ -112,6 +112,13 @@ Done when:
   `reports/Blog platform features for Beansprout.md`. Spec: `specs/seo.md`. Absolute addresses
   come from `beansprout.site-url` or the request, through `Pages.forSite`. Next in the report's
   list: `aliases` with real 301s, code highlighting, CSS dark mode, ETags, robots.txt.
+- **Code highlighting is a Prism port with Shiki's colors** (Dan, 16 November 2026). Core
+  highlights fences on the server with Prism's grammars ported to Java (MIT notice kept) and
+  Prism's class names, so any Prism theme works. `/beansprout/code.css` uses Shiki's GitHub
+  Light Default and Dark Default colors. Shiki itself and TextMate engines on the JVM were set
+  aside: see `specs/highlighting.md`.
+- **Dark mode follows the reader's system** (Dan, 16 November 2026), CSS only, no toggle. Both
+  schemes are tested for WCAG AA contrast. Spec: `specs/dark-mode.md`.
 - **Railway is the default deploy** (Dan, 16 November 2026). `docs/deploy.md` uses a Dockerfile,
   not `railway.json`, which Railway stops reading on 1 December 2026.
 - **The feed and sitemap need no theme.** They are served whenever the web pages are on.

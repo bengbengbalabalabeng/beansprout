@@ -8,7 +8,8 @@ Add a Markdown blog to the Spring Boot app you already run.
 
 You write posts as Markdown files. Beansprout turns them into a blog inside your app: an index,
 a page per post, tag pages, an archive, an Atom feed and a sitemap. Every page carries the tags
-search engines and social sites read. No controllers, no templates, no database.
+search engines and social sites read. Code is highlighted on the server, and the theme follows
+the reader's light or dark mode. No controllers, no templates, no database.
 
 ## Why
 
@@ -87,6 +88,8 @@ beansprout:
     reload: false                   # true re-reads posts on every request, for development
   web:
     enabled: true                   # false turns the pages off. Posts and Pages stay as beans.
+  code:
+    highlight: true                 # false shows code fences as plain code
 ```
 
 ## Try the sample

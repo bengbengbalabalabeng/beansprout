@@ -100,6 +100,31 @@ Put pictures in `src/main/resources/static/images/`. Spring Boot serves that fol
 A post's picture is also its preview when someone shares the link. For that, use a PNG or JPEG
 of 1200 by 630 pixels. Social sites do not show SVG previews.
 
+## Code
+
+Code fences are highlighted on the server, so readers download no JavaScript. Name the language
+after the backticks:
+
+````markdown
+```java
+record Bean(String name) {}
+```
+````
+
+Java, Kotlin, XML, HTML, YAML, properties, JSON, SQL, shell, JavaScript and TypeScript are
+highlighted, and short names like `yml`, `sh` and `ts` work too. Any other language is shown as
+plain code.
+
+The colors are GitHub's, light or dark to match the reader's system. They come from
+`/beansprout/code.css`, which any theme can link. To change a color, set its custom property,
+such as `--bs-code-keyword`, after that file. Highlighting uses Prism's class names, so a Prism
+theme works too. To turn it off, set `beansprout.code.highlight: false`.
+
+## Light and dark
+
+Longhand follows the reader's system: a light page by day, a dark one at night, with no
+JavaScript and nothing to set.
+
 ## What search engines see
 
 Every page gets a description, a canonical link and Open Graph tags, so a shared link shows a
