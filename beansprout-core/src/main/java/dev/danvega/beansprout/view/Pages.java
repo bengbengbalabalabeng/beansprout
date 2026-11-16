@@ -52,7 +52,7 @@ public final class Pages {
 	/** Page n of the index. Page 1 always exists, even with no posts. */
 	public Optional<IndexPage> index(int page) {
 		List<dev.danvega.beansprout.content.Post> published = posts.published();
-		return listing(published, page, links::page).map(listing -> new IndexPage(site(""), listing));
+		return listing(published, page, links::page).map(listing -> new IndexPage(site("", "latest"), listing));
 	}
 
 	/** A published post by its slug. */
@@ -65,10 +65,12 @@ public final class Pages {
 				PostLink older = i + 1 < published.size() ? link(published.get(i + 1)) : PostLink.NONE;
 				List<Tag> tags = tags(post);
 				Tag crumb = tags.isEmpty() ? new Tag("Latest", links.home()) : tags.getFirst();
-				Post view = new Post(post.title(), crumb, LONG_DATE.format(post.date()), isoDate(post.date().toLocalDate()),
-						reading(post), tags, post.html(),
+				String picture = links.picture(post.image());
+				Post view = new Post(post.title(), post.lede(), crumb, settings.author(), LONG_DATE.format(post.date()),
+						isoDate(post.date().toLocalDate()), reading(post), tags, picture, post.imageAlt(),
+						picture.isEmpty() ? "" : post.caption(), post.html(),
 						post.headings().stream().map(h -> new Heading(h.id(), h.text())).toList(), newer, older);
-				return Optional.of(new PostPage(site(""), view));
+				return Optional.of(new PostPage(site("", ""), view));
 			}
 		}
 		return Optional.empty();
@@ -82,7 +84,7 @@ public final class Pages {
 		}
 		List<dev.danvega.beansprout.content.Post> tagged = posts.tagged(tagSlug);
 		return listing(tagged, page, n -> links.tagPage(tagSlug, n))
-			.map(listing -> new TagPage(site(tagSlug), tag.get().name(), count(tagged.size()), listing));
+			.map(listing -> new TagPage(site(tagSlug, ""), tag.get().name(), count(tagged.size()), listing));
 	}
 
 	/** Every published post by year, newest year first. */
@@ -98,7 +100,7 @@ public final class Pages {
 			.map(entry -> new Year(String.valueOf(entry.getKey()), count(entry.getValue().size()), List.copyOf(entry.getValue())))
 			.toList();
 		String since = published.isEmpty() ? "" : MONTH_YEAR.format(published.getLast().date());
-		return new ArchivePage(site(""), new Archive(count(published.size()), since, years));
+		return new ArchivePage(site("", "archive"), new Archive(count(published.size()), since, years));
 	}
 
 	/** The page for an address with nothing at it. */
@@ -108,7 +110,7 @@ public final class Pages {
 			.map(post -> new MiniPost(post.title(), links.post(post.slug()), LONG_DATE.format(post.date()),
 					isoDate(post.date().toLocalDate()), reading(post)))
 			.toList();
-		return new NotFoundPage(site(""), path, count(published.size()), recent);
+		return new NotFoundPage(site("", ""), path, count(published.size()), recent);
 	}
 
 	/**
@@ -154,7 +156,8 @@ public final class Pages {
 
 	private Card card(dev.danvega.beansprout.content.Post post) {
 		return new Card(post.title(), links.post(post.slug()), LONG_DATE.format(post.date()),
-				isoDate(post.date().toLocalDate()), reading(post), post.summary(), tags(post));
+				isoDate(post.date().toLocalDate()), reading(post), post.summary(), links.picture(post.image()), post.imageAlt(),
+				tags(post));
 	}
 
 	private List<Tag> tags(dev.danvega.beansprout.content.Post post) {
@@ -165,14 +168,14 @@ public final class Pages {
 		return new PostLink(post.title(), links.post(post.slug()));
 	}
 
-	private Site site(String currentTag) {
+	private Site site(String currentTag, String section) {
 		List<TagCount> tags = posts.tags().stream()
 			.map(tag -> new TagCount(tag.name(), links.tag(tag.slug()), String.valueOf(tag.count()),
 					tag.slug().equals(currentTag)))
 			.toList();
 		return new Site(settings.title(), settings.description(),
 				String.valueOf(LocalDate.now(posts.clock()).getYear()), links.home(), links.archive(), links.feed(),
-				links.root(), tags);
+				links.root(), links.picture(settings.photo()), section, tags);
 	}
 
 	private static String reading(dev.danvega.beansprout.content.Post post) {

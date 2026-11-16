@@ -18,6 +18,9 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  * @param siteUrl the site's address, like {@code https://example.com}, for the feed and the
  *     sitemap. When not set, the request's scheme, host and port are used.
  * @param timeZone the zone a post's plain date starts in. Defaults to the server's zone.
+ * @param author the writer's name, shown on each post page. Empty for none.
+ * @param photo the writer's picture, shown above the blog's name: a path starting with {@code /}
+ *     or a full http or https address. Empty for none.
  * @param posts where the posts come from
  * @param web the blog's pages
  */
@@ -29,6 +32,8 @@ public record BeansproutProperties(
 		@DefaultValue("10") int pageSize,
 		@Nullable String siteUrl,
 		@Nullable ZoneId timeZone,
+		@DefaultValue("") String author,
+		@DefaultValue("") String photo,
 		@DefaultValue PostsSettings posts,
 		@DefaultValue WebSettings web) {
 

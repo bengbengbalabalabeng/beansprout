@@ -58,13 +58,19 @@ public final class PostParser {
 		Object chosen = frontmatter.raw("slug");
 		String slug = Slugs.slugify(chosen == null ? fileName(file.path()) : chosen instanceof String text ? text : "");
 
+		String image = orEmpty(frontmatter.text("picture"));
+		if (!image.isEmpty() && !Pictures.valid(image)) {
+			throw new InvalidPostException("its picture '" + image + "' is not a path starting with / or an http or https address.");
+		}
+
 		MarkdownRenderer.Rendered rendered = markdown.render(frontmatter.body());
 		String summary = frontmatter.text("summary");
+		String lede = summary != null ? summary.strip() : "";
 
 		return new Post(slug, title.strip(), date, tags(frontmatter.list("tags")),
-				summary != null ? summary.strip() : cut(rendered.firstParagraph()), rendered.html(),
+				!lede.isEmpty() ? lede : cut(rendered.firstParagraph()), rendered.html(),
 				rendered.headings(), Math.max(1, (rendered.words() + WORDS_PER_MINUTE - 1) / WORDS_PER_MINUTE), draft,
-				file.path());
+				file.path(), image, orEmpty(frontmatter.text("picture-alt")), orEmpty(frontmatter.text("caption")), lede);
 	}
 
 	private ZonedDateTime date(String text) {
@@ -112,6 +118,10 @@ public final class PostParser {
 			}
 		}
 		return tags;
+	}
+
+	private static String orEmpty(@Nullable String value) {
+		return value == null ? "" : value.strip();
 	}
 
 	private static String fileName(String path) {

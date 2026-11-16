@@ -17,6 +17,12 @@ import java.util.List;
  * @param readingMinutes words divided by 200, rounded up, at least 1
  * @param draft true when frontmatter says {@code draft: true}
  * @param path the file the post came from, relative to the posts folder
+ * @param image the post's {@code picture}: a path starting with {@code /}, a full http or https address,
+ *     or empty for none
+ * @param imageAlt the {@code picture-alt} text, or empty
+ * @param caption a line under the picture, or empty
+ * @param lede the summary as written in frontmatter, or empty when the summary was taken from
+ *     the body
  */
 public record Post(
 		String slug,
@@ -28,7 +34,11 @@ public record Post(
 		List<Heading> headings,
 		int readingMinutes,
 		boolean draft,
-		String path) {
+		String path,
+		String image,
+		String imageAlt,
+		String caption,
+		String lede) {
 
 	public Post {
 		tags = List.copyOf(tags);

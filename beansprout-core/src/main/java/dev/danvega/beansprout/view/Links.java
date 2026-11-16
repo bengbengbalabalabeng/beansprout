@@ -58,6 +58,14 @@ public final class Links {
 		return prefix + "/archive";
 	}
 
+	/**
+	 * A picture's address for a page: a path starting with {@code /} gets the context path in
+	 * front, a full address is used as written, and empty stays empty.
+	 */
+	public String picture(String address) {
+		return address.startsWith("/") ? root + address : address;
+	}
+
 	public String feed() {
 		return prefix + "/feed.xml";
 	}

@@ -14,7 +14,9 @@
           </ol>
         </nav>
         <h1 class="post-title">${post.title()}</h1>
+        @if(!post.lede().isEmpty())<p class="post-lede">${post.lede()}</p>@endif
         <div class="post-info">
+          @if(!post.author().isEmpty())<p class="post-author">${post.author()}</p>@endif
           <p class="post-meta"><time class="post-date" datetime="${post.dateTime()}">${post.date()}</time> · <span class="post-reading">${post.reading()}</span></p>
           @if(!post.tags().isEmpty())
             <ul class="post-tags" aria-label="Tags">
@@ -25,6 +27,12 @@
           @endif
         </div>
       </header>
+      @if(!post.picture().isEmpty())
+        <figure class="post-figure">
+          <img class="post-figure-img" src="${post.picture()}" alt="${post.pictureAlt()}" width="1200" height="600">
+          @if(!post.caption().isEmpty())<figcaption class="post-figure-caption">${post.caption()}</figcaption>@endif
+        </figure>
+      @endif
       <div class="post-body">$unsafe{post.body()}</div>
     </article>
     <nav class="post-nav" aria-label="Newer and older posts">

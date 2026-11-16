@@ -7,6 +7,7 @@
   <ul class="cards">
     @for(var c : listing.cards())
       <li class="card">
+        @if(!c.picture().isEmpty())<img class="card-picture" src="${c.picture()}" alt="${c.pictureAlt()}" width="1200" height="600" loading="lazy">@endif
         <div class="card-body">
           <h2 class="card-title"><a class="card-link" href="${c.url()}">${c.title()}</a></h2>
           <p class="card-meta"><time class="card-date" datetime="${c.dateTime()}">${c.date()}</time> · <span class="card-reading">${c.reading()}</span></p>

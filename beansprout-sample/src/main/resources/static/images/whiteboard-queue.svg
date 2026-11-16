@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900">
+  <rect width="900" height="900" fill="#d9e1e6"/>
+  <rect x="53" y="53" width="794" height="758" rx="8" fill="#c5cbd2"/>
+  <rect x="63" y="63" width="774" height="738" rx="4" fill="#fbfbfa"/>
+  <path d="M489 93 L797 395" stroke="#ffffff" stroke-width="45" stroke-linecap="round" opacity=".7"/>
+  <rect x="218" y="811" width="464" height="22" rx="4" fill="#8a929c"/>
+  <rect x="295" y="803" width="54" height="12" rx="6" fill="#3d5a80"/>
+  <rect x="373" y="803" width="54" height="12" rx="6" fill="#b4532a"/>
+  <rect x="450" y="803" width="54" height="12" rx="6" fill="#1b1f24"/>
+  <rect x="103" y="103" width="260" height="12" rx="6" fill="#1b1f24"/>
+  <rect x="103" y="335" width="170" height="120" rx="10" fill="none" stroke="#1b1f24" stroke-width="5"/>
+  <rect x="127" y="385" width="110" height="8" rx="4" fill="#1b1f24"/>
+  <path d="M283 395 L363 395" stroke="#1b1f24" stroke-width="4" stroke-linecap="round" fill="none"/>
+<path d="M347 403 L363 395 L347 387" stroke="#1b1f24" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect x="373" y="355" width="30" height="80" rx="4" fill="none" stroke="#3d5a80" stroke-width="5"/>
+  <rect x="415" y="355" width="30" height="80" rx="4" fill="none" stroke="#3d5a80" stroke-width="5"/>
+  <rect x="457" y="355" width="30" height="80" rx="4" fill="none" stroke="#3d5a80" stroke-width="5"/>
+  <rect x="499" y="355" width="30" height="80" rx="4" fill="none" stroke="#3d5a80" stroke-width="5"/>
+  <path d="M553 395 L623 395" stroke="#1b1f24" stroke-width="4" stroke-linecap="round" fill="none"/>
+<path d="M607 403 L623 395 L607 387" stroke="#1b1f24" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect x="633" y="335" width="120" height="120" rx="10" fill="none" stroke="#1b1f24" stroke-width="5"/>
+  <rect x="653" y="385" width="70" height="8" rx="4" fill="#1b1f24"/>
+  <path d="M343 245 L593 535 M593 245 L343 535" stroke="#b4532a" stroke-width="12" stroke-linecap="round"/>
+  <rect x="123" y="681" width="300" height="9" rx="4" fill="#b4532a"/>
+  <rect x="123" y="711" width="200" height="9" rx="4" fill="#b4532a"/>
+</svg>

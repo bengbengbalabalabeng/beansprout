@@ -18,12 +18,13 @@
     <a class="skip" href="#main">Skip to content</a>
     <div class="site">
       <header class="site-header">
+        @if(!site.photo().isEmpty())<img class="site-avatar" src="${site.photo()}" alt="" width="240" height="240">@endif
         <p class="site-name"><a class="site-name-link" href="${site.home()}">${site.name()}</a></p>
         @if(!site.description().isEmpty())<p class="site-bio">${site.description()}</p>@endif
         <nav class="site-nav" aria-label="Main">
           <ul class="nav-list">
-            <li><a class="nav-link" href="${site.home()}">Latest</a></li>
-            <li><a class="nav-link" href="${site.archive()}">Archive</a></li>
+            <li><a class="nav-link" href="${site.home()}" aria-current="${site.section().equals("latest") ? "page" : null}">Latest</a></li>
+            <li><a class="nav-link" href="${site.archive()}" aria-current="${site.section().equals("archive") ? "page" : null}">Archive</a></li>
           </ul>
         </nav>
         <button class="button menu-button" type="button" popovertarget="menu">Menu</button>
@@ -33,8 +34,8 @@
             <button class="button menu-close" type="button" popovertarget="menu" popovertargetaction="hide">Close</button>
           </div>
           <ul class="menu-list">
-            <li><a class="menu-link" href="${site.home()}">Latest</a></li>
-            <li><a class="menu-link" href="${site.archive()}">Archive</a></li>
+            <li><a class="menu-link" href="${site.home()}" aria-current="${site.section().equals("latest") ? "page" : null}">Latest</a></li>
+            <li><a class="menu-link" href="${site.archive()}" aria-current="${site.section().equals("archive") ? "page" : null}">Archive</a></li>
           </ul>
           @if(!site.tags().isEmpty())
             <div class="menu-tags">

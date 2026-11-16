@@ -12,6 +12,8 @@ import java.util.List;
  * @param archive the archive's address
  * @param feed the Atom feed's address
  * @param root the app's context path, empty at the root, for a theme's own files
+ * @param photo the writer's picture, or empty
+ * @param section the menu item this page belongs to: {@code latest}, {@code archive}, or empty
  * @param tags every tag with its count, most used first
  */
 public record Site(
@@ -22,5 +24,7 @@ public record Site(
 		String archive,
 		String feed,
 		String root,
+		String photo,
+		String section,
 		List<TagCount> tags) {
 }

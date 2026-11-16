@@ -48,7 +48,8 @@ public class BeansproutAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	Pages beansproutPages(Posts posts, Links links, BeansproutProperties properties) {
-		return new Pages(posts, links, new BlogSettings(properties.title(), properties.description(), properties.pageSize()));
+		return new Pages(posts, links, new BlogSettings(properties.title(), properties.description(), properties.pageSize(),
+				properties.author(), properties.photo()));
 	}
 
 	@Bean

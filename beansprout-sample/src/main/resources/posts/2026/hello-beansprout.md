@@ -3,6 +3,9 @@ title: Hello, Beansprout
 date: 2026-11-16
 tags: [beansprout, spring boot]
 summary: The first post, served from a folder of Markdown by a Spring Boot starter.
+picture: /images/terminal-logs.svg
+picture-alt: A terminal with the app starting
+caption: One dependency and a folder of Markdown. That is the whole setup.
 ---
 This blog has no controllers and no templates of its own. It has one dependency and a folder of
 Markdown files.

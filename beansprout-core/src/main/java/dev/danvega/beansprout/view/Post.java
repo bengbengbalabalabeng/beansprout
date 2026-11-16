@@ -5,10 +5,15 @@ import java.util.List;
 /**
  * One post on its own page.
  *
+ * @param lede the summary written in frontmatter, shown under the title, or empty
  * @param crumb the tag the breadcrumb leads back to: the post's first tag, or the index
  * @param date as the page shows it: 14 March 2026
  * @param dateTime the same date as 2026-03-14, for the time element
  * @param reading 9 min read
+ * @param author the writer's name, or empty
+ * @param picture the lead picture's address, or empty
+ * @param pictureAlt the picture's alt text, or empty
+ * @param caption a line under the picture, or empty. Always empty when there is no picture.
  * @param body the post as HTML. The only value a theme shows without escaping.
  * @param headings the post's {@code ##} headings, for "On this page"
  * @param newer the next newer post, or {@link PostLink#NONE}
@@ -16,11 +21,16 @@ import java.util.List;
  */
 public record Post(
 		String title,
+		String lede,
 		Tag crumb,
+		String author,
 		String date,
 		String dateTime,
 		String reading,
 		List<Tag> tags,
+		String picture,
+		String pictureAlt,
+		String caption,
 		String body,
 		List<Heading> headings,
 		PostLink newer,

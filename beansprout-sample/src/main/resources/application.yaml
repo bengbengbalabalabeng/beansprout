@@ -6,6 +6,8 @@ spring:
 beansprout:
   title: Beansprout Notes
   description: A sample blog, served by the Beansprout starter.
+  author: Beansprout
+  photo: /images/beansprout.png
 
 # This app also uses JTE for its own pages, and JTE will not start until you choose: compile
 # templates on the fly (development) or load precompiled ones (production). Beansprout's theme
