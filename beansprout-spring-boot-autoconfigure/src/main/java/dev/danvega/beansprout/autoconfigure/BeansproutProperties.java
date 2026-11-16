@@ -23,6 +23,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  *     or a full http or https address. Empty for none.
  * @param posts where the posts come from
  * @param web the blog's pages
+ * @param code how code fences are shown
  */
 @ConfigurationProperties("beansprout")
 public record BeansproutProperties(
@@ -35,7 +36,8 @@ public record BeansproutProperties(
 		@DefaultValue("") String author,
 		@DefaultValue("") String photo,
 		@DefaultValue PostsSettings posts,
-		@DefaultValue WebSettings web) {
+		@DefaultValue WebSettings web,
+		@DefaultValue CodeSettings code) {
 
 	public BeansproutProperties {
 		if (siteUrl != null && !siteUrl.isBlank()) {
@@ -64,6 +66,14 @@ public record BeansproutProperties(
 	 * @param enabled false to register no controllers, and call the posts service from your own
 	 */
 	public record WebSettings(@DefaultValue("true") boolean enabled) {
+	}
+
+	/**
+	 * How code fences are shown.
+	 *
+	 * @param highlight false to show every fence as plain code
+	 */
+	public record CodeSettings(@DefaultValue("true") boolean highlight) {
 	}
 
 }

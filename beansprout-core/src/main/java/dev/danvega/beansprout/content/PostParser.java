@@ -11,6 +11,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import dev.danvega.beansprout.code.CodeHighlighter;
+import dev.danvega.beansprout.code.PrismHighlighter;
 import org.jspecify.annotations.Nullable;
 
 /** Turns one {@link MarkdownFile} into a {@link Post}, or says why it cannot. */
@@ -22,15 +24,26 @@ public final class PostParser {
 
 	private final ZoneId zone;
 
-	private final MarkdownRenderer markdown = new MarkdownRenderer();
+	private final MarkdownRenderer markdown;
+
+	/**
+	 * Creates a parser for one blog that highlights code with the built-in highlighter.
+	 *
+	 * @param zone the blog's time zone: a date with no time starts at midnight here
+	 */
+	public PostParser(ZoneId zone) {
+		this(zone, new PrismHighlighter());
+	}
 
 	/**
 	 * Creates a parser for one blog.
 	 *
 	 * @param zone the blog's time zone: a date with no time starts at midnight here
+	 * @param highlighter highlights code fences, or {@link CodeHighlighter#NONE} for none
 	 */
-	public PostParser(ZoneId zone) {
+	public PostParser(ZoneId zone, CodeHighlighter highlighter) {
 		this.zone = zone;
+		this.markdown = new MarkdownRenderer(highlighter);
 	}
 
 	/**

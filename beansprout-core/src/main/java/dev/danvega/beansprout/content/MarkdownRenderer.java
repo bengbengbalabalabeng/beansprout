@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import dev.danvega.beansprout.code.CodeHighlighter;
 import org.commonmark.Extension;
 import org.commonmark.ext.gfm.tables.TablesExtension;
 import org.commonmark.node.AbstractVisitor;
@@ -27,6 +28,12 @@ final class MarkdownRenderer {
 	private static final List<Extension> EXTENSIONS = List.of(TablesExtension.create());
 
 	private final Parser parser = Parser.builder().extensions(EXTENSIONS).build();
+
+	private final CodeHighlighter highlighter;
+
+	MarkdownRenderer(CodeHighlighter highlighter) {
+		this.highlighter = highlighter;
+	}
 
 	private final TextContentRenderer text = TextContentRenderer.builder().extensions(EXTENSIONS).build();
 
@@ -55,6 +62,7 @@ final class MarkdownRenderer {
 
 		HtmlRenderer html = HtmlRenderer.builder()
 			.extensions(EXTENSIONS)
+			.nodeRendererFactory(context -> new FencedCodeRenderer(context, highlighter))
 			.attributeProviderFactory(context -> (node, tagName, attributes) -> {
 				String id = ids.get(node);
 				if (id != null) {

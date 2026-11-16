@@ -4,6 +4,9 @@
    button (a popover) and a footer under the page. Built from the design agent's mockups. */
 
 :root {
+  /* Light and dark: the page follows the reader's system. The dark colours are in the
+     prefers-color-scheme block below this one. */
+  color-scheme: light dark;
   /* Every colour a rebrand touches is in this block. */
   --paper: #f4f5f6;
   --surface: #fff;
@@ -37,16 +40,18 @@
   --ok-dot: #2f7a52;
   --neutral: #4a525c;
   --neutral-fill: #edeff2;
-  /* Code samples: always dark, whatever the page is. */
-  --code-bg: #1e2227;
+  /* Code samples take their colours from Beansprout's code.css (GitHub Light Default and Dark
+     Default), so code is light on a light page and dark on a dark one. The second value in each
+     var() is the colour used when code.css is not loaded. */
+  --code-bg: var(--bs-code-bg, #1e2227);
   --code-head: #272c33;
-  --code-text: #d7dae0;
+  --code-text: var(--bs-code-fg, #d7dae0);
   --code-file: #e6e8eb;
   --code-muted: #aeb4bd;
-  --code-keyword: #8fb4e0;
-  --code-meta: #e5b07a;
-  --code-string: #a8c98a;
-  --code-comment: #8b939e;
+  --code-keyword: var(--bs-code-keyword, #8fb4e0);
+  --code-meta: var(--bs-code-function, #e5b07a);
+  --code-string: var(--bs-code-string, #a8c98a);
+  --code-comment: var(--bs-code-comment, #8b939e);
   --code-inline: #e9ecef;
   --scrollbar: #0f1113;
   /* Designed with IBM Plex Sans and IBM Plex Mono. Nothing is fetched: these pages render
@@ -66,6 +71,43 @@
   --gutter: 24px;
   --list-width: 1000px;
   --read-width: 720px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0f1216;
+    --surface: #171b21;
+    --ink: #eceef1;
+    --ink-2: #c3c9d0;
+    --ink-3: #9aa3ad;
+    --text: #d7dce2;
+    --line: #2a3038;
+    --line-2: #3c434c;
+    --fill: #1d2228;
+    --fill-2: #191d22;
+    --fill-3: #242a31;
+    --accent: #ec9a6e;
+    --accent-hover: #f3ae89;
+    --accent-soft: #3b2519;
+    --on-accent: #1b0f08;
+    --mark: #4a2c1c;
+    --on-mark: #f7cdb5;
+    --focus: #ec9a6e;
+    --bad: #f0a07a;
+    --bad-fill: #3b2519;
+    --bad-dot: #ec9a6e;
+    --bad-line: #ec9a6e;
+    --wait: #e9c46a;
+    --wait-fill: #33290f;
+    --wait-dot: #d4a72c;
+    --ok: #8fd3a9;
+    --ok-fill: #14301f;
+    --ok-dot: #4fb07b;
+    --neutral: #b8c0c8;
+    --neutral-fill: #242a31;
+    --code-inline: #262c33;
+    --scrollbar: #4a525c;
+  }
 }
 
 @media (max-width: 1100px) { :root { --sidebar: 256px; --side-pad: 24px; --main-pad: 40px; } }
@@ -429,6 +471,7 @@ code, pre { font-family: var(--mono); }
   padding: 18px;
   border-radius: var(--radius-lg);
   background: var(--code-bg);
+  border: 1px solid var(--line);
   color: var(--code-text);
   font-size: 14px;
   line-height: 1.6;

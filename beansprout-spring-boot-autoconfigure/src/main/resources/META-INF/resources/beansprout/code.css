@@ -1,0 +1,55 @@
+/* Beansprout code colors. Beansprout highlights code fences on the server with Prism's class
+   names, so any Prism theme works too. This file uses the colors of Shiki's GitHub Light Default
+   and GitHub Dark Default themes, and follows the reader's light or dark preference.
+
+   Change a color by setting its custom property on the root element after this file, such as
+   --bs-code-keyword set to #b31d28. A theme can also use --bs-code-bg and --bs-code-fg for its
+   own code blocks. */
+
+:root {
+  --bs-code-bg: #ffffff;
+  --bs-code-fg: #1f2328;
+  --bs-code-comment: #6e7781;
+  --bs-code-keyword: #cf222e;
+  --bs-code-string: #0a3069;
+  --bs-code-function: #8250df;
+  --bs-code-constant: #0550ae;
+  --bs-code-type: #953800;
+  --bs-code-variable: #953800;
+  --bs-code-tag: #116329;
+  --bs-code-attr: #0550ae;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bs-code-bg: #0d1117;
+    --bs-code-fg: #e6edf3;
+    --bs-code-comment: #8b949e;
+    --bs-code-keyword: #ff7b72;
+    --bs-code-string: #a5d6ff;
+    --bs-code-function: #d2a8ff;
+    --bs-code-constant: #79c0ff;
+    --bs-code-type: #ffa657;
+    --bs-code-variable: #ffa657;
+    --bs-code-tag: #7ee787;
+    --bs-code-attr: #79c0ff;
+  }
+}
+
+/* A block's own colors, with or without a language, at zero specificity, so a theme's rules
+   for pre always win. */
+:where(pre:has(> code)) {
+  background: var(--bs-code-bg);
+  color: var(--bs-code-fg);
+}
+
+.token.comment, .token.prolog, .token.doctype, .token.cdata, .token.shebang { color: var(--bs-code-comment); font-style: italic; }
+.token.keyword, .token.important, .token.directive, .token.operator.keyword { color: var(--bs-code-keyword); }
+.token.string, .token.char, .token.template-string, .token.attr-value, .token.entity { color: var(--bs-code-string); }
+.token.function, .token.annotation { color: var(--bs-code-function); }
+.token.number, .token.boolean, .token.constant, .token.property, .token.builtin, .token.attr-name, .token.atrule, .token.identifier { color: var(--bs-code-constant); }
+.token.class-name { color: var(--bs-code-type); }
+.token.variable { color: var(--bs-code-variable); }
+.token.tag { color: var(--bs-code-tag); }
+.token.punctuation, .token.operator { color: var(--bs-code-fg); }
+.token.attr-name { color: var(--bs-code-attr); }

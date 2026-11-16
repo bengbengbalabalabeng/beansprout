@@ -32,6 +32,7 @@
       @endfor
     @endif
     @if(!meta.jsonLd().isEmpty())<script type="application/ld+json">$unsafe{meta.jsonLd()}</script>@endif
+    <link rel="stylesheet" href="${site.root()}/beansprout/code.css">
     <link rel="stylesheet" href="${site.root()}/beansprout/longhand/longhand.css">
     <link rel="alternate" type="application/atom+xml" title="${site.name()}" href="${site.feed()}">
   </head>

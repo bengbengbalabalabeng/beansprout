@@ -18,3 +18,23 @@ The post starts here.
 ```
 
 Tables, code blocks, *emphasis* and [links](https://commonmark.org) all work.
+
+Code fences are highlighted on the server, with no JavaScript:
+
+```java
+@RestController
+class HelloController {
+
+    @GetMapping("/hello")
+    String hello(@RequestParam(defaultValue = "bean") String name) {
+        return "Hello, " + name; // a sprout says hi
+    }
+
+}
+```
+
+```yaml
+beansprout:
+  title: Beansprout Notes   # the blog's name
+  page-size: 10
+```

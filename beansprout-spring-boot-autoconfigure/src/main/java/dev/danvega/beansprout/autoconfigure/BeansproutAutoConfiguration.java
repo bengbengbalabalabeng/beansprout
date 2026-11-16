@@ -3,6 +3,8 @@ package dev.danvega.beansprout.autoconfigure;
 import java.time.Clock;
 import java.time.ZoneId;
 
+import dev.danvega.beansprout.code.CodeHighlighter;
+import dev.danvega.beansprout.code.PrismHighlighter;
 import dev.danvega.beansprout.content.PostParser;
 import dev.danvega.beansprout.content.PostSource;
 import dev.danvega.beansprout.content.Posts;
@@ -34,9 +36,17 @@ public class BeansproutAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	Posts beansproutPosts(PostSource source, BeansproutProperties properties) {
+	CodeHighlighter beansproutCodeHighlighter(BeansproutProperties properties) {
+		return properties.code().highlight() ? new PrismHighlighter() : CodeHighlighter.NONE;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	Posts beansproutPosts(PostSource source, CodeHighlighter highlighter, BeansproutProperties properties) {
 		ZoneId zone = properties.timeZone() != null ? properties.timeZone() : ZoneId.systemDefault();
-		return new Posts(source, new PostParser(zone), Clock.system(zone), properties.posts().reload());
+		// The property turns off highlighting even when the app supplies its own highlighter.
+		CodeHighlighter used = properties.code().highlight() ? highlighter : CodeHighlighter.NONE;
+		return new Posts(source, new PostParser(zone, used), Clock.system(zone), properties.posts().reload());
 	}
 
 	@Bean
