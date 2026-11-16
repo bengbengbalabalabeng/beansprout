@@ -5,5 +5,5 @@ package dev.danvega.beansprout.view;
  *
  * @param count 8 posts
  */
-public record TagPage(Site site, String name, String count, Listing listing) {
+public record TagPage(Site site, Meta meta, String name, String count, Listing listing) {
 }

@@ -9,5 +9,5 @@ import java.util.List;
  * @param postCount 22 posts
  * @param recent the newest posts
  */
-public record NotFoundPage(Site site, String path, String postCount, List<MiniPost> recent) {
+public record NotFoundPage(Site site, Meta meta, String path, String postCount, List<MiniPost> recent) {
 }

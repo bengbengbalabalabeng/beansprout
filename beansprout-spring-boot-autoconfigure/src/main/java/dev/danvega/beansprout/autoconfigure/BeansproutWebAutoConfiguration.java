@@ -28,8 +28,8 @@ public class BeansproutWebAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(ThemeRenderer.class)
 	@ConditionalOnMissingBean
-	BlogController beansproutBlogController(Pages pages, ThemeRenderer theme) {
-		return new BlogController(pages, theme);
+	BlogController beansproutBlogController(Pages pages, ThemeRenderer theme, BeansproutProperties properties) {
+		return new BlogController(pages, theme, properties.siteUrl());
 	}
 
 	/** The feed and the sitemap need no template, so they are served with or without a theme. */

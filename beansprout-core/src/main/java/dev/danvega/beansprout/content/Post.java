@@ -21,6 +21,7 @@ import java.util.List;
  *     or empty for none
  * @param imageAlt the {@code picture-alt} text, or empty
  * @param caption a line under the picture, or empty
+ * @param modified when the post last changed: its {@code updated} frontmatter, or its date
  * @param lede the summary as written in frontmatter, or empty when the summary was taken from
  *     the body
  */
@@ -38,7 +39,8 @@ public record Post(
 		String image,
 		String imageAlt,
 		String caption,
-		String lede) {
+		String lede,
+		ZonedDateTime modified) {
 
 	public Post {
 		tags = List.copyOf(tags);

@@ -2,6 +2,7 @@
 @param IndexPage page
 @template.layout(
   site = page.site(),
+  meta = page.meta(),
   title = page.latest().page().equals("1") ? page.site().name() : "Page " + page.latest().page() + " · " + page.site().name(),
   content = @`
     <h1 class="page-title">Latest posts</h1>

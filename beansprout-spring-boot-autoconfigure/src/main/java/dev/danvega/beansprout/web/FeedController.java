@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /** The Atom feed and the sitemap, under {@code beansprout.base-path}. */
 @Controller
@@ -45,10 +44,7 @@ public class FeedController {
 	}
 
 	private String site(HttpServletRequest request) {
-		if (siteUrl != null && !siteUrl.isBlank()) {
-			return siteUrl;
-		}
-		return ServletUriComponentsBuilder.fromRequestUri(request).replacePath(null).replaceQuery(null).toUriString();
+		return SiteAddress.of(siteUrl, request);
 	}
 
 }

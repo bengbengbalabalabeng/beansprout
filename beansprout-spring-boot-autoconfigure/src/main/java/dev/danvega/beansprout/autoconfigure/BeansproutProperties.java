@@ -37,6 +37,16 @@ public record BeansproutProperties(
 		@DefaultValue PostsSettings posts,
 		@DefaultValue WebSettings web) {
 
+	public BeansproutProperties {
+		if (siteUrl != null && !siteUrl.isBlank()) {
+			String scheme = siteUrl.strip().toLowerCase(java.util.Locale.ROOT);
+			if (!scheme.startsWith("http://") && !scheme.startsWith("https://")) {
+				throw new IllegalArgumentException(
+						"beansprout.site-url must start with http:// or https://, like https://blog.example.com, not '" + siteUrl + "'");
+			}
+		}
+	}
+
 	/**
 	 * Where the posts come from.
 	 *

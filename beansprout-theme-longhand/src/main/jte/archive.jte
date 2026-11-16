@@ -2,6 +2,7 @@
 @param ArchivePage page
 @template.layout(
   site = page.site(),
+  meta = page.meta(),
   title = "Archive · " + page.site().name(),
   content = @`
     <div class="archive">

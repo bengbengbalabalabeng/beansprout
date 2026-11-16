@@ -27,16 +27,33 @@ public final class Pages {
 
 	private static final int RECENT = 5;
 
+	private static final DateTimeFormatter TIMESTAMP = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ssXXX");
+
 	private final Posts posts;
 
 	private final Links links;
 
 	private final BlogSettings settings;
 
+	private final String siteUrl;
+
 	public Pages(Posts posts, Links links, BlogSettings settings) {
+		this(posts, links, settings, "");
+	}
+
+	private Pages(Posts posts, Links links, BlogSettings settings, String siteUrl) {
 		this.posts = posts;
 		this.links = links;
 		this.settings = settings;
+		this.siteUrl = tidy(siteUrl);
+	}
+
+	/**
+	 * The same pages, with absolute addresses for canonical links, link previews and structured
+	 * data. The site's address is {@code https://example.com}, with or without a trailing slash.
+	 */
+	public Pages forSite(String siteUrl) {
+		return new Pages(posts, links, settings, siteUrl);
 	}
 
 	/** The links this blog uses. */
@@ -52,7 +69,11 @@ public final class Pages {
 	/** Page n of the index. Page 1 always exists, even with no posts. */
 	public Optional<IndexPage> index(int page) {
 		List<dev.danvega.beansprout.content.Post> published = posts.published();
-		return listing(published, page, links::page).map(listing -> new IndexPage(site("", "latest"), listing));
+		String title = page == 1 ? settings.title() : "Page " + page + " · " + settings.title();
+		String description = settings.description().isEmpty() ? "The latest posts from " + settings.title() + "."
+				: settings.description();
+		return listing(published, page, links::page)
+			.map(listing -> new IndexPage(site("", "latest"), pageMeta(title, description, links.page(page)), listing));
 	}
 
 	/** A published post by its slug. */
@@ -66,11 +87,14 @@ public final class Pages {
 				List<Tag> tags = tags(post);
 				Tag crumb = tags.isEmpty() ? new Tag("Latest", links.home()) : tags.getFirst();
 				String picture = links.picture(post.image());
+				boolean laterDay = post.modified().toLocalDate().isAfter(post.date().toLocalDate());
 				Post view = new Post(post.title(), post.lede(), crumb, settings.author(), LONG_DATE.format(post.date()),
-						isoDate(post.date().toLocalDate()), reading(post), tags, picture, post.imageAlt(),
+						isoDate(post.date().toLocalDate()), reading(post),
+						laterDay ? LONG_DATE.format(post.modified()) : "",
+						laterDay ? isoDate(post.modified().toLocalDate()) : "", tags, picture, post.imageAlt(),
 						picture.isEmpty() ? "" : post.caption(), post.html(),
 						post.headings().stream().map(h -> new Heading(h.id(), h.text())).toList(), newer, older);
-				return Optional.of(new PostPage(site("", ""), view));
+				return Optional.of(new PostPage(site("", ""), postMeta(post), view));
 			}
 		}
 		return Optional.empty();
@@ -84,7 +108,10 @@ public final class Pages {
 		}
 		List<dev.danvega.beansprout.content.Post> tagged = posts.tagged(tagSlug);
 		return listing(tagged, page, n -> links.tagPage(tagSlug, n))
-			.map(listing -> new TagPage(site(tagSlug, ""), tag.get().name(), count(tagged.size()), listing));
+			.map(listing -> new TagPage(site(tagSlug, ""),
+					pageMeta(tag.get().name(), "Posts tagged " + tag.get().name() + " on " + settings.title() + ".",
+							links.tagPage(tagSlug, page)),
+					tag.get().name(), count(tagged.size()), listing));
 	}
 
 	/** Every published post by year, newest year first. */
@@ -100,7 +127,9 @@ public final class Pages {
 			.map(entry -> new Year(String.valueOf(entry.getKey()), count(entry.getValue().size()), List.copyOf(entry.getValue())))
 			.toList();
 		String since = published.isEmpty() ? "" : MONTH_YEAR.format(published.getLast().date());
-		return new ArchivePage(site("", "archive"), new Archive(count(published.size()), since, years));
+		return new ArchivePage(site("", "archive"),
+				pageMeta("Archive", "Every post on " + settings.title() + ", by year.", links.archive()),
+				new Archive(count(published.size()), since, years));
 	}
 
 	/** The page for an address with nothing at it. */
@@ -110,7 +139,10 @@ public final class Pages {
 			.map(post -> new MiniPost(post.title(), links.post(post.slug()), LONG_DATE.format(post.date()),
 					isoDate(post.date().toLocalDate()), reading(post)))
 			.toList();
-		return new NotFoundPage(site("", ""), path, count(published.size()), recent);
+		Meta meta = new Meta("Page not found", "There is no page at this address on " + settings.title() + ".", "", "website",
+				settings.title(),
+				photo(), "", "summary", "", "", List.of(), "");
+		return new NotFoundPage(site("", ""), meta, path, count(published.size()), recent);
 	}
 
 	/**
@@ -125,7 +157,7 @@ public final class Pages {
 		}
 		urls.add(new PageUrl(links.archive(), ""));
 		for (dev.danvega.beansprout.content.Post post : published) {
-			urls.add(new PageUrl(links.post(post.slug()), isoDate(post.date().toLocalDate())));
+			urls.add(new PageUrl(links.post(post.slug()), isoDate(post.modified().toLocalDate())));
 		}
 		for (TagSummary tag : posts.tags()) {
 			for (int n = 1; n <= pageCount(tag.count()); n++) {
@@ -133,6 +165,66 @@ public final class Pages {
 			}
 		}
 		return urls;
+	}
+
+	private Meta pageMeta(String title, String description, String path) {
+		return new Meta(title, description, absolute(path), "website", settings.title(), photo(), "", "summary", "", "",
+				List.of(), "");
+	}
+
+	private Meta postMeta(dev.danvega.beansprout.content.Post post) {
+		String url = absolute(links.post(post.slug()));
+		String picture = post.image().isEmpty() ? "" : absolutePicture(post.image());
+		String published = TIMESTAMP.format(post.date());
+		String modified = TIMESTAMP.format(post.modified());
+
+		Map<String, Object> json = new LinkedHashMap<>();
+		json.put("@context", "https://schema.org");
+		json.put("@type", "BlogPosting");
+		json.put("headline", post.title());
+		json.put("description", post.summary());
+		json.put("url", url);
+		json.put("mainEntityOfPage", url);
+		json.put("datePublished", published);
+		json.put("dateModified", modified);
+		if (!picture.isEmpty()) {
+			json.put("image", picture);
+		}
+		if (!settings.author().isEmpty()) {
+			Map<String, Object> author = new LinkedHashMap<>();
+			author.put("@type", "Person");
+			author.put("name", settings.author());
+			author.put("url", absolute(links.home()));
+			json.put("author", author);
+		}
+
+		return new Meta(post.title(), post.summary(), url, "article", settings.title(),
+				picture.isEmpty() ? photo() : picture, picture.isEmpty() ? "" : post.imageAlt(),
+				picture.isEmpty() ? "summary" : "summary_large_image", published, modified, post.tags(), JsonLd.object(json));
+	}
+
+	/** A site address without spaces around it or slashes at its end. */
+	static String tidy(String siteUrl) {
+		String tidy = siteUrl.strip();
+		while (tidy.endsWith("/")) {
+			tidy = tidy.substring(0, tidy.length() - 1);
+		}
+		return tidy;
+	}
+
+	/** A path in the app becomes an absolute address on this site. */
+	private String absolute(String path) {
+		return siteUrl + path;
+	}
+
+	/** A picture's absolute address: a full address as written, a path on this site. */
+	private String absolutePicture(String address) {
+		String picture = links.picture(address);
+		return picture.startsWith("/") ? absolute(picture) : picture;
+	}
+
+	private String photo() {
+		return settings.photo().isEmpty() ? "" : absolutePicture(settings.photo());
 	}
 
 	private Optional<Listing> listing(List<dev.danvega.beansprout.content.Post> all, int page,

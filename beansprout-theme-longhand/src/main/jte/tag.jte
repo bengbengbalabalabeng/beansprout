@@ -2,6 +2,7 @@
 @param TagPage page
 @template.layout(
   site = page.site(),
+  meta = page.meta(),
   title = page.name() + " · " + page.site().name(),
   content = @`
     <header class="page-head">

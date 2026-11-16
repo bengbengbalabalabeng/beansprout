@@ -50,7 +50,9 @@ public final class PostParser {
 		if (dateText == null) {
 			throw new InvalidPostException("it has no date. Add a line like date: 2026-11-16 to its frontmatter.");
 		}
-		ZonedDateTime date = date(dateText);
+		ZonedDateTime date = date("date", dateText);
+		String updatedText = frontmatter.text("updated");
+		ZonedDateTime modified = updatedText == null ? date : date("updated", updatedText);
 		boolean draft = draft(frontmatter.raw("draft"));
 
 		// A slug: line that is there but empty gives an empty slug, which Posts skips. Only a
@@ -70,10 +72,11 @@ public final class PostParser {
 		return new Post(slug, title.strip(), date, tags(frontmatter.list("tags")),
 				!lede.isEmpty() ? lede : cut(rendered.firstParagraph()), rendered.html(),
 				rendered.headings(), Math.max(1, (rendered.words() + WORDS_PER_MINUTE - 1) / WORDS_PER_MINUTE), draft,
-				file.path(), image, orEmpty(frontmatter.text("picture-alt")), orEmpty(frontmatter.text("caption")), lede);
+				file.path(), image, orEmpty(frontmatter.text("picture-alt")), orEmpty(frontmatter.text("caption")), lede,
+				modified);
 	}
 
-	private ZonedDateTime date(String text) {
+	private ZonedDateTime date(String key, String text) {
 		String value = text.strip();
 		try {
 			return OffsetDateTime.parse(value).atZoneSameInstant(zone);
@@ -91,7 +94,7 @@ public final class PostParser {
 			return LocalDate.parse(value).atStartOfDay(zone);
 		}
 		catch (DateTimeParseException ex) {
-			throw new InvalidPostException("its date '" + value + "' is not a date. Write it like 2026-11-16 or 2026-11-16T09:30.");
+			throw new InvalidPostException("its " + key + " '" + value + "' is not a date. Write it like 2026-11-16 or 2026-11-16T09:30.");
 		}
 	}
 

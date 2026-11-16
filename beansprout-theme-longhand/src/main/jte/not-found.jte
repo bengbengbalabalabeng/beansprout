@@ -2,6 +2,7 @@
 @param NotFoundPage page
 @template.layout(
   site = page.site(),
+  meta = page.meta(),
   title = "Page not found · " + page.site().name(),
   content = @`
     <section class="panel" aria-labelledby="panel-title">

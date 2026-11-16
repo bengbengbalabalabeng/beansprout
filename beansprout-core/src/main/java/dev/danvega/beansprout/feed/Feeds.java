@@ -38,7 +38,8 @@ public final class Feeds {
 	public String atom(String siteUrl) {
 		String site = trim(siteUrl);
 		List<Post> recent = posts.published().stream().limit(FEED_SIZE).toList();
-		ZonedDateTime updated = recent.isEmpty() ? posts.clock().instant().atZone(ZoneOffset.UTC) : recent.getFirst().date();
+		ZonedDateTime updated = recent.stream().map(Post::modified).max(java.util.Comparator.naturalOrder())
+			.orElseGet(() -> posts.clock().instant().atZone(ZoneOffset.UTC));
 
 		StringBuilder xml = new StringBuilder();
 		xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -59,7 +60,7 @@ public final class Feeds {
 			xml.append("    <link href=\"").append(escape(url)).append("\"/>\n");
 			element(xml, "    ", "id", url);
 			element(xml, "    ", "published", TIMESTAMP.format(post.date()));
-			element(xml, "    ", "updated", TIMESTAMP.format(post.date()));
+			element(xml, "    ", "updated", TIMESTAMP.format(post.modified()));
 			for (String tag : post.tags()) {
 				xml.append("    <category term=\"").append(escape(tag)).append("\"/>\n");
 			}
@@ -93,7 +94,11 @@ public final class Feeds {
 	}
 
 	private static String trim(String siteUrl) {
-		return siteUrl.endsWith("/") ? siteUrl.substring(0, siteUrl.length() - 1) : siteUrl;
+		String tidy = siteUrl.strip();
+		while (tidy.endsWith("/")) {
+			tidy = tidy.substring(0, tidy.length() - 1);
+		}
+		return tidy;
 	}
 
 	/** Escapes the five XML special characters, and drops characters XML 1.0 does not allow. */

@@ -10,6 +10,9 @@ import java.util.List;
  * @param date as the page shows it: 14 March 2026
  * @param dateTime the same date as 2026-03-14, for the time element
  * @param reading 9 min read
+ * @param updated the day the post last changed, like 2 April 2026, when that is a later day than
+ *     its date, or empty
+ * @param updatedDateTime the same day as 2026-04-02, or empty
  * @param author the writer's name, or empty
  * @param picture the lead picture's address, or empty
  * @param pictureAlt the picture's alt text, or empty
@@ -27,6 +30,8 @@ public record Post(
 		String date,
 		String dateTime,
 		String reading,
+		String updated,
+		String updatedDateTime,
 		List<Tag> tags,
 		String picture,
 		String pictureAlt,

@@ -3,6 +3,7 @@
 !{var post = page.post();}
 @template.layout(
   site = page.site(),
+  meta = page.meta(),
   title = post.title() + " · " + page.site().name(),
   content = @`
     <article class="post">
@@ -17,7 +18,7 @@
         @if(!post.lede().isEmpty())<p class="post-lede">${post.lede()}</p>@endif
         <div class="post-info">
           @if(!post.author().isEmpty())<p class="post-author">${post.author()}</p>@endif
-          <p class="post-meta"><time class="post-date" datetime="${post.dateTime()}">${post.date()}</time> · <span class="post-reading">${post.reading()}</span></p>
+          <p class="post-meta"><time class="post-date" datetime="${post.dateTime()}">${post.date()}</time> · <span class="post-reading">${post.reading()}</span>@if(!post.updated().isEmpty()) · Updated <time class="post-updated" datetime="${post.updatedDateTime()}">${post.updated()}</time>@endif</p>
           @if(!post.tags().isEmpty())
             <ul class="post-tags" aria-label="Tags">
               @for(var tg : post.tags())
