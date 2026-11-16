@@ -48,7 +48,9 @@ server:
    Railway finds the Dockerfile and builds it.
 3. Open the service's **Settings**, then **Networking**, and choose **Generate Domain**.
 4. Under **Variables**, add `BEANSPROUT_SITE_URL` with that address, such as
-   `https://my-blog-production.up.railway.app`. The feed and the sitemap use it for their links.
+   `https://my-blog-production.up.railway.app`. The canonical links, link previews, feed and
+   sitemap all use it. Without it they use the address each request came in on, which behind
+   a proxy can be the wrong one.
 
 Your blog is at that address plus `/blog`.
 

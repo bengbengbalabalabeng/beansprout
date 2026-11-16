@@ -7,8 +7,8 @@
 Add a Markdown blog to the Spring Boot app you already run.
 
 You write posts as Markdown files. Beansprout turns them into a blog inside your app: an index,
-a page per post, tag pages, an archive, an Atom feed and a sitemap. No controllers, no
-templates, no database.
+a page per post, tag pages, an archive, an Atom feed and a sitemap. Every page carries the tags
+search engines and social sites read. No controllers, no templates, no database.
 
 ## Why
 
@@ -64,7 +64,8 @@ My first post.
 Start your app and open `http://localhost:8080/blog`.
 
 A post with `draft: true` stays hidden. A post dated in the future appears on that date, with no
-redeploy. Add `picture: /images/hello.png` for a picture on the card and the post.
+redeploy. Add `picture: /images/hello.png` for a picture on the card and the post, and
+`updated: 2026-12-02` when you change a post later.
 [Start a new blog](docs/new-blog.md) has every frontmatter option.
 
 ## Settings
@@ -79,7 +80,7 @@ beansprout:
   photo: /images/me.png             # shown above the blog's name. Default: none
   base-path: /blog                  # default: /blog
   page-size: 10                     # default: 10
-  site-url: https://example.com     # for the feed and sitemap. Default: taken from the request
+  site-url: https://example.com     # for canonical links, previews, feed and sitemap. Default: the request
   time-zone: Europe/Amsterdam       # default: the server's zone
   posts:
     location: classpath:posts/      # or a folder on disk, like file:./posts/

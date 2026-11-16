@@ -89,12 +89,27 @@ Open `http://localhost:8080/blog`.
 | A different address | `slug: my-address` |
 | A line under the title, and on the card | `summary: One sentence.` |
 | A picture on the card and the post | `picture: /images/hello.png` and `picture-alt: What it shows` |
+| To say you changed it later | `updated: 2026-12-02` |
 | A line under the picture | `caption: Taken in Ljubljana.` |
 | To keep it hidden | `draft: true` |
 | To publish it later | a date in the future, like `date: 2026-12-01T09:00` |
 
 Put pictures in `src/main/resources/static/images/`. Spring Boot serves that folder, so
 `static/images/hello.png` is `/images/hello.png`.
+
+A post's picture is also its preview when someone shares the link. For that, use a PNG or JPEG
+of 1200 by 630 pixels. Social sites do not show SVG previews.
+
+## What search engines see
+
+Every page gets a description, a canonical link and Open Graph tags, so a shared link shows a
+title, a summary and a picture. Each post also gets structured data (`BlogPosting`) for Google.
+You do not have to do anything, but three things make it better:
+
+- Write a `summary`. It is the description in search results.
+- Set `updated` when you change a post. Search engines trust a date you set, not a file's age.
+- Set `beansprout.site-url` in production, such as `https://blog.example.com`. Links in the
+  tags, the feed and the sitemap use it.
 
 To put your photo above the blog's name, add `photo: /images/me.png` under `beansprout:`.
 

@@ -108,6 +108,10 @@ Done when:
   author's name and the current menu item, from `specs/rich-pages.md`. The frontmatter keys
   follow Longhand's model: `picture`, `picture-alt`, `caption`. `image:` stays unknown, because
   Jekyll posts use it for nested data. Search, subscribe, series and about wait for features.
+- **SEO tags, `updated` and JSON-LD first** (Dan, 16 November 2026), the top three from
+  `reports/Blog platform features for Beansprout.md`. Spec: `specs/seo.md`. Absolute addresses
+  come from `beansprout.site-url` or the request, through `Pages.forSite`. Next in the report's
+  list: `aliases` with real 301s, code highlighting, CSS dark mode, ETags, robots.txt.
 - **Railway is the default deploy** (Dan, 16 November 2026). `docs/deploy.md` uses a Dockerfile,
   not `railway.json`, which Railway stops reading on 1 December 2026.
 - **The feed and sitemap need no theme.** They are served whenever the web pages are on.
