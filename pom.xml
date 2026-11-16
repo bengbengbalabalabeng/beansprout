@@ -26,10 +26,25 @@
 		</license>
 	</licenses>
 
+	<developers>
+		<developer>
+			<id>danvega</id>
+			<name>Dan Vega</name>
+			<url>https://www.danvega.dev</url>
+		</developer>
+	</developers>
+
 	<scm>
 		<url>https://github.com/danvega/beansprout</url>
 		<connection>scm:git:https://github.com/danvega/beansprout.git</connection>
+		<developerConnection>scm:git:git@github.com:danvega/beansprout.git</developerConnection>
+		<tag>HEAD</tag>
 	</scm>
+
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/danvega/beansprout/issues</url>
+	</issueManagement>
 
 	<modules>
 		<module>beansprout-core</module>
@@ -50,6 +65,8 @@
 		<archunit.version>1.5.1</archunit.version>
 		<errorprone.version>2.52.0</errorprone.version>
 		<nullaway.version>0.14.3</nullaway.version>
+		<central-publishing.version>0.12.0</central-publishing.version>
+		<maven-gpg.version>3.2.8</maven-gpg.version>
 	</properties>
 
 	<dependencyManagement>
@@ -188,4 +205,85 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<!--
+		The release build: sources and Javadoc jars, signatures, and the upload to Maven Central.
+		.github/workflows/release.yml runs it when a v* tag is pushed. RELEASING.md has the steps.
+		Try it locally without signing or uploading:
+		  ./mvnw -P release -Dgpg.skip=true -DskipPublishing=true deploy
+	-->
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<doclint>all,-missing</doclint>
+							<quiet>true</quiet>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${maven-gpg.version}</version>
+						<configuration>
+							<!-- The key and its passphrase come from the environment: MAVEN_GPG_KEY and
+							     MAVEN_GPG_PASSPHRASE. No gpg agent or keyring needed. -->
+							<bestPractices>true</bestPractices>
+							<signer>bc</signer>
+						</configuration>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<version>${central-publishing.version}</version>
+						<extensions>true</extensions>
+						<configuration>
+							<publishingServerId>central</publishingServerId>
+							<!-- The upload is checked by Central, then waits for a person to press
+							     Publish at central.sonatype.com. Nothing goes live by itself. -->
+							<autoPublish>false</autoPublish>
+							<waitUntil>validated</waitUntil>
+							<excludeArtifacts>
+								<artifact>beansprout-sample</artifact>
+								<artifact>beansprout-verification</artifact>
+							</excludeArtifacts>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

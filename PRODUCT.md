@@ -174,8 +174,11 @@ Done when:
 - **Who may call the MCP server.** Creating drafts writes files, so the server needs a guard.
   Options: local development only, or a token. Decide before goal 7 is built.
 - **Publishing to Maven Central now blocks deploying.** Railway, like most hosts, builds the
-  app from source, and its build cannot download Beansprout until it is on Maven Central.
-  Publishing needs a namespace (`dev.danvega`), signing and a release workflow.
+  app from source, and its build cannot download Beansprout until it is on Maven Central. The
+  build side is ready (16 November 2026): a `release` profile, `.github/workflows/release.yml`
+  on `v*` tags, and `RELEASING.md`. Still needed from Dan: a Central account, the `dev.danvega`
+  namespace verified by a DNS TXT record on danvega.dev, a release signing key, four GitHub
+  secrets, and a public repository. Nothing has been published under `dev.danvega` before.
 
 ## Current state
 

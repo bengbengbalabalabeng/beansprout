@@ -20,4 +20,44 @@
 			<artifactId>beansprout-spring-boot-autoconfigure</artifactId>
 		</dependency>
 	</dependencies>
+
+	<profiles>
+		<!-- Maven Central wants sources and Javadoc jars for every jar. With no code there are
+		     none to build, so both carry a README that says where the code is. -->
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>placeholder-sources</id>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<configuration>
+									<classifier>sources</classifier>
+									<classesDirectory>${project.basedir}/src/release</classesDirectory>
+								</configuration>
+							</execution>
+							<execution>
+								<id>placeholder-javadoc</id>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<configuration>
+									<classifier>javadoc</classifier>
+									<classesDirectory>${project.basedir}/src/release</classesDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
