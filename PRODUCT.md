@@ -159,8 +159,8 @@ Done when:
 
 ## Current state
 
-Goals 1, 2, 3 and 4 are built and verified, uncommitted, on 16 November 2026, while Dan was
-away. Goal 6 is half done: `beansprout.web.enabled=false` turns the pages off and `Posts` and
+Goals 1, 2, 3 and 4 are built, verified and committed (344644d specs, 4c31aad code) on
+16 November 2026, built while Dan was away. Not pushed. Goal 6 is half done: `beansprout.web.enabled=false` turns the pages off and `Posts` and
 `Pages` are beans an app can call. The sample app serves the Longhand theme at `/blog`.
 
 - Specs: `specs/posts.md` (POSTS-1 to 18), `specs/pages.md` (PAGES-1 to 19), `specs/feeds.md`
@@ -175,10 +175,10 @@ away. Goal 6 is half done: `beansprout.web.enabled=false` turns the pages off an
 - Not done: Thymeleaf and FreeMarker (rest of goal 5), page overrides and theme choice (rest of
   goal 8), MCP (goal 7), static export (second release).
 
-Gate gap found: a spec-only commit can never pass `verify`, because the done-judge requires a
-test for every spec ID. A spec with its tests fails too (no code yet), and a spec with its code
-is refused by the commit hook. The only order the gates allow is code first, then spec and
-tests, which is backwards. Fix idea: let the done-judge skip IDs from a spec whose code is not
-committed yet, or drop the separate-commit rule. The hooks and `verification/` are Dan's.
+Gate note: the commit hook runs `verify` on the working tree, not on the staged files. So a
+spec-only commit passes the hook while its code sits uncommitted beside it, which is how
+344644d (specs) and 4c31aad (code) went in. Checked out alone, the spec commit fails `verify`,
+because the done-judge wants a test for every spec ID. Fine for local history. If CI ever builds
+every commit, the done-judge needs a way to skip specs whose code is not committed yet.
 
-Next step: Dan reviews the specs and the open questions above, then decides how to commit.
+Next step: Dan reviews the specs and the open questions above, then push.
