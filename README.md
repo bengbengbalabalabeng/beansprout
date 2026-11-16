@@ -18,6 +18,11 @@ the third choice: add a dependency to the app you already have.
 
 **Status:** early. Nothing is released yet. [PRODUCT.md](PRODUCT.md) has the plan.
 
+## Guides
+
+- [Start a new blog](docs/new-blog.md): a new app, your first post, pictures, drafts and scheduling.
+- [Deploy it](docs/deploy.md): to Railway, or anywhere that runs Java or Docker.
+
 ## Tested with
 
 Java 25 and Spring Boot 4.1.2. Pages render with [JTE](https://jte.gg).
@@ -59,7 +64,8 @@ My first post.
 Start your app and open `http://localhost:8080/blog`.
 
 A post with `draft: true` stays hidden. A post dated in the future appears on that date, with no
-redeploy. [specs/posts.md](specs/posts.md) has every frontmatter rule.
+redeploy. Add `picture: /images/hello.png` for a picture on the card and the post.
+[Start a new blog](docs/new-blog.md) has every frontmatter option.
 
 ## Settings
 
@@ -69,6 +75,8 @@ All optional, in `application.yaml`:
 beansprout:
   title: My Blog                    # default: Blog
   description: Notes on Java.       # default: empty
+  author: Your Name                 # shown on each post. Default: empty
+  photo: /images/me.png             # shown above the blog's name. Default: none
   base-path: /blog                  # default: /blog
   page-size: 10                     # default: 10
   site-url: https://example.com     # for the feed and sitemap. Default: taken from the request

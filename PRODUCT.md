@@ -103,6 +103,13 @@ Done when:
   `META-INF/resources`. Beansprout renders it with its own `TemplateEngine`, so it works
   whatever JTE settings the app has, and the "development-mode" startup error never reaches
   Beansprout users. Tradeoff: an app cannot edit a theme template in place.
+- **Longhand shows the designed details** (Dan asked, 16 November 2026: "make the default theme
+  look nicer"). The writer's photo, pictures on cards and posts with captions, the lede, the
+  author's name and the current menu item, from `specs/rich-pages.md`. The frontmatter keys
+  follow Longhand's model: `picture`, `picture-alt`, `caption`. `image:` stays unknown, because
+  Jekyll posts use it for nested data. Search, subscribe, series and about wait for features.
+- **Railway is the default deploy** (Dan, 16 November 2026). `docs/deploy.md` uses a Dockerfile,
+  not `railway.json`, which Railway stops reading on 1 December 2026.
 - **The feed and sitemap need no theme.** They are served whenever the web pages are on.
 - **JTE only for now** (Dan, 16 November 2026). This replaces "all three engines from the
   start" (15 November). Thymeleaf and FreeMarker move to Non-goals as "not now". Longhand
@@ -155,8 +162,9 @@ Done when:
   `archive`, `not-found`. Renaming later breaks users, so review them now.
 - **Who may call the MCP server.** Creating drafts writes files, so the server needs a guard.
   Options: local development only, or a token. Decide before goal 7 is built.
-- **Publishing.** Maven Central needs a namespace, signing and a release workflow. Not needed
-  until the first release.
+- **Publishing to Maven Central now blocks deploying.** Railway, like most hosts, builds the
+  app from source, and its build cannot download Beansprout until it is on Maven Central.
+  Publishing needs a namespace (`dev.danvega`), signing and a release workflow.
 
 ## Current state
 
@@ -173,6 +181,10 @@ Goals 1, 2, 3 and 4 are built, verified and committed (344644d specs, 4c31aad co
 - Frontmatter rules that came out of review: unknown keys of any shape are ignored, only
   `tags` reads `[a, b]` as a list, an indented known key is refused, a file that is not UTF-8
   is skipped with a warning, and `._` files are skipped silently.
+- Since then: Longhand's designed details (`specs/rich-pages.md`, RICH-1 to 12, /attack PASS),
+  the README with the mascot, and two guides: `docs/new-blog.md` and `docs/deploy.md`. A fresh
+  app built from the guide, a packaged jar, and the dev reload tip were all run and checked.
+  The Railway steps were not run: Beansprout is not on Maven Central yet.
 - Not done: page overrides and theme choice (rest of goal 8), MCP (goal 7), the rest of goal 6.
   Later: Thymeleaf and FreeMarker, static export (second release).
 
