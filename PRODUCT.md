@@ -79,7 +79,8 @@ Done when:
 - **Spring Boot 4.1 and Java 25** (Dan, 15 November 2026). Newest LTS and nicer library code.
   Tradeoff, accepted: Boot 4 apps still on Java 17 or 21 cannot use Beansprout.
 - **Apache 2.0** (Dan, 15 November 2026), like Spring Boot.
-- **GitHub repo `danvega/beansprout`, private until the first release** (Dan, 15 November 2026).
+- **GitHub repo `danvega/beansprout`, public since 16 November 2026** (Dan). It was private
+  until the release setup was ready.
 - **Group ID `dev.danvega`**, packages under `dev.danvega.beansprout`, like Dan's other starter
   (`browserbase-spring-boot-starter`). Easy to change before the first release.
 - **Five modules**: `beansprout-core` (posts, tags, view contract; plain Java),
@@ -121,6 +122,13 @@ Done when:
   schemes are tested for WCAG AA contrast. Spec: `specs/dark-mode.md`.
 - **Railway is the default deploy** (Dan, 16 November 2026). `docs/deploy.md` uses a Dockerfile,
   not `railway.json`, which Railway stops reading on 1 December 2026.
+- **Two dependencies for now** (Dan, 16 November 2026): the starter and
+  `beansprout-theme-longhand`. The starter never pulls in an engine, as AGENTS.md says, and JTE
+  is the theme's engine. Having the theme jar bring the starter can come later.
+- **The routes stay as built** (Dan, 16 November 2026): `/blog`, `/blog/page/{n}`,
+  `/blog/{slug}`, `/blog/tags/{tag}`, `/blog/archive`, `/blog/feed.xml`, `/blog/sitemap.xml`,
+  and the `beansprout.*` properties. Dan: "we can always change them later". Before 1.0 a
+  rename is allowed, with a note in the release.
 - **The feed and sitemap need no theme.** They are served whenever the web pages are on.
 - **JTE only for now** (Dan, 16 November 2026). This replaces "all three engines from the
   start" (15 November). Thymeleaf and FreeMarker move to Non-goals as "not now". Longhand
@@ -159,26 +167,17 @@ Done when:
 
 - **How an app overrides one page of a theme.** Longhand ships precompiled (see Decisions), so
   an override has to come from the app's own templates. Settle it at the start of goal 8.
-- **The first-run experience needs two dependencies today**: the starter and
-  `beansprout-theme-longhand`. AGENTS.md says the starter never pulls in an engine, and JTE
-  is the theme's engine. Options: keep two (clear, honest), or have the theme jar bring the
-  starter so it is one line. Dan decides.
 - **A hidden post can take a live post's slug.** Duplicates are settled by path before drafts
   and future posts are filtered, as POSTS-6 says. So a draft `a/hello.md` hides a live
   `b/hello.md`. Settling duplicates among visible posts only is likely better. Spec change.
-- **Public names** (Judgment in AGENTS.md): routes `/blog`, `/blog/page/{n}`, `/blog/{slug}`,
-  `/blog/tags/{tag}`, `/blog/archive`, `/blog/feed.xml`, `/blog/sitemap.xml`; properties
-  `beansprout.title`, `.description`, `.base-path`, `.page-size`, `.site-url`, `.time-zone`,
-  `.posts.location`, `.posts.reload`, `.web.enabled`; template names `index`, `post`, `tag`,
-  `archive`, `not-found`. Renaming later breaks users, so review them now.
 - **Who may call the MCP server.** Creating drafts writes files, so the server needs a guard.
   Options: local development only, or a token. Decide before goal 7 is built.
 - **Publishing to Maven Central now blocks deploying.** Railway, like most hosts, builds the
   app from source, and its build cannot download Beansprout until it is on Maven Central. The
   build side is ready (16 November 2026): a `release` profile, `.github/workflows/release.yml`
-  on `v*` tags, and `RELEASING.md`. Still needed from Dan: a Central account, the `dev.danvega`
-  namespace verified by a DNS TXT record on danvega.dev, a release signing key, four GitHub
-  secrets, and a public repository. Nothing has been published under `dev.danvega` before.
+  on `v*` tags, and `RELEASING.md`. The `dev.danvega` namespace is verified (16 November 2026) and
+  the repository is public. Still needed from Dan: a Central user token and a release signing
+  key, saved as four GitHub secrets. Nothing has been published under `dev.danvega` yet.
 
 ## Current state
 

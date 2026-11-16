@@ -65,7 +65,7 @@ gh repo edit danvega/beansprout --visibility public --accept-visibility-change-c
 
 ## Before the first release
 
-These names are hard to change once people depend on them. See "Open questions" in PRODUCT.md.
+Settled for 0.1.0 (see "Decisions" in PRODUCT.md). Before 1.0 they can still change:
 
 - The group ID `dev.danvega` and the artifact names.
 - The routes, the `beansprout.*` properties and the theme's template names.
