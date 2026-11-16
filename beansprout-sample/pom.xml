@@ -24,6 +24,10 @@
 			<artifactId>beansprout-spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>dev.danvega</groupId>
+			<artifactId>beansprout-theme-longhand</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>

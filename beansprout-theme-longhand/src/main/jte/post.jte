@@ -1,0 +1,47 @@
+@import dev.danvega.beansprout.view.PostPage
+@param PostPage page
+!{var post = page.post();}
+@template.layout(
+  site = page.site(),
+  title = post.title() + " · " + page.site().name(),
+  content = @`
+    <article class="post">
+      <header class="post-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <ol class="breadcrumb-list">
+            <li><a class="breadcrumb-link" href="${page.site().home()}">Latest</a></li>
+            @if(!post.crumb().url().equals(page.site().home()))<li><a class="breadcrumb-link" href="${post.crumb().url()}">${post.crumb().name()}</a></li>@endif
+          </ol>
+        </nav>
+        <h1 class="post-title">${post.title()}</h1>
+        <div class="post-info">
+          <p class="post-meta"><time class="post-date" datetime="${post.dateTime()}">${post.date()}</time> · <span class="post-reading">${post.reading()}</span></p>
+          @if(!post.tags().isEmpty())
+            <ul class="post-tags" aria-label="Tags">
+              @for(var tg : post.tags())
+                <li><a class="tag" href="${tg.url()}">${tg.name()}</a></li>
+              @endfor
+            </ul>
+          @endif
+        </div>
+      </header>
+      <div class="post-body">$unsafe{post.body()}</div>
+    </article>
+    <nav class="post-nav" aria-label="Newer and older posts">
+      @if(!post.newer().url().isEmpty())<a class="post-nav-item post-nav-newer" href="${post.newer().url()}"><span class="post-nav-label"><span aria-hidden="true">←</span> Newer</span> <span class="post-nav-title">${post.newer().title()}</span></a>@else<p class="post-nav-item post-nav-newer post-nav-empty">This is the newest post.</p>@endif
+      @if(!post.older().url().isEmpty())<a class="post-nav-item post-nav-older" href="${post.older().url()}"><span class="post-nav-label">Older <span aria-hidden="true">→</span></span> <span class="post-nav-title">${post.older().title()}</span></a>@else<p class="post-nav-item post-nav-older post-nav-empty">This is the oldest post.</p>@endif
+    </nav>
+  `,
+  sidebar = @`
+    @if(!post.headings().isEmpty())
+      <h2 class="label sidebar-label">On this page</h2>
+      <ul class="toc-list">
+        @for(var h : post.headings())
+          <li><a class="toc-link" href="#${h.id()}">${h.text()}</a></li>
+        @endfor
+      </ul>
+    @else
+      @template.tags(site = page.site())
+    @endif
+  `
+)

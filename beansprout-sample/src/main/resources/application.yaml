@@ -2,8 +2,14 @@ spring:
   application:
     name: beansprout-sample
 
-# JTE will not start until you choose: compile templates on the fly (development) or load
-# precompiled ones (production). The sample runs in development mode for now.
+# Everything here is optional. Without it the blog is called "Blog" and lives at /blog.
+beansprout:
+  title: Beansprout Notes
+  description: A sample blog, served by the Beansprout starter.
+
+# This app also uses JTE for its own pages, and JTE will not start until you choose: compile
+# templates on the fly (development) or load precompiled ones (production). Beansprout's theme
+# does not need this setting. It ships its templates precompiled and uses its own engine.
 gg:
   jte:
     development-mode: true

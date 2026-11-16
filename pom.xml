@@ -35,6 +35,7 @@
 		<module>beansprout-core</module>
 		<module>beansprout-spring-boot-autoconfigure</module>
 		<module>beansprout-spring-boot-starter</module>
+		<module>beansprout-theme-longhand</module>
 		<module>beansprout-sample</module>
 		<!-- Last on purpose: it reads the whole repo after every module has built and tested. -->
 		<module>verification</module>
@@ -45,6 +46,7 @@
 		<!-- Keep in step with the parent version above. The annotation processors need it spelled out. -->
 		<spring-boot-version>4.1.2</spring-boot-version>
 		<jte.version>3.2.5</jte.version>
+		<commonmark.version>0.29.0</commonmark.version>
 		<archunit.version>1.5.1</archunit.version>
 		<errorprone.version>2.52.0</errorprone.version>
 		<nullaway.version>0.14.3</nullaway.version>
@@ -68,9 +70,29 @@
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-theme-longhand</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>gg.jte</groupId>
 				<artifactId>jte-spring-boot-starter-4</artifactId>
 				<version>${jte.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>gg.jte</groupId>
+				<artifactId>jte-runtime</artifactId>
+				<version>${jte.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.commonmark</groupId>
+				<artifactId>commonmark</artifactId>
+				<version>${commonmark.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.commonmark</groupId>
+				<artifactId>commonmark-ext-gfm-tables</artifactId>
+				<version>${commonmark.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.tngtech.archunit</groupId>
@@ -83,6 +105,14 @@
 	<build>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<configuration>
+						<!-- Temp files for @TempDir go under target/, so a sandboxed build can write them. -->
+						<argLine>-Djava.io.tmpdir=${project.build.directory}</argLine>
+					</configuration>
+				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>

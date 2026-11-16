@@ -95,6 +95,13 @@ Done when:
   Dan approves the spec before code.
 - **Markdown files first** (Dan, 15 November 2026). No database and no admin in the first
   version.
+- **Longhand ships precompiled, with its own JTE engine** (16 November 2026, built while Dan was
+  away). `beansprout-theme-longhand` compiles its templates at build time into
+  `dev.danvega.beansprout.engine.jte.longhand.templates` and serves its CSS from
+  `META-INF/resources`. Beansprout renders it with its own `TemplateEngine`, so it works
+  whatever JTE settings the app has, and the "development-mode" startup error never reaches
+  Beansprout users. Tradeoff: an app cannot edit a theme template in place.
+- **The feed and sitemap need no theme.** They are served whenever the web pages are on.
 - **Thymeleaf, FreeMarker and JTE from the start** (Dan, 15 November 2026). The starter
   supplies the data. Longhand already exists in all three, so the cost is one data contract
   verified three times.
@@ -119,7 +126,10 @@ Done when:
 
 ## Assumptions (change any of these freely)
 
-- **A CommonMark parser** renders Markdown. Pick the library during goal 1.
+- **commonmark-java 0.29.0** renders Markdown, with GitHub tables (picked during goal 1).
+  0.29.0 because it was already in the local Maven cache; 0.31 or newer is a safe bump.
+- **Frontmatter is a small format, not YAML**: `key: value`, quotes, `[a, b]` or `- item`
+  lists, and comments. No YAML library, so no surprises and clear errors. See `specs/posts.md`.
 - **"Category" means tag** for now. Posts carry `tags` in frontmatter, and the MCP server's
   find tool searches them. Add a separate `category` field only if one tag per post turns out
   to be wanted.
@@ -128,9 +138,20 @@ Done when:
 
 ## Open questions
 
-- **How a JTE theme ships.** JTE checks templates against their types at compile time. A theme
-  in a jar either carries precompiled template classes or its source templates. That choice
-  decides how an app overrides one page. Settle it at the start of goal 8.
+- **How an app overrides one page of a theme.** Longhand ships precompiled (see Decisions), so
+  an override has to come from the app's own templates. Settle it at the start of goal 8.
+- **The first-run experience needs two dependencies today**: the starter and
+  `beansprout-theme-longhand`. AGENTS.md says the starter never pulls in an engine, and JTE
+  is the theme's engine. Options: keep two (clear, honest), or have the theme jar bring the
+  starter so it is one line. Dan decides.
+- **A hidden post can take a live post's slug.** Duplicates are settled by path before drafts
+  and future posts are filtered, as POSTS-6 says. So a draft `a/hello.md` hides a live
+  `b/hello.md`. Settling duplicates among visible posts only is likely better. Spec change.
+- **Public names** (Judgment in AGENTS.md): routes `/blog`, `/blog/page/{n}`, `/blog/{slug}`,
+  `/blog/tags/{tag}`, `/blog/archive`, `/blog/feed.xml`, `/blog/sitemap.xml`; properties
+  `beansprout.title`, `.description`, `.base-path`, `.page-size`, `.site-url`, `.time-zone`,
+  `.posts.location`, `.posts.reload`, `.web.enabled`; template names `index`, `post`, `tag`,
+  `archive`, `not-found`. Renaming later breaks users, so review them now.
 - **Who may call the MCP server.** Creating drafts writes files, so the server needs a guard.
   Options: local development only, or a token. Decide before goal 7 is built.
 - **Publishing.** Maven Central needs a namespace, signing and a release workflow. Not needed
@@ -138,12 +159,26 @@ Done when:
 
 ## Current state
 
-The repo is bootstrapped with gates and no features. `./mvnw verify` is green: five modules,
-an empty `BeansproutAutoConfiguration` registered and switched on in the sample app, and every
-gate in place and shown to fail on a bad input.
+Goals 1, 2, 3 and 4 are built and verified, uncommitted, on 16 November 2026, while Dan was
+away. Goal 6 is half done: `beansprout.web.enabled=false` turns the pages off and `Posts` and
+`Pages` are beans an app can call. The sample app serves the Longhand theme at `/blog`.
 
-Gotcha found while bootstrapping: JTE's Boot starter refuses to start until the app sets
-`gg.jte.development-mode` or `gg.jte.use-precompiled-templates`. Beansprout should pick a
-sensible default for its users so they never see that error.
+- Specs: `specs/posts.md` (POSTS-1 to 18), `specs/pages.md` (PAGES-1 to 19), `specs/feeds.md`
+  (FEEDS-1 to 8). Dan has not approved them yet. Read them first.
+- Modules: a sixth, `beansprout-theme-longhand`, holds the theme.
+- Tests: 119 across core (65), autoconfigure (28) and sample (26), every spec ID covered.
+  `/attack` took five rounds: 13 valid findings, each fixed with a failing test first, then PASS.
+  Most were frontmatter edge cases and the Spring loader (encoded paths, non-UTF-8 files).
+- Frontmatter rules that came out of review: unknown keys of any shape are ignored, only
+  `tags` reads `[a, b]` as a list, an indented known key is refused, a file that is not UTF-8
+  is skipped with a warning, and `._` files are skipped silently.
+- Not done: Thymeleaf and FreeMarker (rest of goal 5), page overrides and theme choice (rest of
+  goal 8), MCP (goal 7), static export (second release).
 
-Next step: write `specs/posts.md` for goal 1 with Dan, commit it, then build it test first.
+Gate gap found: a spec-only commit can never pass `verify`, because the done-judge requires a
+test for every spec ID. A spec with its tests fails too (no code yet), and a spec with its code
+is refused by the commit hook. The only order the gates allow is code first, then spec and
+tests, which is backwards. Fix idea: let the done-judge skip IDs from a spec whose code is not
+committed yet, or drop the separate-commit rule. The hooks and `verification/` are Dan's.
+
+Next step: Dan reviews the specs and the open questions above, then decides how to commit.
