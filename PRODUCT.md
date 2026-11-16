@@ -31,9 +31,8 @@ Done when:
    URLs added to the app's sitemap.
 4. **Drafts and scheduled posts stay hidden.** `draft: true` hides a post. A post dated in the
    future appears on that date, with no redeploy.
-5. **It works in all three engines, JTE first.** JTE is the default theme's engine and the one
-   the docs lead with. The same sample app renders the same pages in Thymeleaf and FreeMarker
-   too, checked by an automated test in each.
+5. **It renders with JTE.** JTE is the theme engine and the one the docs lead with. Thymeleaf
+   and FreeMarker wait until later (see Non-goals).
 6. **It stays out of the app's way.** The developer can turn off the default controllers and
    call a posts service from their own.
 7. **Agents can work with the blog over MCP.** An optional MCP server lets an agent list posts,
@@ -52,6 +51,9 @@ Done when:
   can still show a static search or subscribe page.
 - **Image processing, multiple authors, series** (not now): Longhand supports series,
   corrections and guest authors. They wait until the core is used.
+- **Thymeleaf and FreeMarker** (not now, Dan, 16 November 2026): JTE covers the first
+  release. The view contract stays engine-neutral and each engine keeps its own package, so
+  adding one later is a theme and an adapter, not a redesign.
 - **Changelogs** (not now): the same engine fits dated, versioned entries with Quoin as a theme.
   A good second release, not the first.
 - **Static site export** (not now, planned for the second release): one command renders every
@@ -102,12 +104,11 @@ Done when:
   whatever JTE settings the app has, and the "development-mode" startup error never reaches
   Beansprout users. Tradeoff: an app cannot edit a theme template in place.
 - **The feed and sitemap need no theme.** They are served whenever the web pages are on.
-- **Thymeleaf, FreeMarker and JTE from the start** (Dan, 15 November 2026). The starter
-  supplies the data. Longhand already exists in all three, so the cost is one data contract
-  verified three times.
+- **JTE only for now** (Dan, 16 November 2026). This replaces "all three engines from the
+  start" (15 November). Thymeleaf and FreeMarker move to Non-goals as "not now". Longhand
+  already exists in both in Pressworks, so they stay cheap to add later.
 - **JTE is the default** (Dan, 15 November 2026), for speed. JTE templates compile to Java
-  ahead of time, so pages render fast. The default theme is written in JTE first and the
-  other two engines follow it.
+  ahead of time, so pages render fast.
 - **Longhand is the first theme** (Dan, 15 November 2026), taken from Pressworks. This
   replaces the earlier plan of a plain default theme with Longhand only linked. Consequence,
   accepted: Longhand becomes open source here, so the Pressworks signup no longer gates it.
@@ -172,8 +173,8 @@ Goals 1, 2, 3 and 4 are built, verified and committed (344644d specs, 4c31aad co
 - Frontmatter rules that came out of review: unknown keys of any shape are ignored, only
   `tags` reads `[a, b]` as a list, an indented known key is refused, a file that is not UTF-8
   is skipped with a warning, and `._` files are skipped silently.
-- Not done: Thymeleaf and FreeMarker (rest of goal 5), page overrides and theme choice (rest of
-  goal 8), MCP (goal 7), static export (second release).
+- Not done: page overrides and theme choice (rest of goal 8), MCP (goal 7), the rest of goal 6.
+  Later: Thymeleaf and FreeMarker, static export (second release).
 
 Gate note: the commit hook runs `verify` on the working tree, not on the staged files. So a
 spec-only commit passes the hook while its code sits uncommitted beside it, which is how

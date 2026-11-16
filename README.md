@@ -3,7 +3,7 @@
 Add a Markdown blog to the Spring Boot app you already run.
 
 Add one dependency, put your posts in a folder, and your app serves a blog. It renders with
-JTE by default, and also works with Thymeleaf and FreeMarker.
+JTE.
 
 **Status:** early. Nothing is released yet. `PRODUCT.md` has the plan.
 
