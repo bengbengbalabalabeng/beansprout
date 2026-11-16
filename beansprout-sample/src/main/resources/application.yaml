@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: beansprout-sample
+
+# JTE will not start until you choose: compile templates on the fly (development) or load
+# precompiled ones (production). The sample runs in development mode for now.
+gg:
+  jte:
+    development-mode: true
