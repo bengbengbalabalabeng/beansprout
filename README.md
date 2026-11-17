@@ -27,6 +27,7 @@ the third choice: add a dependency to the app you already have.
 - [Start a new blog](docs/new-blog.md): a new app, a theme, your first post, pictures, drafts and scheduling.
 - [Deploy it](docs/deploy.md): to Railway, or anywhere that runs Java or Docker.
 - [Use your own templates](docs/own-templates.md): your site's look instead of a theme.
+- [Write with an agent over MCP](docs/mcp.md): let Claude Code or another agent read your posts and start drafts.
 
 ## Tested with
 
@@ -147,6 +148,9 @@ beansprout:
     enabled: true                   # false turns the pages off. Posts and Pages stay as beans.
   code:
     highlight: true                 # false shows code fences as plain code
+  mcp:
+    token: ...                      # with the MCP starter: lets other machines call /mcp. Default: same machine only.
+                                    # Keep it out of the repo: set BEANSPROUT_MCP_TOKEN instead
 ```
 
 ## Try the sample
@@ -168,6 +172,7 @@ Open `http://localhost:8080/blog`. To see another theme, add
 | `beansprout-spring-boot-autoconfigure` | The Spring part. Reads the `beansprout.*` settings, creates the beans, and holds the controllers. |
 | `beansprout-spring-boot-starter` | The dependency you add. It has no code of its own. |
 | `themes/beansprout-theme-*` | The looks: each theme's templates and stylesheet, one module per theme. |
+| `beansprout-mcp-spring-boot-starter` | Optional. Adds an MCP server so an agent can read posts and start drafts. It has no code. |
 | `beansprout-bom` | One version for every artifact above. It has no code. |
 | `beansprout-sample` | A small Spring Boot app that uses all of the above. |
 | `verification` | Checks the build runs on the repo itself, such as no leftover TODOs in the code. |

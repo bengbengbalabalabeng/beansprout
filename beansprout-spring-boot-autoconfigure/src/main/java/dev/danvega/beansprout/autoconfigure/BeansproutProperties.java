@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  * @param posts where the posts come from
  * @param web the blog's pages
  * @param code how code fences are shown
+ * @param mcp who may call the MCP server, when the app adds the MCP starter
  */
 @ConfigurationProperties("beansprout")
 public record BeansproutProperties(
@@ -40,7 +41,8 @@ public record BeansproutProperties(
 		@Nullable String theme,
 		@DefaultValue PostsSettings posts,
 		@DefaultValue WebSettings web,
-		@DefaultValue CodeSettings code) {
+		@DefaultValue CodeSettings code,
+		@DefaultValue McpSettings mcp) {
 
 	public BeansproutProperties {
 		if (siteUrl != null && !siteUrl.isBlank()) {
@@ -77,6 +79,16 @@ public record BeansproutProperties(
 	 * @param highlight false to show every fence as plain code
 	 */
 	public record CodeSettings(@DefaultValue("true") boolean highlight) {
+	}
+
+	/**
+	 * Who may call the MCP server at {@code /mcp}.
+	 *
+	 * @param token when set, every MCP request must send it as {@code Authorization: Bearer
+	 *     <token>}, from any machine. When not set, only requests from the same machine are
+	 *     answered.
+	 */
+	public record McpSettings(@Nullable String token) {
 	}
 
 }

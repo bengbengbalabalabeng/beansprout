@@ -142,6 +142,14 @@ Done when:
   published artifact at one version. It is published with no parent, through
   flatten-maven-plugin in bom mode, so an app that imports it gets Beansprout's versions and not
   Spring Boot's. The docs lead with the BOM: import it, then add the starter and a theme.
+- **MCP: local, or a token** (Dan, 17 November 2026): the MCP server answers only the same
+  machine, and never a proxied request, unless `beansprout.mcp.token` is set; then any machine
+  that sends it as a Bearer header. It ships as `beansprout-mcp-spring-boot-starter` and drafts
+  go only into the posts folder on disk (`specs/mcp.md`).
+- **Spring AI 2.0.2 for MCP** (Dan asked for the latest, 17 November 2026): the newest GA, and
+  the one that runs on Spring Boot 4.1. 2.1 pairs with Boot 4.2 and is a release candidate. Move
+  when both are GA. Spring AI 2.0 falls back to SSE without `spring.ai.mcp.server.protocol`, so
+  Beansprout defaults it to streamable.
 - **A theme jar brings JTE** (decided while building themes, 17 November 2026, for Dan to
   confirm): each theme depends on `jte-runtime` at compile scope, as Longhand has since 0.1.0.
   Picking a theme is picking its engine. The starter still pulls in no engine.
@@ -186,8 +194,6 @@ Done when:
 - **A hidden post can take a live post's slug.** Duplicates are settled by path before drafts
   and future posts are filtered, as POSTS-6 says. So a draft `a/hello.md` hides a live
   `b/hello.md`. Settling duplicates among visible posts only is likely better. Spec change.
-- **Who may call the MCP server.** Creating drafts writes files, so the server needs a guard.
-  Options: local development only, or a token. Decide before goal 7 is built.
 - **Publishing to Maven Central now blocks deploying.** Railway, like most hosts, builds the
   app from source, and its build cannot download Beansprout until it is on Maven Central. The
   build side is ready (16 November 2026): a `release` profile, `.github/workflows/release.yml`
