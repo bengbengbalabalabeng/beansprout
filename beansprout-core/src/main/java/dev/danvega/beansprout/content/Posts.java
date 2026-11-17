@@ -134,13 +134,24 @@ public final class Posts {
 		files.sort(Comparator.comparing(MarkdownFile::path));
 		Map<String, Post> bySlug = new LinkedHashMap<>();
 		List<String> problems = new ArrayList<>();
+		// A folder with an index.md is one post. The other Markdown files inside it are not posts.
+		List<String> bundles = new ArrayList<>();
 		for (MarkdownFile file : files) {
+			String folder = Bundles.folder(file.path());
+			if (folder != null) {
+				bundles.add(folder);
+			}
+		}
+		for (MarkdownFile file : files) {
+			if (Bundles.insideAnother(file.path(), bundles)) {
+				continue;
+			}
 			if (file.unreadable() != null) {
 				problems.add(problem(file.path(), file.unreadable()));
 				continue;
 			}
 			try {
-				Post post = parser.parse(file);
+				Post post = parser.parse(file, source::contains);
 				if (post.slug().isEmpty()) {
 					problems.add(problem(file.path(), "its slug is empty. Give it a slug: made of letters or digits."));
 					continue;

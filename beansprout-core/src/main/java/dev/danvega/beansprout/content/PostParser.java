@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiPredicate;
 
 import dev.danvega.beansprout.code.CodeHighlighter;
 import dev.danvega.beansprout.code.PrismHighlighter;
@@ -25,6 +26,12 @@ public final class PostParser {
 	private final ZoneId zone;
 
 	private final MarkdownRenderer markdown;
+
+	/** The context path and the blog's path, like {@code /app/blog}, for images in a bundle's body. */
+	private final String address;
+
+	/** The blog's path, like {@code /blog}, for a bundle's picture. Pages add the context path. */
+	private final String base;
 
 	/**
 	 * Creates a parser for one blog that highlights code with the built-in highlighter.
@@ -42,8 +49,23 @@ public final class PostParser {
 	 * @param highlighter highlights code fences, or {@link CodeHighlighter#NONE} for none
 	 */
 	public PostParser(ZoneId zone, CodeHighlighter highlighter) {
+		this(zone, highlighter, "", "/blog");
+	}
+
+	/**
+	 * Creates a parser for one blog that knows where the blog is served, so a post that is a folder
+	 * can link the images next to it.
+	 *
+	 * @param zone the blog's time zone: a date with no time starts at midnight here
+	 * @param highlighter highlights code fences, or {@link CodeHighlighter#NONE} for none
+	 * @param root the app's context path: empty, or like {@code /app}
+	 * @param base the blog's path in the app, like {@code /blog}
+	 */
+	public PostParser(ZoneId zone, CodeHighlighter highlighter, String root, String base) {
 		this.zone = zone;
 		this.markdown = new MarkdownRenderer(highlighter);
+		this.base = base.endsWith("/") ? base.substring(0, base.length() - 1) : base;
+		this.address = (root.endsWith("/") ? root.substring(0, root.length() - 1) : root) + this.base;
 	}
 
 	/**
@@ -53,6 +75,17 @@ public final class PostParser {
 	 *     date the parser can read
 	 */
 	public Post parse(MarkdownFile file) {
+		return parse(file, (folder, path) -> false);
+	}
+
+	/**
+	 * Reads one file, checking a bundle's relative picture against the files next to it.
+	 *
+	 * @param exists says whether a file is really in a post's folder, given the folder and the path
+	 * @throws InvalidPostException when the frontmatter is missing or broken, has no title or date
+	 *     the parser can read, or names a picture that is not there
+	 */
+	public Post parse(MarkdownFile file, BiPredicate<String, String> exists) {
 		Frontmatter frontmatter = Frontmatter.parse(file.text());
 
 		String title = frontmatter.text("title");
@@ -71,14 +104,25 @@ public final class PostParser {
 		// A slug: line that is there but empty gives an empty slug, which Posts skips. Only a
 		// missing slug: line falls back to the file name.
 		Object chosen = frontmatter.raw("slug");
-		String slug = Slugs.slugify(chosen == null ? fileName(file.path()) : chosen instanceof String text ? text : "");
+		String folder = Bundles.folder(file.path());
+		String named = folder != null ? folder.substring(folder.lastIndexOf('/') + 1) : fileName(file.path());
+		String slug = Slugs.slugify(chosen == null ? named : chosen instanceof String text ? text : "");
 
 		String image = orEmpty(frontmatter.text("picture"));
-		if (!image.isEmpty() && !Pictures.valid(image)) {
+		String inFolder = folder != null && !image.isEmpty() ? Bundles.relative(image) : null;
+		if (folder != null && inFolder != null) {
+			if (!exists.test(folder, inFolder)) {
+				throw new InvalidPostException("its picture '" + image + "' is not in its folder " + folder
+						+ ". Put the file there, or fix the name.");
+			}
+			image = base + "/" + slug + "/" + Bundles.encode(inFolder);
+		}
+		else if (!image.isEmpty() && !Pictures.valid(image)) {
 			throw new InvalidPostException("its picture '" + image + "' is not a path starting with / or an http or https address.");
 		}
 
-		MarkdownRenderer.Rendered rendered = markdown.render(frontmatter.body());
+		String images = address + "/" + slug + "/";
+		MarkdownRenderer.Rendered rendered = markdown.render(frontmatter.body(), folder == null ? null : images);
 		String summary = frontmatter.text("summary");
 		String lede = summary != null ? summary.strip() : "";
 
@@ -140,6 +184,7 @@ public final class PostParser {
 		return value == null ? "" : value.strip();
 	}
 
+	/** The last part of a path, without {@code .md}. */
 	private static String fileName(String path) {
 		String name = path.substring(path.lastIndexOf('/') + 1);
 		return name.endsWith(".md") ? name.substring(0, name.length() - 3) : name;

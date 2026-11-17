@@ -42,11 +42,15 @@ public class BeansproutAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	Posts beansproutPosts(PostSource source, CodeHighlighter highlighter, BeansproutProperties properties) {
+	Posts beansproutPosts(PostSource source, CodeHighlighter highlighter, BeansproutProperties properties,
+			Environment environment) {
 		ZoneId zone = properties.timeZone() != null ? properties.timeZone() : ZoneId.systemDefault();
 		// The property turns off highlighting even when the app supplies its own highlighter.
 		CodeHighlighter used = properties.code().highlight() ? highlighter : CodeHighlighter.NONE;
-		return new Posts(source, new PostParser(zone, used), Clock.system(zone), properties.posts().reload());
+		// The parser links a bundle's images under the blog's address, context path included.
+		PostParser parser = new PostParser(zone, used, environment.getProperty("server.servlet.context-path", ""),
+				properties.basePath());
+		return new Posts(source, parser, Clock.system(zone), properties.posts().reload());
 	}
 
 	@Bean

@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import dev.danvega.beansprout.content.Bundles;
 import dev.danvega.beansprout.content.Post;
 import dev.danvega.beansprout.content.Posts;
 import dev.danvega.beansprout.view.Links;
@@ -65,7 +66,7 @@ public final class Feeds {
 				xml.append("    <category term=\"").append(escape(tag)).append("\"/>\n");
 			}
 			element(xml, "    ", "summary", post.summary());
-			xml.append("    <content type=\"html\">").append(escape(post.html())).append("</content>\n");
+			xml.append("    <content type=\"html\">").append(escape(absoluteImages(post, site))).append("</content>\n");
 			xml.append("  </entry>\n");
 		}
 		xml.append("</feed>\n");
@@ -87,6 +88,18 @@ public final class Feeds {
 		}
 		xml.append("</urlset>\n");
 		return xml.toString();
+	}
+
+	/**
+	 * A post's body for the feed. A feed reader has no page to resolve a path against, so the images
+	 * of a post that is a folder get the site's address in front.
+	 */
+	private String absoluteImages(Post post, String site) {
+		if (Bundles.folder(post.path()) == null) {
+			return post.html();
+		}
+		String images = links.post(post.slug()) + "/";
+		return post.html().replace("src=\"" + images, "src=\"" + site + images);
 	}
 
 	private static void element(StringBuilder xml, String indent, String name, String value) {

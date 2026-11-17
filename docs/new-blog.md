@@ -80,14 +80,51 @@ Open `http://localhost:8080/blog`.
 | --- | --- |
 | A different address | `slug: my-address` |
 | A line under the title, and on the card | `summary: One sentence.` |
-| A picture on the card and the post | `picture: /images/hello.png` and `picture-alt: What it shows` |
+| A picture on the card and the post | `picture: /images/hello.png`, or a file in the post's folder, and `picture-alt: What it shows` |
 | To say you changed it later | `updated: 2026-12-02` |
 | A line under the picture | `caption: Taken in Ljubljana.` |
 | To keep it hidden | `draft: true` |
 | To publish it later | a date in the future, like `date: 2026-12-01T09:00` |
 
-Put pictures in `src/main/resources/static/images/`. Spring Boot serves that folder, so
-`static/images/hello.png` is `/images/hello.png`.
+## Posts with pictures
+
+A post can be a folder instead of a file. Put `index.md` in a folder, and put the post's pictures
+next to it:
+
+```
+posts/
+  hello.md                  /blog/hello
+  welcome/                  /blog/welcome
+    index.md
+    cover.png
+    shots/editor.png
+```
+
+The folder's name is the address, unless the post sets `slug`. Link a picture by its path in the
+folder, with no `/` in front:
+
+```markdown
+---
+title: Welcome
+date: 2026-11-17
+picture: cover.png
+picture-alt: The new editor
+---
+![The editor](shots/editor.png)
+```
+
+Beansprout serves `cover.png` at `/blog/welcome/cover.png`. It serves PNG, JPEG, GIF, WebP and
+AVIF files, and only while the post is published. Other Markdown files in the folder are not
+posts, so notes can live there too. Delete the folder and the post and its pictures go together.
+
+If your app has its own route under a post, such as `/blog/{slug}/og.png` for a share card, that
+route wins over a file with the same name in the folder.
+
+Plain `.md` files keep working, so mix the two however you like. Start with files, and use a
+folder when a post needs pictures. This needs Beansprout 0.2.0 or newer.
+
+You can also put pictures in `src/main/resources/static/images/`. Spring Boot serves that folder,
+so `static/images/hello.png` is `/images/hello.png`. Link those with a `/` in front.
 
 A post's picture is also its preview when someone shares the link. For that, use a PNG or JPEG
 of 1200 by 630 pixels. Social sites do not show SVG previews.

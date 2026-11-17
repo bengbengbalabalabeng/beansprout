@@ -3,6 +3,7 @@ package dev.danvega.beansprout.content;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
@@ -31,6 +32,18 @@ public final class DirectoryPostSource implements PostSource {
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException("Could not list the posts in " + root, ex);
+		}
+	}
+
+	@Override
+	public boolean contains(String folder, String path) {
+		try {
+			Path inside = root.toRealPath().resolve(folder).normalize();
+			Path file = inside.resolve(path).normalize();
+			return file.startsWith(inside) && Files.isRegularFile(file) && file.toRealPath().startsWith(inside.toRealPath());
+		}
+		catch (IOException | InvalidPathException ex) {
+			return false;
 		}
 	}
 

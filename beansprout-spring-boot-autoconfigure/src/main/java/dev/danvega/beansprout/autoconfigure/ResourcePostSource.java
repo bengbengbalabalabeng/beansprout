@@ -4,19 +4,24 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import dev.danvega.beansprout.content.MarkdownFile;
 import dev.danvega.beansprout.content.PostSource;
+import dev.danvega.beansprout.web.BundleFiles;
+import org.jspecify.annotations.Nullable;
 
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.StringUtils;
 
 /** Reads every {@code .md} file under a Spring resource location, such as {@code classpath:posts/}. */
-final class ResourcePostSource implements PostSource {
+final class ResourcePostSource implements PostSource, BundleFiles {
 
 	private final ResourcePatternResolver resolver;
 
@@ -47,6 +52,42 @@ final class ResourcePostSource implements PostSource {
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException("Could not read the posts at " + location, ex);
+		}
+	}
+
+	@Override
+	public boolean contains(String folder, String path) {
+		return find(folder, path) != null;
+	}
+
+	/**
+	 * A folder on disk, or an unpacked classpath, is searched by path, so a name with {@code #},
+	 * {@code ?} or {@code %} is just a name, and a link that leads out of the folder is not
+	 * followed. Files in a jar are looked up by name.
+	 */
+	@Override
+	public @Nullable Resource find(String folder, String path) {
+		try {
+			Resource root = resolver.getResource(location);
+			if (!root.exists()) {
+				return null;
+			}
+			if (root.isFile()) {
+				Path base = root.getFile().toPath().toRealPath();
+				Path inside = base.resolve(folder).normalize();
+				Path file = inside.resolve(path).normalize();
+				if (!inside.startsWith(base) || !file.startsWith(inside) || !Files.isRegularFile(file)) {
+					return null;
+				}
+				Path real = file.toRealPath();
+				return real.startsWith(inside.toRealPath()) && Files.isReadable(real) ? new FileSystemResource(real) : null;
+			}
+			Resource resource = resolver.getResource(location + (folder.isEmpty() ? "" : folder + "/") + path);
+			return resource.exists() && resource.isReadable() ? resource : null;
+		}
+		catch (IOException | InvalidPathException ex) {
+			// A name this file system cannot hold, such as a * on Windows, is not a file here.
+			return null;
 		}
 	}
 

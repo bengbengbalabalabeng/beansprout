@@ -1,8 +1,10 @@
 package dev.danvega.beansprout.autoconfigure;
 
+import dev.danvega.beansprout.content.Posts;
 import dev.danvega.beansprout.feed.Feeds;
 import dev.danvega.beansprout.view.Pages;
 import dev.danvega.beansprout.web.BlogController;
+import dev.danvega.beansprout.web.BundleImageController;
 import dev.danvega.beansprout.web.FeedController;
 import dev.danvega.beansprout.web.ThemeRenderer;
 
@@ -13,6 +15,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 /**
  * The blog's pages (when a theme is present), feed and sitemap, in a servlet web app. Turn them off with
@@ -37,6 +40,14 @@ public class BeansproutWebAutoConfiguration {
 	@ConditionalOnMissingBean
 	FeedController beansproutFeedController(Feeds feeds, BeansproutProperties properties) {
 		return new FeedController(feeds, properties.siteUrl());
+	}
+
+	/** The images in a post's folder, served with or without a theme. */
+	@Bean
+	@ConditionalOnMissingBean
+	BundleImageController beansproutBundleImageController(Posts posts, ResourcePatternResolver resolver,
+			BeansproutProperties properties) {
+		return new BundleImageController(posts, new ResourcePostSource(resolver, properties.posts().location()));
 	}
 
 }
