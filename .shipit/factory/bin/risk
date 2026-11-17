@@ -1,0 +1,412 @@
+#!/bin/bash
+# risk: score a change by path rules, so a person knows what to read.
+#
+# Usage: risk [--config FILE] [--worktree] [--level] [base-ref]
+#
+#   base-ref     What the change is compared with. Default: `set base-ref` in the
+#                config, else origin/main, else main. The range is base-ref...HEAD,
+#                so only this branch's own changes count.
+#   --config     The rules file. Default: .shipit/factory/risk.txt in the repo.
+#   --worktree   Also count uncommitted and untracked files, as one more commit.
+#   --level      Print only the overall level: low, medium or high.
+#
+# It prints Markdown: the overall level, then each reason with the files to read.
+# Exit 0 at every risk level. Risk is a reading signal, not a gate.
+# Exit 2 for a bad config or bad arguments. Exit 3 for a git error.
+#
+# Kit code: bash 3.2 (the macOS default), git and standard tools. No project names here.
+# Everything about one project lives in its config file. See .shipit/factory/README.md.
+set -u
+
+usage() {
+  echo "Usage: risk [--config FILE] [--worktree] [--level] [base-ref]" >&2
+  exit 2
+}
+
+config_error() {
+  echo "risk: $CONFIG:$1: $2" >&2
+  exit 2
+}
+
+git_error() {
+  echo "risk: $1" >&2
+  exit 3
+}
+
+# --- Arguments ---------------------------------------------------------------
+
+CONFIG=""
+WORKTREE=0
+LEVEL_ONLY=0
+BASE=""
+while [ $# -gt 0 ]; do
+  case $1 in
+    --config) [ $# -ge 2 ] || usage; CONFIG=$2; shift 2 ;;
+    --worktree) WORKTREE=1; shift ;;
+    --level) LEVEL_ONLY=1; shift ;;
+    -h|--help) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -*) echo "risk: unknown option $1" >&2; usage ;;
+    *) [ -z "$BASE" ] || usage; BASE=$1; shift ;;
+  esac
+done
+
+TOP=$(git rev-parse --show-toplevel 2>/dev/null) || git_error "not inside a git repository"
+cd "$TOP" || git_error "cannot enter $TOP"
+[ -n "$CONFIG" ] || CONFIG=".shipit/factory/risk.txt"
+[ -f "$CONFIG" ] || { echo "risk: no config at $CONFIG" >&2; exit 2; }
+
+# --- Globs -------------------------------------------------------------------
+
+# A glob as an anchored extended regex. `**/` is zero or more folders, `**` is anything,
+# `*` is anything but a slash, `?` is one character but a slash. Everything else is literal.
+glob_to_regex() {
+  local g=$1 out="" c i=0 n=${#1}
+  while [ "$i" -lt "$n" ]; do
+    c=${g:$i:1}
+    case $c in
+      '*')
+        if [ "${g:$((i + 1)):1}" = '*' ]; then
+          if [ "${g:$((i + 2)):1}" = '/' ]; then
+            out="$out(.*/)?"; i=$((i + 3))
+          else
+            out="$out.*"; i=$((i + 2))
+          fi
+          continue
+        fi
+        out="$out[^/]*" ;;
+      '?') out="$out[^/]" ;;
+      .|+|'('|')'|'|'|'^'|'$'|'{'|'}'|'['|']'|\\) out="$out\\$c" ;;
+      *) out="$out$c" ;;
+    esac
+    i=$((i + 1))
+  done
+  printf '^%s$' "$out"
+}
+
+level_rank() {
+  case $1 in low) echo 1 ;; medium) echo 2 ;; high) echo 3 ;; *) echo 0 ;; esac
+}
+
+rank_level() {
+  case $1 in 1) echo low ;; 2) echo medium ;; 3) echo high ;; esac
+}
+
+# --- Config ------------------------------------------------------------------
+
+# Path rules, in file order.
+RULE_RANK=(); RULE_GLOB=(); RULE_RE=(); RULE_REASON=()
+NRULES=0
+# Computed checks: on when the config names them.
+CHECK_NAMES=" "
+# Settings and their defaults.
+SET_BASE=""
+SET_DEFAULT_LEVEL="medium"
+SET_DEFAULT_REASON="No rule matched these files"
+SET_MODULE_FILES="pom.xml"
+SET_TEST_GLOB="**/src/test/**"
+SET_DEP_GLOB="**/pom.xml"
+SET_DEP_REGEX="<dependency>"
+SET_MIXED_A="specs/**"
+SET_MIXED_B="**/src/main/**"
+SET_SIZE_LIMIT=1000
+SET_LIST_LIMIT=20
+
+lineno=0
+while IFS= read -r line || [ -n "$line" ]; do
+  lineno=$((lineno + 1))
+  line=${line%%$'\r'}
+  case $line in ''|'#'*) continue ;; esac
+  # shellcheck disable=SC2086
+  set -f; set -- $line; set +f
+  [ $# -gt 0 ] || continue
+  case $1 in
+    low|medium|high)
+      [ $# -ge 3 ] || config_error "$lineno" "a path rule needs: level glob reason"
+      rank=$(level_rank "$1"); glob=$2; shift 2
+      RULE_RANK[NRULES]=$rank
+      RULE_GLOB[NRULES]=$glob
+      RULE_RE[NRULES]=$(glob_to_regex "$glob")
+      RULE_REASON[NRULES]="$*"
+      RULE_LINE[NRULES]=$lineno
+      NRULES=$((NRULES + 1)) ;;
+    check)
+      [ $# -ge 4 ] || config_error "$lineno" "a check needs: check level name reason"
+      [ "$(level_rank "$2")" -gt 0 ] || config_error "$lineno" "unknown level '$2'"
+      case $3 in
+        multi-module|changed-test|new-dependency|mixed-commit|size) ;;
+        *) config_error "$lineno" "unknown check '$3'" ;;
+      esac
+      name=$3; lvl=$2; shift 3
+      CHECK_NAMES="$CHECK_NAMES$name "
+      eval "CHECK_LEVEL_${name//-/_}=\$lvl"
+      eval "CHECK_REASON_${name//-/_}=\"\$*\""
+      eval "CHECK_LINE_${name//-/_}=\$lineno" ;;
+    set)
+      [ $# -ge 3 ] || config_error "$lineno" "a setting needs: set key value"
+      key=$2; shift 2; value="$*"
+      case $key in
+        base-ref) SET_BASE=$value ;;
+        default-level)
+          [ "$(level_rank "$value")" -gt 0 ] || config_error "$lineno" "unknown level '$value'"
+          SET_DEFAULT_LEVEL=$value ;;
+        default-reason) SET_DEFAULT_REASON=$value ;;
+        module-files) SET_MODULE_FILES=$value ;;
+        test-glob) SET_TEST_GLOB=$value ;;
+        dependency-files) SET_DEP_GLOB=$value ;;
+        dependency-regex) SET_DEP_REGEX=$value ;;
+        mixed-a) SET_MIXED_A=$value ;;
+        mixed-b) SET_MIXED_B=$value ;;
+        size-limit)
+          case $value in ''|*[!0-9]*) config_error "$lineno" "size-limit must be a whole number" ;; esac
+          SET_SIZE_LIMIT=$value ;;
+        list-limit)
+          case $value in ''|*[!0-9]*|0) config_error "$lineno" "list-limit must be a whole number above 0" ;; esac
+          SET_LIST_LIMIT=$value ;;
+        *) config_error "$lineno" "unknown setting '$key'" ;;
+      esac ;;
+    *) config_error "$lineno" "a line starts with low, medium, high, check or set, not '$1'" ;;
+  esac
+done < "$CONFIG"
+
+has_check() {
+  case $CHECK_NAMES in *" $1 "*) return 0 ;; *) return 1 ;; esac
+}
+
+check_level() { eval "echo \"\$CHECK_LEVEL_${1//-/_}\""; }
+check_reason() { eval "echo \"\$CHECK_REASON_${1//-/_}\""; }
+check_line() { eval "echo \"\$CHECK_LINE_${1//-/_}\""; }
+
+# --- The range ---------------------------------------------------------------
+
+if [ -z "$BASE" ]; then
+  if [ -n "$SET_BASE" ]; then BASE=$SET_BASE
+  elif git rev-parse --verify -q "origin/main^{commit}" >/dev/null; then BASE=origin/main
+  else BASE=main
+  fi
+fi
+git rev-parse --verify -q "$BASE^{commit}" >/dev/null || git_error "unknown base ref '$BASE'"
+git rev-parse --verify -q "HEAD^{commit}" >/dev/null || git_error "HEAD has no commit yet"
+MB=$(git merge-base "$BASE" HEAD 2>/dev/null) || git_error "no merge base between $BASE and HEAD (a shallow clone needs fetch-depth: 0)"
+
+TAB=$(printf "\t")
+GIT="git -c core.quotePath=false"
+if [ "$WORKTREE" -eq 1 ]; then
+  DIFF_TO=""            # git diff MB: the merge base against the working tree
+  RANGE_LABEL="$BASE...working tree"
+else
+  DIFF_TO="HEAD"
+  RANGE_LABEL="$BASE...HEAD"
+fi
+
+TMP=$(mktemp -d "${TMPDIR:-/tmp}/risk.XXXXXX") || git_error "cannot make a temp folder"
+trap 'rm -rf "$TMP"' EXIT
+
+# Changed files as "STATUS<TAB>path", one per line. Renames keep the new path.
+# shellcheck disable=SC2086
+$GIT diff --name-status -z -M $MB $DIFF_TO > "$TMP/raw" 2>"$TMP/err" || git_error "git diff failed: $(cat "$TMP/err")"
+: > "$TMP/files"
+{
+  while IFS= read -r -d '' status; do
+    case $status in
+      R*|C*) IFS= read -r -d '' old; IFS= read -r -d '' path ;;
+      *) IFS= read -r -d '' path ;;
+    esac
+    printf '%s\t%s\n' "${status:0:1}" "$path"
+  done < "$TMP/raw"
+  if [ "$WORKTREE" -eq 1 ]; then
+    $GIT ls-files --others --exclude-standard | while IFS= read -r path; do
+      printf 'A\t%s\n' "$path"
+    done
+  fi
+} > "$TMP/files"
+
+# Lines added and removed. Binary files count as zero.
+# shellcheck disable=SC2086
+read -r ADDED REMOVED <<EOF
+$($GIT diff --numstat $MB $DIFF_TO | awk '{ if ($1 != "-") a += $1; if ($2 != "-") d += $2 } END { print a + 0, d + 0 }')
+EOF
+if [ "$WORKTREE" -eq 1 ]; then
+  while IFS= read -r path; do
+    [ -f "$path" ] && ADDED=$((ADDED + $(wc -l < "$path")))
+  done <<EOF
+$($GIT ls-files --others --exclude-standard)
+EOF
+fi
+
+COMMITS=$(git rev-list --count "$MB..HEAD") || git_error "git rev-list failed"
+NFILES=$(wc -l < "$TMP/files" | tr -d ' ')
+
+# --- Findings ----------------------------------------------------------------
+# Each finding is "rank<TAB>order<TAB>reason<TAB>item" in $TMP/findings. The order is the
+# config line of the rule, so reasons print in config order. Items are Markdown.
+
+: > "$TMP/findings"
+finding() { printf '%s\t%s\t%s\t%s\n' "$(level_rank "$1")" "$2" "$3" "$4" >> "$TMP/findings"; }
+
+# Path rules: each file goes to the first rule at the highest level that matches it.
+while IFS="$TAB" read -r status path; do
+  best=-1; best_rank=0; i=0
+  while [ "$i" -lt "$NRULES" ]; do
+    re=${RULE_RE[$i]}
+    if [[ $path =~ $re ]] && [ "${RULE_RANK[$i]}" -gt "$best_rank" ]; then
+      best=$i; best_rank=${RULE_RANK[$i]}
+    fi
+    i=$((i + 1))
+  done
+  note=""
+  [ "$status" = "D" ] && note=" (deleted)"
+  if [ "$best" -ge 0 ]; then
+    finding "$(rank_level "$best_rank")" "${RULE_LINE[$best]}" "${RULE_REASON[$best]}" "\`$path\`$note"
+  else
+    finding "$SET_DEFAULT_LEVEL" 100000 "$SET_DEFAULT_REASON" "\`$path\`$note"
+  fi
+done < "$TMP/files"
+
+TEST_RE=$(glob_to_regex "$SET_TEST_GLOB")
+DEP_RE=$(glob_to_regex "$SET_DEP_GLOB")
+MIXED_A_RE=$(glob_to_regex "$SET_MIXED_A")
+MIXED_B_RE=$(glob_to_regex "$SET_MIXED_B")
+
+# The folder of the nearest module file above a path, not counting the repo root.
+module_of() {
+  local dir=$1 f
+  dir=${dir%/*}
+  [ "$dir" = "$1" ] && return 0
+  while [ -n "$dir" ]; do
+    for f in $SET_MODULE_FILES; do
+      if grep -qxF "$dir/$f" "$TMP/known"; then
+        printf '%s\n' "$dir"
+        return 0
+      fi
+    done
+    case $dir in */*) dir=${dir%/*} ;; *) dir="" ;; esac
+  done
+}
+
+if has_check multi-module; then
+  # Module files at HEAD, at the base, and in the working tree, so moves and deletes count.
+  { git ls-tree -r --name-only HEAD; git ls-tree -r --name-only "$MB"
+    [ "$WORKTREE" -eq 1 ] && git ls-files --others --exclude-standard; } | sort -u > "$TMP/known"
+  : > "$TMP/modules"
+  while IFS="$TAB" read -r status path; do
+    module_of "$path" >> "$TMP/modules"
+  done < "$TMP/files"
+  sort -u "$TMP/modules" -o "$TMP/modules"
+  if [ "$(wc -l < "$TMP/modules" | tr -d ' ')" -gt 1 ]; then
+    while IFS= read -r module; do
+      finding "$(check_level multi-module)" "$(check_line multi-module)" "$(check_reason multi-module)" "\`$module/\`"
+    done < "$TMP/modules"
+  fi
+fi
+
+if has_check changed-test; then
+  while IFS="$TAB" read -r status path; do
+    case $status in
+      M) what=modified ;; D) what=deleted ;; R) what="renamed or moved" ;; T) what="type changed" ;; *) continue ;;
+    esac
+    if [[ $path =~ $TEST_RE ]]; then
+      finding "$(check_level changed-test)" "$(check_line changed-test)" "$(check_reason changed-test)" "\`$path\` ($what)"
+    fi
+  done < "$TMP/files"
+  # A rename keeps only the new path above. The old path is the existing test that went away.
+  # shellcheck disable=SC2086
+  $GIT diff --name-status -z -M $MB $DIFF_TO > "$TMP/raw2"
+  while IFS= read -r -d '' status; do
+    case $status in
+      R*) IFS= read -r -d '' old; IFS= read -r -d '' new
+          if [[ $old =~ $TEST_RE ]] && ! [[ $new =~ $TEST_RE ]]; then
+            finding "$(check_level changed-test)" "$(check_line changed-test)" "$(check_reason changed-test)" "\`$old\` (moved out to \`$new\`)"
+          fi ;;
+      C*) IFS= read -r -d '' old; IFS= read -r -d '' new ;;
+      *) IFS= read -r -d '' path ;;
+    esac
+  done < "$TMP/raw2"
+fi
+
+if has_check new-dependency; then
+  while IFS="$TAB" read -r status path; do
+    [ "$status" = "D" ] && continue
+    [[ $path =~ $DEP_RE ]] || continue
+    if git ls-files --error-unmatch -- "$path" >/dev/null 2>&1 || [ "$WORKTREE" -eq 0 ]; then
+      # shellcheck disable=SC2086
+      count=$($GIT diff -U0 $MB $DIFF_TO -- "$path" | grep -E '^\+' | grep -v '^+++' | grep -cE -- "$SET_DEP_REGEX")
+    else
+      count=$(grep -cE -- "$SET_DEP_REGEX" "$path")
+    fi
+    if [ "${count:-0}" -gt 0 ]; then
+      finding "$(check_level new-dependency)" "$(check_line new-dependency)" "$(check_reason new-dependency)" "\`$path\` ($count added)"
+    fi
+  done < "$TMP/files"
+fi
+
+if has_check mixed-commit; then
+  mixed_files() {
+    local a=0 b=0 f
+    while IFS= read -r f; do
+      [[ $f =~ $MIXED_A_RE ]] && a=1
+      [[ $f =~ $MIXED_B_RE ]] && b=1
+    done
+    [ "$a" -eq 1 ] && [ "$b" -eq 1 ]
+  }
+  for c in $(git rev-list --no-merges "$MB..HEAD"); do
+    if $GIT diff-tree --no-commit-id --name-only -r "$c" | mixed_files; then
+      finding "$(check_level mixed-commit)" "$(check_line mixed-commit)" "$(check_reason mixed-commit)" "$(git log -1 --format='`%h` %s' "$c")"
+    fi
+  done
+  if [ "$WORKTREE" -eq 1 ]; then
+    # The uncommitted work counts as one more commit.
+    if { $GIT diff --name-only HEAD; $GIT ls-files --others --exclude-standard; } | mixed_files; then
+      finding "$(check_level mixed-commit)" "$(check_line mixed-commit)" "$(check_reason mixed-commit)" "uncommitted work"
+    fi
+  fi
+fi
+
+if has_check size; then
+  if [ $((ADDED + REMOVED)) -gt "$SET_SIZE_LIMIT" ]; then
+    finding "$(check_level size)" "$(check_line size)" "$(check_reason size)" "$((ADDED + REMOVED)) lines changed, limit $SET_SIZE_LIMIT"
+  fi
+fi
+
+# --- Output ------------------------------------------------------------------
+
+TOP_RANK=$(cut -f1 "$TMP/findings" | sort -rn | head -n 1)
+[ -n "$TOP_RANK" ] || TOP_RANK=1
+OVERALL=$(rank_level "$TOP_RANK")
+
+if [ "$LEVEL_ONLY" -eq 1 ]; then
+  echo "$OVERALL"
+  exit 0
+fi
+
+echo "## Risk: $OVERALL"
+echo
+echo "\`$RANGE_LABEL\`: $COMMITS commits, $NFILES files, +$ADDED -$REMOVED lines."
+if [ "$NFILES" -eq 0 ]; then
+  echo
+  echo "No changes in this range."
+fi
+
+for rank in 3 2 1; do
+  grep -q "^$rank$TAB" "$TMP/findings" || continue
+  case $rank in
+    3) echo; echo "### High: read these" ;;
+    2) echo; echo "### Medium: read these" ;;
+    1) echo; echo "### Low: skim" ;;
+  esac
+  # Reasons in config order, each with its items, at most list-limit of them.
+  grep "^$rank$TAB" "$TMP/findings" | sort -t "$TAB" -k2,2n | cut -f3 | awk '!seen[$0]++' > "$TMP/reasons"
+  while IFS= read -r reason; do
+    echo
+    echo "**$reason**"
+    echo
+    awk -F '\t' -v r="$rank" -v reason="$reason" '$1 == r && $3 == reason { print "- " $4 }' "$TMP/findings" \
+      | awk '!seen[$0]++' > "$TMP/items"
+    head -n "$SET_LIST_LIMIT" "$TMP/items"
+    more=$(( $(wc -l < "$TMP/items") - SET_LIST_LIMIT ))
+    [ "$more" -gt 0 ] && echo "- and $more more"
+  done < "$TMP/reasons"
+done
+
+echo
+echo "Rules: \`$CONFIG\`. Risk is a reading signal, not a gate."
+exit 0

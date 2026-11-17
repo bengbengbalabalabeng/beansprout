@@ -1,0 +1,43 @@
+name: factory
+
+# Signals for the reviewer, on every pull request. Nothing here blocks a merge on risk,
+# comments, labels or needs a secret. The result goes to the job summary only.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  risk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The risk script compares the PR with its base, so it needs the full history.
+          fetch-depth: 0
+
+      - name: Test the risk analyzer
+        run: .shipit/factory/test/run
+
+      - name: Score the change
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          # The script and rules come from the base branch, so a PR cannot lower its own score.
+          # The PR that first adds the factory has no base copy yet, so its own copy runs.
+          mkdir -p "$RUNNER_TEMP/factory"
+          if git cat-file -e "$BASE_SHA:.shipit/factory/bin/risk" 2>/dev/null \
+             && git cat-file -e "$BASE_SHA:.shipit/factory/risk.txt" 2>/dev/null; then
+            git show "$BASE_SHA:.shipit/factory/bin/risk" > "$RUNNER_TEMP/factory/risk"
+            git show "$BASE_SHA:.shipit/factory/risk.txt" > "$RUNNER_TEMP/factory/risk.txt"
+            source="the base branch"
+          else
+            cp .shipit/factory/bin/risk .shipit/factory/risk.txt "$RUNNER_TEMP/factory/"
+            source="this pull request (the base branch has no factory yet)"
+          fi
+          {
+            bash "$RUNNER_TEMP/factory/risk" --config "$RUNNER_TEMP/factory/risk.txt" "$BASE_SHA"
+            echo
+            echo "Script and rules from $source."
+          } | tee -a "$GITHUB_STEP_SUMMARY"
