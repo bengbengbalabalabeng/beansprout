@@ -44,6 +44,11 @@
 			</dependency>
 			<dependency>
 				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-mcp-spring-boot-starter</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>dev.danvega</groupId>
 				<artifactId>beansprout-theme-longhand</artifactId>
 				<version>${project.version}</version>
 			</dependency>
