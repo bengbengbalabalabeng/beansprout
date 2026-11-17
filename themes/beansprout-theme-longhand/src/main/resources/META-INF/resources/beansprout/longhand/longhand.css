@@ -7,6 +7,12 @@
   /* Light and dark: the page follows the reader's system. The dark colours are in the
      prefers-color-scheme block below this one. */
   color-scheme: light dark;
+  /* The colours Beansprout checks for contrast (THEME-15): each one against the background. */
+  --theme-background: #f4f5f6;
+  --theme-text: #262b31;
+  --theme-heading: #1b1f24;
+  --theme-muted: #5e6670;
+  --theme-link: #ae5029;
   /* Every colour a rebrand touches is in this block. */
   --paper: #f4f5f6;
   --surface: #fff;
@@ -75,6 +81,11 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --theme-background: #0f1216;
+    --theme-text: #d7dce2;
+    --theme-heading: #eceef1;
+    --theme-muted: #9aa3ad;
+    --theme-link: #ec9a6e;
     --paper: #0f1216;
     --surface: #171b21;
     --ink: #eceef1;

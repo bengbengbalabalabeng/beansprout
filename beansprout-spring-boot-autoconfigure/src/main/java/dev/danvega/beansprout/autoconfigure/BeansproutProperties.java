@@ -21,6 +21,8 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  * @param author the writer's name, shown on each post page. Empty for none.
  * @param photo the writer's picture, shown above the blog's name: a path starting with {@code /}
  *     or a full http or https address. Empty for none.
+ * @param theme which theme renders the blog, like {@code dateline}. Needed only when more than one
+ *     theme jar is on the classpath.
  * @param posts where the posts come from
  * @param web the blog's pages
  * @param code how code fences are shown
@@ -35,6 +37,7 @@ public record BeansproutProperties(
 		@Nullable ZoneId timeZone,
 		@DefaultValue("") String author,
 		@DefaultValue("") String photo,
+		@Nullable String theme,
 		@DefaultValue PostsSettings posts,
 		@DefaultValue WebSettings web,
 		@DefaultValue CodeSettings code) {

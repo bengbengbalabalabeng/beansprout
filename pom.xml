@@ -50,7 +50,12 @@
 		<module>beansprout-core</module>
 		<module>beansprout-spring-boot-autoconfigure</module>
 		<module>beansprout-spring-boot-starter</module>
-		<module>beansprout-theme-longhand</module>
+		<module>themes/beansprout-theme-longhand</module>
+		<module>themes/beansprout-theme-dateline</module>
+		<module>themes/beansprout-theme-linocut</module>
+		<module>themes/beansprout-theme-marginalia</module>
+		<module>themes/beansprout-theme-small-machines</module>
+		<module>beansprout-bom</module>
 		<module>beansprout-sample</module>
 		<!-- Last on purpose: it reads the whole repo after every module has built and tested. -->
 		<module>verification</module>

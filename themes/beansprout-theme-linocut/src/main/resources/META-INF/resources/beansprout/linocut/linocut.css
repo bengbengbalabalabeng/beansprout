@@ -1,0 +1,1277 @@
+/*
+ * Linocut, a Beansprout theme. Ported from the Pressworks blog template of the same name.
+ *
+ * One stylesheet for every page. The site is a relief print: warm paper, black ink, one red,
+ * and a little ochre. Headings are cut in a heavy slab face, borders are thick, and the cards
+ * on the home page are pinned up at slight angles, like proofs drying on a line. No JavaScript.
+ *
+ * To rebrand, edit :root. Every colour, font and the focus ring is a custom property there,
+ * and nothing below it names a colour of its own.
+ *
+ * Linocut is light only. It does not switch when the reader's system is dark.
+ *
+ * Fonts: none are downloaded. Each stack starts with a face most systems already have
+ * (Rockwell and Iowan Old Style on macOS, Rockwell and Palatino Linotype on Windows, DejaVu or
+ * URW faces on Linux) and falls back to the generic family. To use a web font instead, put its
+ * woff2 files beside this stylesheet, add an @font-face rule for each, and put the family's name
+ * first in --display, --body or --label. Check the licence allows self-hosting.
+ *
+ * Breakpoints: 900px and 600px. Below 900px the collage drops to two columns; below 600px
+ * everything is one column and the cards stop tilting.
+ */
+
+:root {
+  color-scheme: light;
+  /* The colours Beansprout checks for contrast (THEME-15): each one against the background. */
+  --theme-background: #f2ead9;
+  --theme-text: #1a1714;
+  --theme-heading: #1a1714;
+  --theme-muted: #645a50;
+  --theme-link: #a8250f;
+  /* Paper and ink. */
+  --paper: var(--theme-background);
+  --paper-2: #e8dec8;
+  --surface: #fffaf0;
+  --grain: rgba(26, 23, 20, .045);
+  --text: var(--theme-text);
+  --ink: var(--theme-heading);
+  --ink-2: #4a423b;
+  --ink-3: var(--theme-muted);
+  --on-ink: #f2ead9;
+  --on-ink-2: #d8cdb6;
+  /* The one red, for shapes, and the darker red that text uses, which passes on paper. */
+  --red: #c8361d;
+  --red-ink: var(--theme-link);
+  --on-red: #fffaf0;
+  --ochre: #e3a92f;
+  --on-ochre: #1a1714;
+  --focus: #1a1714;
+  /* Pictures still loading, and the gouge marks behind a post with no picture. */
+  --ph: #e2d6bd;
+  --gouge: rgba(26, 23, 20, .09);
+  /* Code samples are always dark, on any system. These replace the colours in Beansprout's
+     code.css, which loads before this file. */
+  --bs-code-bg: #1a1714;
+  --bs-code-fg: #f2ead9;
+  --bs-code-comment: #b9ac98;
+  --bs-code-keyword: #f3937a;
+  --bs-code-string: #e8c66f;
+  --bs-code-function: #f6b89f;
+  --bs-code-constant: #9ccfd8;
+  --bs-code-type: #e3a92f;
+  --bs-code-variable: #e3a92f;
+  --bs-code-tag: #a8d5a2;
+  --bs-code-attr: #9ccfd8;
+  --code-inline: #e8dec8;
+  /* Type. */
+  --display: Rockwell, "Rockwell Nova", "Zilla Slab", "Roboto Slab", Arvo, "DejaVu Serif", Georgia, serif;
+  --body: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "URW Palladio L", P052, Georgia, serif;
+  --label: "Avenir Next Condensed", "Arial Narrow", "Roboto Condensed", "Liberation Sans Narrow", system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  /* The hard shadow under every card and button. */
+  --lift: 6px 6px 0 var(--ink);
+  --lift-small: 4px 4px 0 var(--ink);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--paper);
+  background-image: radial-gradient(var(--grain) 1px, transparent 1.2px);
+  background-size: 5px 5px;
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--red-ink);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--display);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -.01em;
+  overflow-wrap: break-word;
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  z-index: 10;
+  background: var(--ink);
+  color: var(--on-ink);
+  padding: 10px 14px;
+  font-family: var(--label);
+  font-weight: 700;
+}
+
+.skip:focus {
+  top: 12px;
+}
+
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Labels: the condensed capitals for kickers, dates and buttons. */
+.kicker,
+.meta,
+.btn,
+.nav a,
+.metabar,
+.foot,
+.pager {
+  font-family: var(--label);
+}
+
+.kicker {
+  margin: 0;
+  color: var(--red-ink);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.kicker a {
+  color: inherit;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 15px;
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* The shell */
+
+.top {
+  border-bottom: 3px solid var(--ink);
+  background: var(--paper);
+}
+
+.top .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+.brand {
+  display: inline-block;
+  max-width: 100%;
+  padding: 4px 16px 7px;
+  background: var(--ink);
+  color: var(--on-ink);
+  font-family: var(--display);
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  line-height: 1.1;
+  overflow-wrap: break-word;
+  text-decoration: none;
+  text-transform: uppercase;
+  transform: rotate(-2deg);
+  clip-path: polygon(0 5%, 97% 0, 100% 90%, 3% 100%);
+}
+
+.brand:hover {
+  color: var(--ochre);
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  flex: 1 1 auto;
+}
+
+.nav a {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-decoration: none;
+  text-transform: uppercase;
+  padding: 6px 0 2px;
+  border-bottom: 4px solid transparent;
+}
+
+.nav a:hover {
+  border-bottom-color: var(--ink);
+}
+
+.nav a[aria-current] {
+  border-bottom-color: var(--red);
+}
+
+.foot {
+  margin-top: 72px;
+  border-top: 3px solid var(--ink);
+  background: var(--ink);
+  color: var(--on-ink);
+  font-size: 15px;
+}
+
+.foot .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding-top: 24px;
+  padding-bottom: 28px;
+}
+
+.foot nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+}
+
+.foot a {
+  color: var(--on-ink);
+}
+
+.foot a:hover {
+  color: var(--ochre);
+}
+
+/* Buttons. */
+.btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 20px 0 0;
+}
+
+.btn {
+  display: inline-block;
+  padding: 11px 18px;
+  border: 3px solid var(--ink);
+  background: var(--red);
+  color: var(--on-red);
+  box-shadow: var(--lift-small);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  line-height: 1.2;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.btn:hover {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.btn:active {
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+
+.btn.alt {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.btn.alt:hover {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* Home: the intro, the newest post and the collage */
+
+.intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px 40px;
+  padding: 40px 0 8px;
+}
+
+.intro h1 {
+  flex: 1 1 520px;
+  margin: 0;
+  font-size: 64px;
+  line-height: .98;
+}
+
+.intro p {
+  flex: 0 1 320px;
+  margin: 0;
+  font-size: 18px;
+}
+
+.intro-photo {
+  width: 96px;
+  height: 96px;
+  border: 3px solid var(--ink);
+  background: var(--ph);
+  box-shadow: var(--lift-small);
+  object-fit: cover;
+  transform: rotate(3deg);
+}
+
+.lead {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: 28px;
+  margin: 32px 0 0;
+  padding: 20px;
+  border: 3px solid var(--ink);
+  background: var(--surface);
+  box-shadow: var(--lift);
+  transform: rotate(-.6deg);
+}
+
+/* The newest post with no picture: one column, with the gouge marks behind it. */
+.lead.bare {
+  grid-template-columns: minmax(0, 1fr);
+  padding: 30px 28px 32px;
+  background-image: repeating-linear-gradient(-38deg, transparent 0 14px, var(--gouge) 14px 17px);
+}
+
+.lead figure {
+  margin: 0;
+}
+
+.lead img {
+  width: 100%;
+  border: 3px solid var(--ink);
+  background: var(--ph);
+}
+
+.lead .txt {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.lead.bare .txt {
+  max-width: 900px;
+  padding-right: 72px;
+}
+
+.lead h2 {
+  margin: 0;
+  font-size: 46px;
+}
+
+.lead h2 a,
+.card h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.lead h2 a:hover,
+.card h2 a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+}
+
+.lead .excerpt {
+  margin: 0;
+  font-size: 19px;
+}
+
+.stamp {
+  position: absolute;
+  right: -14px;
+  top: -18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 92px;
+  height: 92px;
+  margin: 0;
+  padding: 10px;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: var(--red);
+  color: var(--on-red);
+  font-family: var(--label);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  line-height: 1.05;
+  text-align: center;
+  text-transform: uppercase;
+  transform: rotate(12deg);
+}
+
+.collage {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 34px 30px;
+  align-items: start;
+  margin: 48px 0 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 16px;
+  border: 3px solid var(--ink);
+  background: var(--surface);
+  box-shadow: var(--lift);
+  grid-column: span 2;
+}
+
+.card.w2 {
+  grid-column: span 2;
+}
+
+.card.w3 {
+  grid-column: span 3;
+}
+
+.card.w4 {
+  grid-column: span 4;
+}
+
+.card.tl {
+  transform: rotate(-1.2deg);
+}
+
+.card.tr {
+  transform: rotate(1deg);
+}
+
+.card figure {
+  margin: 0;
+}
+
+.card img {
+  width: 100%;
+  border: 3px solid var(--ink);
+  background: var(--ph);
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 25px;
+}
+
+.card.w4 h2 {
+  font-size: 32px;
+}
+
+.card p {
+  margin: 0;
+}
+
+.card .excerpt {
+  font-size: 17px;
+}
+
+.card .meta {
+  margin-top: auto;
+}
+
+/* A card's tone: inked, red or ochre instead of white. */
+.card.ink {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.card.ink .kicker {
+  color: var(--ochre);
+}
+
+.card.ink .meta {
+  color: var(--on-ink-2);
+}
+
+.card.ink h2 a {
+  color: var(--on-ink);
+}
+
+.card.red {
+  background: var(--red);
+  color: var(--on-red);
+}
+
+.card.red .kicker,
+.card.red .meta,
+.card.red h2 a {
+  color: var(--on-red);
+}
+
+.card.ochre {
+  background: var(--ochre);
+  color: var(--on-ochre);
+}
+
+.card.ochre .kicker,
+.card.ochre .meta,
+.card.ochre h2 a {
+  color: var(--on-ochre);
+}
+
+.card.ink .kicker a:hover,
+.card.red .kicker a:hover,
+.card.ochre .kicker a:hover {
+  color: inherit;
+  text-decoration-thickness: 3px;
+}
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 48px 0 0;
+  font-weight: 700;
+}
+
+.pager span:first-child {
+  margin-right: auto;
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* A post on its own page */
+
+.post {
+  padding: 48px 0 0;
+}
+
+.p-head {
+  max-width: 900px;
+}
+
+.p-head h1 {
+  margin: 12px 0 16px;
+  font-size: 64px;
+  line-height: .98;
+}
+
+.p-head .stand {
+  max-width: 720px;
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+/* A post with no picture: the title is the picture. */
+.p-head.bare {
+  max-width: none;
+  padding: 34px 32px 36px;
+  border: 3px solid var(--ink);
+  background-color: var(--surface);
+  background-image: repeating-linear-gradient(-38deg, transparent 0 14px, var(--gouge) 14px 17px);
+  box-shadow: var(--lift);
+}
+
+.p-head.bare h1 {
+  max-width: 1000px;
+  font-size: 58px;
+}
+
+.metabar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 26px 0 0;
+  padding: 10px 0;
+  border-top: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
+  color: var(--ink-2);
+  font-size: 16px;
+}
+
+.metabar a {
+  color: var(--red-ink);
+  font-weight: 700;
+}
+
+.metabar a:hover {
+  color: var(--ink);
+}
+
+.hero {
+  margin: 34px 0 0;
+}
+
+.hero img {
+  width: 100%;
+  border: 3px solid var(--ink);
+  background: var(--ph);
+}
+
+figcaption {
+  margin-top: 8px;
+  color: var(--ink-3);
+  font-family: var(--label);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+/* The post itself, as the Markdown made it. */
+.body {
+  max-width: 680px;
+  margin: 36px 0 0;
+  font-size: 20px;
+  line-height: 1.65;
+  overflow-wrap: break-word;
+}
+
+.body > :first-child {
+  margin-top: 0;
+}
+
+.body p,
+.body ul,
+.body ol,
+.body dl {
+  margin: 0 0 20px;
+}
+
+.body li + li {
+  margin-top: 6px;
+}
+
+.body li::marker {
+  color: var(--red-ink);
+  font-family: var(--label);
+  font-weight: 700;
+}
+
+.body h2 {
+  margin: 40px 0 14px;
+  font-size: 32px;
+  scroll-margin-top: 16px;
+}
+
+.body h3 {
+  margin: 30px 0 10px;
+  font-size: 24px;
+  scroll-margin-top: 16px;
+}
+
+.body h4 {
+  margin: 26px 0 8px;
+  font-family: var(--label);
+  font-size: 17px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.body figure {
+  margin: 30px 0;
+}
+
+.body img {
+  border: 3px solid var(--ink);
+  background: var(--ph);
+}
+
+.body figure img {
+  width: 100%;
+}
+
+.body blockquote {
+  margin: 30px 0;
+  padding: 4px 0 4px 20px;
+  border-left: 6px solid var(--red);
+  color: var(--ink-2);
+  font-size: 21px;
+}
+
+.body blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.body hr {
+  margin: 36px 0;
+  border: 0;
+  border-top: 3px solid var(--ink);
+}
+
+.body sup {
+  line-height: 0;
+}
+
+.body code {
+  padding: 1px 5px;
+  background: var(--code-inline);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: .85em;
+}
+
+.body pre {
+  margin: 28px 0;
+  padding: 16px;
+  overflow-x: auto;
+  border: 3px solid var(--ink);
+  background: var(--bs-code-bg);
+  color: var(--bs-code-fg);
+  box-shadow: var(--lift-small);
+  font-family: var(--mono);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.body pre code {
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+}
+
+.body table {
+  width: 100%;
+  margin: 28px 0;
+  border: 3px solid var(--ink);
+  border-collapse: collapse;
+  background: var(--surface);
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.body th,
+.body td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--ink);
+  text-align: left;
+  vertical-align: top;
+}
+
+.body th {
+  background: var(--ink);
+  color: var(--on-ink);
+  font-family: var(--label);
+  letter-spacing: .04em;
+}
+
+.p-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 52px 0 0;
+  padding: 22px 0 0;
+  border-top: 3px solid var(--ink);
+}
+
+.p-foot .btn {
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.p-foot .last {
+  align-self: center;
+  color: var(--ink-3);
+  font-family: var(--label);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* The missing page: what happened, what it means now, what to do next */
+
+.notice {
+  max-width: 900px;
+  margin: 52px 0 0;
+  border: 3px solid var(--ink);
+  background: var(--surface);
+  box-shadow: var(--lift);
+}
+
+.notice-head {
+  padding: 26px 28px 24px;
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.notice-head .kicker {
+  color: var(--ochre);
+}
+
+.notice-head h1 {
+  margin: 10px 0 0;
+  font-size: 46px;
+}
+
+.notice.red .notice-head {
+  background: var(--red);
+  color: var(--on-red);
+}
+
+.notice.red .notice-head .kicker {
+  color: var(--on-red);
+}
+
+.wwn {
+  margin: 0;
+  padding: 8px 28px 28px;
+}
+
+.wwn dt {
+  margin: 20px 0 6px;
+  font-family: var(--label);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.wwn dt::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 10px;
+  background: var(--red);
+  border: 2px solid var(--ink);
+  transform: rotate(45deg);
+}
+
+.wwn dd {
+  margin: 0;
+  font-size: 19px;
+}
+
+.wwn dd p {
+  margin: 0 0 10px;
+}
+
+.code404 {
+  padding: 1px 6px;
+  background: var(--paper-2);
+  font-family: var(--mono);
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+
+/* A short list of posts beside the missing page: where to go instead. */
+.rel {
+  max-width: 900px;
+  margin: 40px 0 0;
+}
+
+.rel h2 {
+  margin: 0 0 12px;
+  font-size: 26px;
+}
+
+.minis {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 3px solid var(--ink);
+}
+
+.minis li {
+  border-bottom: 1px solid var(--ink);
+}
+
+.minis a {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 18px;
+  padding: 12px 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.minis a:hover strong {
+  text-decoration: underline;
+}
+
+.minis strong {
+  font-family: var(--display);
+  font-size: 20px;
+}
+
+.minis span {
+  color: var(--ink-3);
+  font-family: var(--label);
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* A tag, and the archive */
+
+.t-head {
+  margin: 48px 0 0;
+}
+
+.t-head h1 {
+  display: inline-block;
+  max-width: 100%;
+  margin: 10px 0 14px;
+  padding: 6px 20px 10px;
+  background: var(--ink);
+  color: var(--on-ink);
+  font-size: 58px;
+  transform: rotate(-1deg);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 26px 0 0;
+}
+
+.chips a {
+  padding: 5px 12px;
+  border: 3px solid var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--label);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.chips a:hover {
+  background: var(--paper-2);
+}
+
+.chips a[aria-current] {
+  background: var(--red);
+  color: var(--on-red);
+}
+
+.tally {
+  margin: 18px 0 0;
+  color: var(--ink-3);
+  font-family: var(--label);
+}
+
+.rows {
+  margin: 34px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 3px solid var(--ink);
+}
+
+.post-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 24px;
+  align-items: baseline;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--ink);
+}
+
+.rows h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.rows h2 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.rows h2 a:hover {
+  text-decoration: underline;
+}
+
+.rows p {
+  margin: 4px 0 0;
+}
+
+.empty {
+  max-width: 900px;
+  margin: 40px 0 0;
+  padding: 26px 28px;
+  border: 3px dashed var(--ink);
+}
+
+.empty h2 {
+  margin: 0 0 6px;
+  font-size: 34px;
+}
+
+.empty p {
+  margin: 0;
+}
+
+.arch {
+  margin: 48px 0 0;
+}
+
+.arch > h1 {
+  margin: 0 0 6px;
+  font-size: 64px;
+}
+
+.arch > p {
+  margin: 0;
+  color: var(--ink-3);
+  font-family: var(--label);
+}
+
+.yr {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 10px 34px;
+  margin: 40px 0 0;
+  padding: 26px 0 0;
+  border-top: 6px solid var(--ink);
+}
+
+/* The year numbers use the text red, not the shape red, so they pass on paper. */
+.yr h2 {
+  margin: 0;
+  color: var(--red-ink);
+  font-size: 80px;
+  line-height: .9;
+}
+
+.yr .cnt {
+  margin: 6px 0 0;
+  color: var(--ink-3);
+  font-family: var(--label);
+}
+
+.entries {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  gap: 4px 16px;
+  align-items: baseline;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--paper-2);
+}
+
+.entries time,
+.entries .rt {
+  color: var(--ink-3);
+  font-family: var(--label);
+  font-size: 15px;
+}
+
+.entries a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.entries a:hover {
+  text-decoration: underline;
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* Narrower screens. These come last, because a media query adds no specificity. */
+
+@media (max-width: 900px) {
+  .intro h1,
+  .p-head h1 {
+    font-size: 48px;
+  }
+
+  .p-head.bare h1 {
+    font-size: 44px;
+  }
+
+  .lead {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lead h2 {
+    font-size: 36px;
+  }
+
+  .collage {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card,
+  .card.w2,
+  .card.w3 {
+    grid-column: span 1;
+  }
+
+  .card.w4 {
+    grid-column: span 2;
+  }
+
+  .yr {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .yr h2 {
+    font-size: 60px;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    font-size: 17px;
+  }
+
+  .wrap {
+    padding: 0 16px;
+  }
+
+  .brand {
+    font-size: 24px;
+  }
+
+  .nav {
+    order: 3;
+    flex-basis: 100%;
+    gap: 2px 16px;
+  }
+
+  .top .feed {
+    margin-left: auto;
+  }
+
+  .intro h1,
+  .p-head h1,
+  .arch > h1 {
+    font-size: 38px;
+  }
+
+  .p-head.bare {
+    padding: 22px 18px 24px;
+  }
+
+  .p-head.bare h1 {
+    font-size: 32px;
+  }
+
+  .p-head .stand {
+    font-size: 19px;
+  }
+
+  .lead {
+    padding: 14px;
+    transform: none;
+  }
+
+  .lead.bare {
+    padding: 22px 18px 24px;
+  }
+
+  .lead.bare .txt {
+    padding-right: 48px;
+  }
+
+  .lead h2 {
+    font-size: 30px;
+  }
+
+  .stamp {
+    width: 74px;
+    height: 74px;
+    right: -6px;
+    top: -14px;
+    font-size: 13px;
+  }
+
+  .collage {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .card,
+  .card.w2,
+  .card.w3,
+  .card.w4 {
+    grid-column: span 1;
+  }
+
+  .card.tl,
+  .card.tr {
+    transform: none;
+  }
+
+  .card.w4 h2 {
+    font-size: 26px;
+  }
+
+  .body {
+    font-size: 18px;
+  }
+
+  .body pre {
+    font-size: 14px;
+  }
+
+  .notice-head {
+    padding: 20px 18px;
+  }
+
+  .notice-head h1,
+  .t-head h1 {
+    font-size: 32px;
+  }
+
+  .wwn {
+    padding: 4px 18px 22px;
+  }
+
+  .post-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .entry {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}

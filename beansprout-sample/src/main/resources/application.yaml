@@ -8,6 +8,8 @@ spring:
 
 # Everything here is optional. Without it the blog is called "Blog" and lives at /blog.
 beansprout:
+  # The sample has every theme on its classpath, so it names the one to use.
+  theme: longhand
   title: Beansprout Notes
   description: A sample blog, served by the Beansprout starter.
   author: Beansprout

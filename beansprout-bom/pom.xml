@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>dev.danvega</groupId>
+		<artifactId>beansprout-parent</artifactId>
+		<version>0.2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>beansprout-bom</artifactId>
+	<packaging>pom</packaging>
+	<name>Beansprout BOM</name>
+	<description>One version for every Beansprout artifact. Import it, then add the starter and a theme with no version.</description>
+	<url>https://github.com/danvega/beansprout</url>
+
+	<scm>
+		<url>https://github.com/danvega/beansprout</url>
+		<connection>scm:git:https://github.com/danvega/beansprout.git</connection>
+		<developerConnection>scm:git:git@github.com:danvega/beansprout.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<!-- Only Beansprout's own artifacts. The published pom has no parent (see the flatten plugin
+	     below), so an app that imports this gets these versions and nothing else: not Spring
+	     Boot's, not JTE's. -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-spring-boot-autoconfigure</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-spring-boot-starter</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-theme-longhand</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-theme-dateline</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-theme-linocut</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-theme-marginalia</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-theme-small-machines</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<!-- Publishes this pom without its parent, keeping only the dependencyManagement above.
+			     Inheriting from beansprout-parent, and so from spring-boot-starter-parent, would
+			     hand every app that imports the BOM Spring Boot's whole version list. -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<version>1.8.0</version>
+				<configuration>
+					<flattenMode>bom</flattenMode>
+					<updatePomFile>true</updatePomFile>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+					<pomElements>
+						<properties>remove</properties>
+						<build>remove</build>
+					</pomElements>
+				</configuration>
+				<executions>
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

@@ -1,0 +1,303 @@
+/* Marginalia, a link blog kept like a notebook. Ported from the Pressworks template of the
+   same name. No build step and no JavaScript.
+
+   Every page is the same sheet of paper: a narrow margin on the left holds the small facts
+   (what kind of entry it is, the date, the reading time, the tags) and the wide column on the
+   right holds the words. Below 760px the margin folds up into a line above the text, so a
+   phone reads the same notes in one column. Marginalia is light only. */
+
+:root {
+  color-scheme: light;
+  /* The colours Beansprout checks for contrast (THEME-15): each one against the background. */
+  --theme-background: #fbf9f3;
+  --theme-text: #24211c;
+  --theme-heading: #24211c;
+  --theme-muted: #5f594e;
+  --theme-link: #1f5c4a;
+  /* Every colour a rebrand touches is in this block. */
+  --paper: var(--theme-background);
+  --ground: #f1ece0;
+  --ground-2: #f6f2e8;
+  --ink: var(--theme-text);
+  --ink-2: #3a362f;
+  --muted: var(--theme-muted);
+  --line: #ddd6c6;
+  --line-2: #cbc2ae;
+  /* The one accent, a green ink: the kind of entry, links and the current page. */
+  --accent: var(--theme-link);
+  --accent-hover: #123d31;
+  --focus: #1f5c4a;
+  /* Code: always dark, whatever the page is. Beansprout's code.css reads these, so the
+     highlighted words keep their contrast on the dark box. */
+  --code-inline: #efe9dc;
+  --bs-code-bg: #2a2722;
+  --bs-code-fg: #ece6d8;
+  --bs-code-comment: #8b949e;
+  --bs-code-keyword: #ff7b72;
+  --bs-code-string: #a5d6ff;
+  --bs-code-function: #d2a8ff;
+  --bs-code-constant: #79c0ff;
+  --bs-code-type: #ffa657;
+  --bs-code-variable: #ffa657;
+  --bs-code-tag: #7ee787;
+  --bs-code-attr: #79c0ff;
+
+  /* No webfont is loaded: a theme must not fetch anything from another site. Charter ships
+     with macOS and most Linux desktops, Cambria and Georgia with Windows. */
+  --serif: Charter, "Bitstream Charter", "Iowan Old Style", "Sitka Text", Cambria, Georgia, serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --margin: 8.5rem;
+  --gap: 1.75rem;
+  --wide: 66rem;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 17px/1.6 var(--serif);
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a:hover { color: var(--accent-hover); }
+a:focus-visible, pre:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+h1, h2, h3 { line-height: 1.25; color: var(--theme-heading); }
+
+code, pre, kbd { font-family: var(--mono); }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  background: var(--ink);
+  color: var(--paper);
+  padding: .5rem .9rem;
+  z-index: 10;
+}
+.skip:focus { top: 1rem; color: var(--paper); }
+
+/* The shell ---------------------------------------------------------------------------- */
+
+.site { max-width: var(--wide); margin: 0 auto; padding: 0 1.5rem; }
+
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding: 2rem 0 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.masthead-name { margin: 0; font-size: 1.6rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
+.masthead-link { color: var(--ink); text-decoration: none; }
+.masthead-link:hover { color: var(--accent); }
+.masthead-tagline { margin: .3rem 0 0; color: var(--muted); font-style: italic; font-size: 1rem; }
+
+.nav-list { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; margin: 0; padding: 0; list-style: none; font-size: .95rem; }
+.nav-link { color: var(--ink); text-decoration: none; padding: .25rem 0; display: inline-block; }
+.nav-link:hover { color: var(--accent); text-decoration: underline; }
+.nav-link[aria-current] { color: var(--accent); text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 2px; }
+
+.page { padding: .5rem 0 3rem; }
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .5rem 1.5rem;
+  padding: 1.5rem 0 2.5rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: .9rem;
+}
+.footer p { margin: 0; }
+.footer-links { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; margin: 0; padding: 0; list-style: none; }
+
+/* The spread: a margin and a text column. Every page is made of these. -------------------- */
+
+.spread {
+  display: grid;
+  grid-template-columns: var(--margin) minmax(0, 1fr);
+  column-gap: var(--gap);
+}
+.spread-margin {
+  margin: 0;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: .78rem;
+  line-height: 1.5;
+  color: var(--muted);
+  padding-top: .35rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.spread-text { min-width: 0; max-width: 42rem; }
+
+.margin-label {
+  display: block;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+.margin-line { display: block; }
+.margin-tags { list-style: none; margin: .6rem 0 0; padding: 0; }
+
+.page-head { margin-top: 2rem; }
+.page-title { margin: 0; font-size: 2rem; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.page-intro { margin: .5rem 0 0; color: var(--ink-2); font-size: 1.05rem; }
+
+.section-title {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-bottom: .5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+/* The stream: days, and the entries in them. ------------------------------------------- */
+
+.day { margin-top: 2.25rem; }
+.day-title { margin: 0 0 0 calc(var(--margin) + var(--gap)); }
+.day-list { list-style: none; margin: 0; padding: 0; }
+
+.item { padding: .9rem 0; }
+.day-list > li + li .item { border-top: 1px dotted var(--line-2); }
+.item-meta { padding-top: .2rem; }
+.item-kind::before { display: inline-block; width: 1.1em; text-align: center; }
+.item-post .item-kind::before { content: "\00B6"; }
+
+.item-title { margin: 0; font-size: 1.12rem; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.item-title-link { color: var(--ink); text-decoration: none; }
+.item-title-link:hover { color: var(--accent); text-decoration: underline; }
+.item-post .item-title { font-size: 1.45rem; font-weight: 700; letter-spacing: -.01em; }
+.item-picture { margin-top: .6rem; border: 1px solid var(--line); background: var(--ground); }
+.item-comment { margin: .35rem 0 0; color: var(--ink-2); overflow-wrap: anywhere; }
+.item-foot { margin: .4rem 0 0; font-family: var(--mono); font-size: .78rem; color: var(--muted); }
+.item-reading { margin-right: .8rem; }
+.tag-list { display: inline; list-style: none; margin: 0; padding: 0; }
+.tag-list li { display: inline; margin-right: .7rem; }
+.tag-link { color: var(--muted); }
+.tag-link:hover { color: var(--accent); }
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: .75rem 1.5rem;
+  margin-top: 2.5rem;
+  padding: 1.1rem 0 0 calc(var(--margin) + var(--gap));
+  border-top: 1px solid var(--line);
+}
+.pager-status { margin: 0; color: var(--muted); font-size: .95rem; }
+.pager-links { display: flex; gap: 1.5rem; margin: 0; }
+
+/* One entry on its own page. ------------------------------------------------------------- */
+
+.entry { margin-top: 2.25rem; }
+.entry-kind { font-size: .82rem; }
+.entry-title { margin: 0; font-size: 2.1rem; letter-spacing: -.015em; line-height: 1.2; overflow-wrap: anywhere; }
+.entry-lede { margin: .75rem 0 0; font-size: 1.2rem; color: var(--ink-2); line-height: 1.5; }
+
+.entry-figure { margin: 1.5rem 0 0; }
+.entry-picture { border: 1px solid var(--line); background: var(--ground); }
+.entry-caption { margin-top: .45rem; font-size: .88rem; color: var(--muted); }
+
+.prose { margin-top: 1.5rem; font-size: 1.08rem; line-height: 1.7; overflow-wrap: break-word; }
+.prose > :first-child { margin-top: 0; }
+.prose p, .prose ul, .prose ol, .prose blockquote, .prose figure, .prose pre, .prose table { margin: 0 0 1.1rem; }
+.prose h2 { font-size: 1.35rem; margin: 2.2rem 0 .6rem; }
+.prose h3 { font-size: 1.12rem; margin: 1.6rem 0 .4rem; }
+.prose li + li { margin-top: .3rem; }
+.prose blockquote { padding-left: 1.2rem; border-left: 3px solid var(--line-2); color: var(--ink-2); font-style: italic; }
+.prose code { font-size: .86em; background: var(--code-inline); padding: .05em .3em; border-radius: 2px; }
+.prose pre { padding: .9rem 1rem; background: var(--bs-code-bg); color: var(--bs-code-fg); border-radius: 3px; font-size: .8rem; line-height: 1.55; overflow-x: auto; tab-size: 4; }
+.prose pre code { background: none; padding: 0; font-size: inherit; white-space: pre; }
+.prose img { border: 1px solid var(--line); }
+.prose figcaption { margin-top: .45rem; font-size: .88rem; color: var(--muted); }
+.prose table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; font-size: .92rem; }
+.prose th, .prose td { text-align: left; padding: .4rem .6rem; border-bottom: 1px solid var(--line); }
+
+.entry-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .75rem 1.5rem;
+  margin-top: 2.5rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+  font-size: .95rem;
+}
+.entry-foot-link { max-width: 20rem; }
+.entry-foot-label { display: block; font-family: var(--mono); font-size: .72rem; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.entry-foot-end { margin: 0; color: var(--muted); }
+
+/* Lists of entries: the archive and the newest ones. -------------------------------------- */
+
+.year { margin-top: 2.25rem; }
+.year-count { display: block; }
+
+.mini-list { list-style: none; margin: .5rem 0 0; padding: 0; }
+.mini { padding: .45rem 0; border-top: 1px dotted var(--line-2); }
+.mini-title { overflow-wrap: anywhere; }
+.mini-meta { display: block; font-family: var(--mono); font-size: .74rem; color: var(--muted); }
+
+.block { margin-top: 2.25rem; }
+
+/* An empty page, and the page not found. --------------------------------------------------- */
+
+.empty { margin-top: 2rem; padding: 1.25rem 1.25rem 1.4rem; border: 1px dashed var(--line-2); background: var(--ground-2); }
+.empty-title { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--theme-heading); }
+.empty p { margin: .4rem 0 0; }
+.empty p.empty-title { margin: 0; }
+
+.steps { margin: .5rem 0 0; padding-left: 1.25rem; }
+.steps li + li { margin-top: .3rem; }
+
+.address { font-family: var(--mono); font-size: .92em; overflow-wrap: anywhere; }
+
+/* Narrow screens: the margin folds up into a line above the text. ------------------------- */
+
+@media (max-width: 760px) {
+  body { font-size: 16px; }
+  .site { padding: 0 1rem; }
+  .masthead { padding-top: 1.25rem; align-items: flex-start; }
+  .spread { grid-template-columns: minmax(0, 1fr); }
+  .spread-margin { text-align: left; padding-top: 0; margin-bottom: .3rem; }
+  .spread-margin .margin-label, .spread-margin .margin-line { display: inline; margin-right: .6rem; }
+  .margin-tags { display: inline; margin: 0; }
+  .margin-tags li { display: inline; margin-right: .6rem; }
+  .day-title { margin-left: 0; }
+  .pager { padding-left: 0; }
+  .page-title, .entry-title { font-size: 1.6rem; }
+}

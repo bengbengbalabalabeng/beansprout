@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -40,6 +41,27 @@ public class BeansproutWebAutoConfiguration {
 	@ConditionalOnMissingBean
 	FeedController beansproutFeedController(Feeds feeds, BeansproutProperties properties) {
 		return new FeedController(feeds, properties.siteUrl());
+	}
+
+	/**
+	 * Stops the start when {@code beansprout.theme} names a theme but no theme renders the blog,
+	 * because no theme jar is on the classpath. Without this the app would start with no blog.
+	 */
+	@Bean
+	@ConditionalOnProperty("beansprout.theme")
+	@ConditionalOnMissingBean(ThemeRenderer.class)
+	ThemeCheck beansproutThemeCheck(BeansproutProperties properties) {
+		String theme = properties.theme();
+		if (theme != null && !theme.isBlank()) {
+			throw new IllegalStateException("beansprout.theme is '" + theme + "', but there is no theme on the classpath. "
+					+ "Add one, such as dev.danvega:beansprout-theme-" + theme.strip() + ". Themes found: none.");
+		}
+		return new ThemeCheck();
+	}
+
+	/** The mark that the theme check ran. */
+	static final class ThemeCheck {
+
 	}
 
 	/** The images in a post's folder, served with or without a theme. */
