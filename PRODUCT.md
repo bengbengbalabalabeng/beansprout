@@ -122,6 +122,12 @@ Done when:
   schemes are tested for WCAG AA contrast. Spec: `specs/dark-mode.md`.
 - **Railway is the default deploy** (Dan, 16 November 2026). `docs/deploy.md` uses a Dockerfile,
   not `railway.json`, which Railway stops reading on 1 December 2026.
+- **Every Pressworks blog theme ships free here** (Dan, 16 November 2026): Longhand, Dateline,
+  Linocut, Marginalia and Small Machines, under Apache 2.0, each its own module in `themes/`.
+  This sets aside "premium themes sold on Pressworks" from the first shaping, and it conflicts
+  with "Every new template is paid" in the Pressworks PRODUCT.md, which Dan updates there.
+- **Specs stay public** (Dan, 16 November 2026). CI runs the done-judge, which needs them, and
+  the test names point to them. The README does not mention them.
 - **Two dependencies for now** (Dan, 16 November 2026): the starter and
   `beansprout-theme-longhand`. The starter never pulls in an engine, as AGENTS.md says, and JTE
   is the theme's engine. Having the theme jar bring the starter can come later.
@@ -206,5 +212,13 @@ spec-only commit passes the hook while its code sits uncommitted beside it, whic
 344644d (specs) and 4c31aad (code) went in. Checked out alone, the spec commit fails `verify`,
 because the done-judge wants a test for every spec ID. Fine for local history. If CI ever builds
 every commit, the done-judge needs a way to skip specs whose code is not committed yet.
+
+**First real user: the Wrap website** (Dan, 16 November 2026). `~/dev/projects/wrap-www` has a
+hand-built blog (`dev.danvega.wrap.blog`, about 880 lines, Markdown in `src/main/resources/blog`).
+When Beansprout is in a good spot, replace it with Beansprout and a custom theme built through
+`docs/own-templates.md` option 1. Gaps to close or map first: Wrap's frontmatter says
+`description` (Beansprout: `summary`), and has `cover`, `image` and a per-post `author`; it makes a
+1200x630 share image per post (`ShareCard`); it shows drafts in local runs (`wrap.blog.show-drafts`);
+and it checks a description is 40 to 170 characters. wrap-www pushes to main deploy to production.
 
 Next step: Dan reviews the specs and the open questions above, then push.
