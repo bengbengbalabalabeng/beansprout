@@ -4,9 +4,10 @@ A release goes to Maven Central when a version tag such as `v0.1.0` is pushed.
 `.github/workflows/release.yml` builds, signs and uploads it. The upload then waits at
 central.sonatype.com until you press **Publish**, so nothing goes live by accident.
 
-These artifacts are published: `beansprout-parent`, `beansprout-core`,
-`beansprout-spring-boot-autoconfigure`, `beansprout-spring-boot-starter` and
-`beansprout-theme-longhand`. The sample and the verification module are not.
+These artifacts are published: `beansprout-parent`, `beansprout-bom`, `beansprout-core`,
+`beansprout-spring-boot-autoconfigure`, `beansprout-spring-boot-starter`, and the themes
+`beansprout-theme-longhand`, `-dateline`, `-linocut`, `-marginalia` and `-small-machines`. The
+sample and the verification module are not.
 
 ## One-time setup
 

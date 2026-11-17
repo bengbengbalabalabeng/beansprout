@@ -14,7 +14,7 @@ Both examples use Thymeleaf. Any engine works, since Beansprout only needs HTML 
 
 ## 1. Your templates, Beansprout's pages
 
-Add the starter, and leave out `beansprout-theme-longhand`. You also need a web app and your
+Add the starter, and leave out the theme. You also need a web app and your
 template engine. With Thymeleaf, that is three dependencies:
 
 ```xml
@@ -29,7 +29,7 @@ template engine. With Thymeleaf, that is three dependencies:
 <dependency>
     <groupId>dev.danvega</groupId>
     <artifactId>beansprout-spring-boot-starter</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -122,7 +122,7 @@ Things to know:
   Markdown, and `meta.jsonLd` is JSON. Use `th:utext` for those two, and `th:text` for the rest.
 - **`page.meta` holds the SEO tags**: title, description, canonical link, Open Graph values and
   JSON-LD. The head above uses the main ones. Longhand's
-  [layout](../beansprout-theme-longhand/src/main/jte/layout.jte) shows the rest, such as
+  [layout](../themes/beansprout-theme-longhand/src/main/jte/layout.jte) shows the rest, such as
   `og:image:alt` and the article dates.
 - **Set `beansprout.site-url` in production.** Without it the canonical link comes from the
   request, which can say `http` behind a proxy that handles HTTPS.
@@ -132,7 +132,7 @@ Things to know:
 - **Your renderer wins over a theme.** If a theme jar is on the classpath too, Beansprout still
   uses your bean.
 
-The [Longhand templates](../beansprout-theme-longhand/src/main/jte) show every value in use,
+The [Longhand templates](../themes/beansprout-theme-longhand/src/main/jte) show every value in use,
 and each record's fields are in
 [the view package](../beansprout-core/src/main/java/dev/danvega/beansprout/view).
 
@@ -144,7 +144,7 @@ Claude Code, or any coding agent, and paste this:
 ```text
 Add a blog to this Spring Boot app with Beansprout, in this site's own look.
 
-1. Add the dependency dev.danvega:beansprout-spring-boot-starter:0.1.0.
+1. Add the dependency dev.danvega:beansprout-spring-boot-starter:0.2.0.
    Do not add any beansprout-theme jar.
 2. Read option 1 of https://github.com/danvega/beansprout/blob/main/docs/own-templates.md
    and follow it.

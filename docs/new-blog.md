@@ -16,22 +16,62 @@ Go to [start.spring.io](https://start.spring.io) and pick:
 
 Download it and unzip it.
 
-## 2. Add Beansprout
+## 2. Add Beansprout and pick a theme
 
-Add two dependencies to your app's `pom.xml`. The starter is the blog. The theme is how it
-looks.
+Beansprout comes in two parts. The starter is the blog. The theme is how it looks.
+
+First import the BOM, so every Beansprout part gets the same version. In your `pom.xml`, add
+this after `</properties>`. If you already have a `<dependencyManagement>` section, add the
+`<dependency>` inside it instead.
+
+```xml
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>dev.danvega</groupId>
+            <artifactId>beansprout-bom</artifactId>
+            <version>0.2.0</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+```
+
+Then add the starter and one theme to `<dependencies>`, with no version:
 
 ```xml
 <dependency>
     <groupId>dev.danvega</groupId>
     <artifactId>beansprout-spring-boot-starter</artifactId>
-    <version>0.1.0</version>
 </dependency>
 <dependency>
     <groupId>dev.danvega</groupId>
-    <artifactId>beansprout-theme-longhand</artifactId>
-    <version>0.1.0</version>
+    <artifactId>beansprout-theme-linocut</artifactId>
 </dependency>
+```
+
+Pick the theme you like. Each one is free.
+
+| Theme | Add this artifact | Look |
+| --- | --- | --- |
+| Longhand | `beansprout-theme-longhand` | One writer, a long post with a picture. Light and dark. |
+| Dateline | `beansprout-theme-dateline` | An engineering blog dressed as a status board. Dark. |
+| Linocut | `beansprout-theme-linocut` | Bold and playful, black ink on warm paper with one red. |
+| Marginalia | `beansprout-theme-marginalia` | A link blog kept like a notebook. Short entries. |
+| Small Machines | `beansprout-theme-small-machines` | A lot of personality. The site is dressed as an old desktop. |
+
+To change your mind later, swap the artifact and restart. Keep one theme in your `pom.xml`. If
+you want several on hand, name the one to use in `application.yaml` with `beansprout.theme`,
+such as `beansprout.theme: dateline`. With two themes and no name, the app stops at startup
+and tells you which themes it found.
+
+With Gradle:
+
+```kotlin
+implementation(platform("dev.danvega:beansprout-bom:0.2.0"))
+implementation("dev.danvega:beansprout-spring-boot-starter")
+implementation("dev.danvega:beansprout-theme-linocut")
 ```
 
 ## 3. Name your blog
@@ -152,7 +192,8 @@ theme works too. To turn it off, set `beansprout.code.highlight: false`.
 ## Light and dark
 
 Longhand follows the reader's system: a light page by day, a dark one at night, with no
-JavaScript and nothing to set.
+JavaScript and nothing to set. Dateline is always dark. Linocut, Marginalia and Small Machines
+are always light. Every theme keeps its text readable, at a contrast of at least 4.5 to 1.
 
 ## What search engines see
 

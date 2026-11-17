@@ -13,8 +13,8 @@ Add a Markdown blog to the Spring Boot app you already run.
 
 You write posts as Markdown files. Beansprout turns them into a blog inside your app: an index,
 a page per post, tag pages, an archive, an Atom feed and a sitemap. Every page carries the tags
-search engines and social sites read. Code is highlighted on the server, and the theme follows
-the reader's light or dark mode. No controllers, no templates, no database.
+search engines and social sites read. Code is highlighted on the server. Pick one of five free
+themes, or use your own templates. No controllers, no database.
 
 ## Why
 
@@ -24,7 +24,7 @@ the third choice: add a dependency to the app you already have.
 
 ## Guides
 
-- [Start a new blog](docs/new-blog.md): a new app, your first post, pictures, drafts and scheduling.
+- [Start a new blog](docs/new-blog.md): a new app, a theme, your first post, pictures, drafts and scheduling.
 - [Deploy it](docs/deploy.md): to Railway, or anywhere that runs Java or Docker.
 - [Use your own templates](docs/own-templates.md): your site's look instead of a theme.
 
@@ -34,26 +34,39 @@ Java 25 and Spring Boot 4.1.2. Pages render with [JTE](https://jte.gg).
 
 ## Add it to your app
 
-Add the starter and the default theme, Longhand:
+Import the BOM once, then add the starter and a theme with no version:
 
 ```xml
-<dependency>
-    <groupId>dev.danvega</groupId>
-    <artifactId>beansprout-spring-boot-starter</artifactId>
-    <version>0.1.0</version>
-</dependency>
-<dependency>
-    <groupId>dev.danvega</groupId>
-    <artifactId>beansprout-theme-longhand</artifactId>
-    <version>0.1.0</version>
-</dependency>
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>dev.danvega</groupId>
+            <artifactId>beansprout-bom</artifactId>
+            <version>0.2.0</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+
+<dependencies>
+    <dependency>
+        <groupId>dev.danvega</groupId>
+        <artifactId>beansprout-spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>dev.danvega</groupId>
+        <artifactId>beansprout-theme-longhand</artifactId>
+    </dependency>
+</dependencies>
 ```
 
 With Gradle:
 
 ```kotlin
-implementation("dev.danvega:beansprout-spring-boot-starter:0.1.0")
-implementation("dev.danvega:beansprout-theme-longhand:0.1.0")
+implementation(platform("dev.danvega:beansprout-bom:0.2.0"))
+implementation("dev.danvega:beansprout-spring-boot-starter")
+implementation("dev.danvega:beansprout-theme-longhand")
 ```
 
 Put a post in `src/main/resources/posts/hello.md`:
@@ -69,9 +82,27 @@ My first post.
 
 Start your app and open `http://localhost:8080/blog`.
 
+## Themes
+
+Every theme is free. Swap the theme dependency to change the look.
+
+| Theme | Artifact | Look |
+| --- | --- | --- |
+| `longhand` | `beansprout-theme-longhand` | One writer, a long post with a picture. Light and dark. |
+| `dateline` | `beansprout-theme-dateline` | An engineering blog dressed as a status board. Dark. |
+| `linocut` | `beansprout-theme-linocut` | Bold and playful, black ink on warm paper with one red. |
+| `marginalia` | `beansprout-theme-marginalia` | A link blog kept like a notebook. Short entries. |
+| `small-machines` | `beansprout-theme-small-machines` | A lot of personality. The site is dressed as an old desktop. |
+
+With one theme on the classpath, Beansprout uses it. To keep several, name the one to use with
+`beansprout.theme: dateline`. With two and no name, the app stops at startup and lists the
+themes it found, rather than guessing. For your site's own look,
+[use your own templates](docs/own-templates.md).
+
 A post with `draft: true` stays hidden. A post dated in the future appears on that date, with no
-redeploy. Add `picture: /images/hello.png` for a picture on the card and the post, and
-`updated: 2026-12-02` when you change a post later.
+redeploy. A post can also be a folder, `posts/hello/index.md`, with its pictures next to it.
+Add `picture: cover.png` for a picture on the card and the post, and `updated: 2026-12-02` when
+you change a post later.
 [Start a new blog](docs/new-blog.md) has every frontmatter option.
 
 ## Settings
@@ -84,6 +115,7 @@ beansprout:
   description: Notes on Java.       # default: empty
   author: Your Name                 # shown on each post. Default: empty
   photo: /images/me.png             # shown above the blog's name. Default: none
+  theme: longhand                   # needed only with more than one theme. Default: the only one
   base-path: /blog                  # default: /blog
   page-size: 10                     # default: 10
   site-url: https://example.com     # for canonical links, previews, feed and sitemap. Default: the request
@@ -99,13 +131,14 @@ beansprout:
 
 ## Try the sample
 
-The repo has a sample app with a few posts:
+The repo has a sample app with a few posts and every theme:
 
 ```bash
 ./mvnw -q install -DskipTests && ./mvnw -pl beansprout-sample spring-boot:run
 ```
 
-Open `http://localhost:8080/blog`.
+Open `http://localhost:8080/blog`. To see another theme, add
+`-Dspring-boot.run.arguments=--beansprout.theme=linocut` to the second command.
 
 ## How the project is laid out
 
@@ -114,7 +147,8 @@ Open `http://localhost:8080/blog`.
 | `beansprout-core` | The blog's logic in plain Java. Reads Markdown into posts, decides what is published, builds the data for each page, writes the feed and sitemap. No Spring. |
 | `beansprout-spring-boot-autoconfigure` | The Spring part. Reads the `beansprout.*` settings, creates the beans, and holds the controllers. |
 | `beansprout-spring-boot-starter` | The dependency you add. It has no code of its own. |
-| `beansprout-theme-longhand` | The look: Longhand's templates and stylesheet. |
+| `themes/beansprout-theme-*` | The looks: each theme's templates and stylesheet, one module per theme. |
+| `beansprout-bom` | One version for every artifact above. It has no code. |
 | `beansprout-sample` | A small Spring Boot app that uses all of the above. |
 | `verification` | Checks the build runs on the repo itself, such as no leftover TODOs in the code. |
 
@@ -126,7 +160,7 @@ When someone opens `/blog/hello`:
 1. `BlogController` takes the request.
 2. `Pages` asks `Posts` for the post. `Posts` reads the Markdown and checks the post is published.
 3. `Pages` returns a `PostPage`: plain text and lists, ready to show.
-4. The Longhand theme turns it into HTML.
+4. The theme turns it into HTML.
 
 To read the code, start with
 [Posts.java](beansprout-core/src/main/java/dev/danvega/beansprout/content/Posts.java) and

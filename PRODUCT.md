@@ -135,6 +135,13 @@ Done when:
   `/blog/{slug}`, `/blog/tags/{tag}`, `/blog/archive`, `/blog/feed.xml`, `/blog/sitemap.xml`,
   and the `beansprout.*` properties. Dan: "we can always change them later". Before 1.0 a
   rename is allowed, with a note in the release.
+- **One BOM, published flat** (Dan, 17 November 2026): `beansprout-bom` manages every
+  published artifact at one version. It is published with no parent, through
+  flatten-maven-plugin in bom mode, so an app that imports it gets Beansprout's versions and not
+  Spring Boot's. The docs lead with the BOM: import it, then add the starter and a theme.
+- **A theme jar brings JTE** (decided while building themes, 17 November 2026, for Dan to
+  confirm): each theme depends on `jte-runtime` at compile scope, as Longhand has since 0.1.0.
+  Picking a theme is picking its engine. The starter still pulls in no engine.
 - **The feed and sitemap need no theme.** They are served whenever the web pages are on.
 - **JTE only for now** (Dan, 16 November 2026). This replaces "all three engines from the
   start" (15 November). Thymeleaf and FreeMarker move to Non-goals as "not now". Longhand
@@ -193,7 +200,8 @@ Goals 1, 2, 3 and 4 are built, verified and committed (344644d specs, 4c31aad co
 
 - Specs: `specs/posts.md` (POSTS-1 to 18), `specs/pages.md` (PAGES-1 to 19), `specs/feeds.md`
   (FEEDS-1 to 8). Dan has not approved them yet. Read them first.
-- Modules: a sixth, `beansprout-theme-longhand`, holds the theme.
+- Modules: each theme is its own module under `themes/`, and `beansprout-bom` holds the
+  versions. With more than one theme on the classpath, `beansprout.theme` picks one.
 - Tests: 119 across core (65), autoconfigure (28) and sample (26), every spec ID covered.
   `/attack` took five rounds: 13 valid findings, each fixed with a failing test first, then PASS.
   Most were frontmatter edge cases and the Spring loader (encoded paths, non-UTF-8 files).
