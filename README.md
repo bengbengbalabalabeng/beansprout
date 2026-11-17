@@ -97,6 +97,23 @@ Thank you, Pressworks, for giving them to Beansprout.
 | `marginalia` | `beansprout-theme-marginalia` | A link blog kept like a notebook. Short entries. |
 | `small-machines` | `beansprout-theme-small-machines` | A lot of personality. The site is dressed as an old desktop. |
 
+Here is the sample app's blog in each theme, with the same posts:
+
+<table>
+  <tr>
+    <td width="50%"><img src="images/themes/longhand.png" alt="The sample blog in Longhand: a sidebar with the blog's name and tags, and a grid of post cards with pictures"><br><b>Longhand</b></td>
+    <td width="50%"><img src="images/themes/dateline.png" alt="The sample blog in Dateline: a dark status board with a lead post, a log of posts, and a tags panel"><br><b>Dateline</b></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="images/themes/linocut.png" alt="The sample blog in Linocut: a carved, tilted masthead, a big lead post in a black frame, and a red reading-time stamp"><br><b>Linocut</b></td>
+    <td width="50%"><img src="images/themes/small-machines.png" alt="The sample blog in Small Machines: posts as colored desktop windows over a teal desk, with folder icons on the left"><br><b>Small Machines</b></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="images/themes/marginalia.png" alt="A post in Marginalia: the date and tags in the margin, the title and text in a serif notebook column, and a dark code block"><br><b>Marginalia</b>, a post</td>
+    <td width="50%"></td>
+  </tr>
+</table>
+
 With one theme on the classpath, Beansprout uses it. To keep several, name the one to use with
 `beansprout.theme: dateline`. With two and no name, the app stops at startup and lists the
 themes it found, rather than guessing. For your site's own look,
