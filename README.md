@@ -2,6 +2,11 @@
   <img src="images/beansprout-mascot.png" alt="Beansprout, a coffee bean with a green sprout on its head" width="240">
 </p>
 
+<p align="center">
+  <a href="https://central.sonatype.com/artifact/dev.danvega/beansprout-spring-boot-starter"><img src="https://img.shields.io/maven-central/v/dev.danvega/beansprout-spring-boot-starter" alt="Maven Central"></a>
+  <a href="https://github.com/danvega/beansprout/actions/workflows/verify.yml"><img src="https://github.com/danvega/beansprout/actions/workflows/verify.yml/badge.svg" alt="verify"></a>
+</p>
+
 # Beansprout
 
 Add a Markdown blog to the Spring Boot app you already run.
@@ -42,6 +47,13 @@ Add the starter and the default theme, Longhand:
     <artifactId>beansprout-theme-longhand</artifactId>
     <version>0.1.0</version>
 </dependency>
+```
+
+With Gradle:
+
+```kotlin
+implementation("dev.danvega:beansprout-spring-boot-starter:0.1.0")
+implementation("dev.danvega:beansprout-theme-longhand:0.1.0")
 ```
 
 Put a post in `src/main/resources/posts/hello.md`:
