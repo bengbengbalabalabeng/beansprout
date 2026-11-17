@@ -16,3 +16,21 @@ jobs:
           java-version: '25'
           cache: maven
       - run: ./mvnw -B verify
+
+      # Evidence from the sitemap crawl in beansprout-sample (SitemapCrawlTests).
+      - name: Crawl summary
+        if: always()
+        run: |
+          summary=beansprout-sample/target/crawl/crawl-summary.md
+          if [ -f "$summary" ]; then
+            cat "$summary" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No crawl report. The build stopped before the crawl ran." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload crawl evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crawl-evidence
+          path: beansprout-sample/target/crawl/
+          if-no-files-found: warn

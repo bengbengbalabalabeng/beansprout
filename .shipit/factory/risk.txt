@@ -1,0 +1,73 @@
+# Beansprout risk rules, read by .shipit/factory/bin/risk.
+#
+# Seeded from AGENTS.md, "Judgment: Dan reads these": the view contract, public names
+# (beansprout.* properties, routes, template names) and the first-run experience.
+# Plus the files that hold the gates, the release and the build.
+#
+# Path rules:      level  glob  reason
+# Computed checks: check  level  name  reason
+# Settings:        set    key   value
+#
+# Globs: `**/` is any number of folders, `**` is anything, `*` is anything but a slash.
+# Each file goes to the first rule at the highest level that matches it.
+# A file no rule matches gets `default-level`. The highest level found is the overall level.
+# Rules with the same reason are listed together.
+
+# --- High: Dan reads these ---------------------------------------------------
+
+high  **/*Properties.java                         Public beansprout.* property names
+high  **/*AutoConfiguration.java                  Auto-configuration: what an app gets with one dependency
+high  **/*AutoConfiguration.imports               Auto-configuration: what an app gets with one dependency
+high  **/spring.factories                         Auto-configuration: what an app gets with one dependency
+high  beansprout-core/src/main/java/dev/danvega/beansprout/view/**    The view contract that every theme builds on
+high  beansprout-core/src/main/java/dev/danvega/beansprout/theme/**   The theme SPI and its template names
+high  beansprout-spring-boot-autoconfigure/src/main/java/dev/danvega/beansprout/web/**   Routes and controllers: public URLs
+high  **/mcp/**                                   MCP: the server must never publish
+
+high  .github/workflows/release.yml               The release to Maven Central
+high  RELEASING.md                                The release to Maven Central
+high  beansprout-bom/**                           The release to Maven Central
+
+high  verification/**                             A gate or the factory itself
+high  .claude/**                                  A gate or the factory itself
+high  AGENTS.md                                   A gate or the factory itself
+high  **/ArchitectureTests.java                   A gate or the factory itself
+high  .github/workflows/**                        A gate or the factory itself
+high  .shipit/factory/**                          A gate or the factory itself
+high  .mvn/**                                     A gate or the factory itself
+
+check high    multi-module    The change touches more than one Maven module
+check high    changed-test    An existing test was changed or deleted. Is the old behavior still checked?
+check high    new-dependency  A new `<dependency>` in a pom. AGENTS.md says ask first.
+
+# --- Medium: worth a read ----------------------------------------------------
+
+medium  specs/**                                  Specs: the requirements Dan approves
+medium  PRODUCT.md                                Product scope and decisions
+medium  themes/**                                 Theme templates and styles
+medium  **/pom.xml                                Build files
+
+check medium  mixed-commit    A commit holds both a spec and its implementation. AGENTS.md wants them apart.
+check medium  size            The diff is large
+
+set default-level   medium
+set default-reason  Code no rule names
+set size-limit      800
+set list-limit      20
+
+# --- Low: skim ---------------------------------------------------------------
+
+low  docs/**                                      Docs
+low  README.md                                    Docs
+low  **/README.md                                 Docs
+low  images/**                                    Pictures for the docs
+low  **/src/test/**                               New tests and test fixtures
+
+# --- Settings the computed checks use (these are the defaults) ---------------
+
+set module-files      pom.xml
+set test-glob         **/src/test/**
+set dependency-files  **/pom.xml
+set dependency-regex  <dependency>
+set mixed-a           specs/**
+set mixed-b           **/src/main/**
