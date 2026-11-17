@@ -21,6 +21,7 @@ the third choice: add a dependency to the app you already have.
 
 - [Start a new blog](docs/new-blog.md): a new app, your first post, pictures, drafts and scheduling.
 - [Deploy it](docs/deploy.md): to Railway, or anywhere that runs Java or Docker.
+- [Use your own templates](docs/own-templates.md): your site's look instead of a theme.
 
 ## Tested with
 
