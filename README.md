@@ -86,6 +86,9 @@ Start your app and open `http://localhost:8080/blog`.
 
 Every theme is free. Swap the theme dependency to change the look.
 
+The themes come from [Pressworks](https://pressworks.dev), where they started as blog templates.
+Thank you, Pressworks, for giving them to Beansprout.
+
 | Theme | Artifact | Look |
 | --- | --- | --- |
 | `longhand` | `beansprout-theme-longhand` | One writer, a long post with a picture. Light and dark. |
