@@ -54,6 +54,9 @@ Done when:
 - **Thymeleaf and FreeMarker** (not now, Dan, 16 November 2026): JTE covers the first
   release. The view contract stays engine-neutral and each engine keeps its own package, so
   adding one later is a theme and an adapter, not a redesign.
+- **A showcase of blogs built with Beansprout** (not now, Dan, 17 November 2026): a page that
+  highlights real blogs running on Beansprout, each with its theme and a link. The Wrap website
+  and Dan's own blog would be the first entries.
 - **Changelogs** (not now): the same engine fits dated, versioned entries with Quoin as a theme.
   A good second release, not the first.
 - **Static site export** (not now, planned for the second release): one command renders every
