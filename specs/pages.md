@@ -38,7 +38,7 @@ with no controller or template written by the app.
 | PAGES-14 | The system shall HTML-escape every value it shows, except the post body. |
 | PAGES-15 | When `beansprout.web.enabled` is false, the system shall register no blog pages, and the posts service shall still be a bean the app can call. |
 | PAGES-16 | If no theme is on the classpath, then the system shall start and register no blog pages. |
-| PAGES-17 | The system shall render the pages with the Longhand theme, written in JTE, when `beansprout-theme-longhand` is on the classpath. |
+| PAGES-17 | The system shall render the pages with the Longhand theme, written in JTE, when `beansprout-theme-longhand` is the theme in use. |
 | PAGES-18 | The system shall hand a theme only view records, whose values are strings, booleans, lists or other view records. |
 | PAGES-19 | The system shall serve the Longhand stylesheet with the theme, so the pages need no other file from the app. |
 
