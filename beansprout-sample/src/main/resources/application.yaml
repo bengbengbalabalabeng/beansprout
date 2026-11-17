@@ -1,6 +1,10 @@
 spring:
   application:
     name: beansprout-sample
+  # Requests run on virtual threads. Beansprout works either way. This is the app's own choice.
+  threads:
+    virtual:
+      enabled: true
 
 # Everything here is optional. Without it the blog is called "Blog" and lives at /blog.
 beansprout:

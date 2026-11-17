@@ -40,7 +40,13 @@ public final class Posts {
 
 	private final boolean reload;
 
-	private @Nullable Snapshot snapshot;
+	/**
+	 * Taken while the files are read: once when posts are kept, or on each call when they are
+	 * reloaded. Private, so no caller can hold it.
+	 */
+	private final Object reading = new Object();
+
+	private volatile @Nullable Snapshot snapshot;
 
 	public Posts(PostSource source, PostParser parser, Clock clock, boolean reload) {
 		this.source = source;
@@ -103,13 +109,24 @@ public final class Posts {
 		return clock;
 	}
 
-	private synchronized Snapshot snapshot() {
-		Snapshot current = snapshot;
-		if (current == null || reload) {
-			current = read();
-			snapshot = current;
+	private Snapshot snapshot() {
+		if (reload) {
+			synchronized (reading) {
+				return read();
+			}
 		}
-		return current;
+		Snapshot current = snapshot;
+		if (current != null) {
+			return current;
+		}
+		synchronized (reading) {
+			current = snapshot;
+			if (current == null) {
+				current = read();
+				snapshot = current;
+			}
+			return current;
+		}
 	}
 
 	private Snapshot read() {

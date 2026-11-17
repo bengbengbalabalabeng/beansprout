@@ -144,6 +144,22 @@ beansprout:
 
 Keep this for development only. In production, leave both settings out.
 
+## Virtual threads
+
+Beansprout works with virtual threads. To run your app's requests on them, add this to
+`application.yaml`:
+
+```yaml
+spring:
+  threads:
+    virtual:
+      enabled: true
+```
+
+It is a setting for the whole app, so Beansprout leaves it to you. Blog pages do no slow I/O.
+Posts are read once and kept in memory, unless `reload` is on for development. Virtual threads
+help most on pages that wait for a database or another service.
+
 ## Next
 
 [Deploy it](deploy.md).
