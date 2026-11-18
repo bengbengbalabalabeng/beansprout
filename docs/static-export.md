@@ -2,7 +2,7 @@
 
 You don't need a Java host to publish a Beansprout blog. Write and preview in your app as usual.
 Then one run of the app writes the whole blog as plain files for GitHub Pages, Netlify or
-Cloudflare Pages.
+Cloudflare Pages. This needs Beansprout 0.3.0 or newer.
 
 ## 1. Set your site's address
 

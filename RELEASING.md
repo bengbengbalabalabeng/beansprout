@@ -5,7 +5,8 @@ A release goes to Maven Central when a version tag such as `v0.1.0` is pushed.
 central.sonatype.com until you press **Publish**, so nothing goes live by accident.
 
 These artifacts are published: `beansprout-parent`, `beansprout-bom`, `beansprout-core`,
-`beansprout-spring-boot-autoconfigure`, `beansprout-spring-boot-starter`, and the themes
+`beansprout-spring-boot-autoconfigure`, `beansprout-spring-boot-starter`,
+`beansprout-mcp-spring-boot-starter`, and the themes
 `beansprout-theme-longhand`, `-dateline`, `-linocut`, `-marginalia` and `-small-machines`. The
 sample and the verification module are not.
 

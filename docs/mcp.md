@@ -16,7 +16,7 @@ Add one more dependency next to the starter. The BOM gives it its version:
 ```
 
 Start your app. The MCP server is at `http://localhost:8080/mcp`, over streamable HTTP. It uses
-Spring AI 2.0.2.
+Spring AI 2.0.2 and needs Beansprout 0.3.0 or newer.
 
 ## The tools
 

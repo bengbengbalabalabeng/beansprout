@@ -44,7 +44,7 @@ Import the BOM once, then add the starter and a theme with no version:
         <dependency>
             <groupId>dev.danvega</groupId>
             <artifactId>beansprout-bom</artifactId>
-            <version>0.2.0</version>
+            <version>0.3.0</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -66,7 +66,7 @@ Import the BOM once, then add the starter and a theme with no version:
 With Gradle:
 
 ```kotlin
-implementation(platform("dev.danvega:beansprout-bom:0.2.0"))
+implementation(platform("dev.danvega:beansprout-bom:0.3.0"))
 implementation("dev.danvega:beansprout-spring-boot-starter")
 implementation("dev.danvega:beansprout-theme-longhand")
 ```
