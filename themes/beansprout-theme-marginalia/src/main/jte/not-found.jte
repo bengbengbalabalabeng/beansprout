@@ -9,7 +9,9 @@
       <p class="spread-margin"><span class="margin-label">Not found</span><span class="margin-line">Error 404</span></p>
       <div class="spread-text">
         <h1 class="page-title">Nothing lives at this address</h1>
-        <p class="page-intro"><span class="address">${page.path()}</span></p>
+        @if(!page.path().isEmpty())
+          <p class="page-intro"><span class="address">${page.path()}</span></p>
+        @endif
         <div class="empty">
           <h2 class="empty-title">What this means</h2>
           <p>There is no entry at this address. It is most likely a typo in a link, an address cut short in an email, or an entry that was renamed.</p>

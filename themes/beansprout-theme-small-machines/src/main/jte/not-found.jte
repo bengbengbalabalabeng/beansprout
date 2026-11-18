@@ -13,8 +13,10 @@
           <p class="kicker">404</p>
           <h1 id="alert-title">There’s no page at this address</h1>
           <dl class="wwn">
-            <dt>What happened</dt>
-            <dd><p>You asked for <span class="code404">${page.path()}</span> and nothing lives there.</p></dd>
+            @if(!page.path().isEmpty())
+              <dt>What happened</dt>
+              <dd><p>You asked for <span class="code404">${page.path()}</span> and nothing lives there.</p></dd>
+            @endif
             <dt>Right now</dt>
             <dd><p>The address may have a typo, or the link that brought you here is old. The post may have been renamed.</p></dd>
             <dt>What you can do</dt>

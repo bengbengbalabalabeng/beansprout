@@ -9,7 +9,9 @@
     <section class="state" aria-labelledby="state-h">
       <p class="kicker">Error 404</p>
       <h1 class="page-title" id="state-h">There is no page at this address</h1>
-      <p class="state-lead">You asked for <code class="path">${page.path()}</code>, and nothing lives there.</p>
+      @if(!page.path().isEmpty())
+        <p class="state-lead">You asked for <code class="path">${page.path()}</code>, and nothing lives there.</p>
+      @endif
       <h2 class="state-sub">What it means</h2>
       <p>Most likely there is a typo in the address, or the link that brought you here was cut short.</p>
       @if(!page.recent().isEmpty())

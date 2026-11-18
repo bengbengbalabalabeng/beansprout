@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  * @param web the blog's pages
  * @param code how code fences are shown
  * @param mcp who may call the MCP server, when the app adds the MCP starter
+ * @param export the static export: the blog written as files for a static host
  */
 @ConfigurationProperties("beansprout")
 public record BeansproutProperties(
@@ -42,7 +43,8 @@ public record BeansproutProperties(
 		@DefaultValue PostsSettings posts,
 		@DefaultValue WebSettings web,
 		@DefaultValue CodeSettings code,
-		@DefaultValue McpSettings mcp) {
+		@DefaultValue McpSettings mcp,
+		@DefaultValue ExportSettings export) {
 
 	public BeansproutProperties {
 		if (siteUrl != null && !siteUrl.isBlank()) {
@@ -89,6 +91,15 @@ public record BeansproutProperties(
 	 *     answered.
 	 */
 	public record McpSettings(@Nullable String token) {
+	}
+
+	/**
+	 * The static export.
+	 *
+	 * @param enabled true to start the app, write the blog to {@code output} as files, and stop
+	 * @param output the folder to write to, relative to where the app runs
+	 */
+	public record ExportSettings(boolean enabled, @DefaultValue("target/blog") String output) {
 	}
 
 }

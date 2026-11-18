@@ -26,6 +26,7 @@ the third choice: add a dependency to the app you already have.
 
 - [Start a new blog](docs/new-blog.md): a new app, a theme, your first post, pictures, drafts and scheduling.
 - [Deploy it](docs/deploy.md): to Railway, or anywhere that runs Java or Docker.
+- [Publish as static files](docs/static-export.md): GitHub Pages, Netlify or Cloudflare Pages, with no Java host.
 - [Use your own templates](docs/own-templates.md): your site's look instead of a theme.
 - [Write with an agent over MCP](docs/mcp.md): let Claude Code or another agent read your posts and start drafts.
 

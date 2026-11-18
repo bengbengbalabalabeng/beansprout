@@ -41,7 +41,7 @@ class FeedBundlesTests {
 		String atom = feeds.atom("https://example.com");
 
 		assertThat(atom).contains("src=&quot;https://example.com/app/blog/welcome/shots/a.png&quot;")
-			.contains("src=&quot;/images/logo.png&quot;")
+			.contains("src=&quot;/app/images/logo.png&quot;")
 			.contains("src=&quot;https://example.com/app/blog/welcome/shots/single.png&quot;");
 	}
 
