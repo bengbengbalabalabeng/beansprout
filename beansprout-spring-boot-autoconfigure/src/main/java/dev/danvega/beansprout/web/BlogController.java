@@ -31,6 +31,8 @@ public class BlogController {
 
 	private final @Nullable String siteUrl;
 
+	private final Etags etags = new Etags();
+
 	/**
 	 * Creates the controller.
 	 *
@@ -84,7 +86,17 @@ public class BlogController {
 			String html = theme.render("not-found", pages(request).notFound(request.getRequestURI()));
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(HTML).body(html);
 		}
-		return ResponseEntity.ok().contentType(HTML).body(theme.render(template, page.get()));
+		// The view record holds everything the theme shows, so its hash is the page's ETag, known
+		// before the costly part: rendering. A 304 skips the theme.
+		String etag = etags.of(template + "\n" + page.get());
+		if (Etags.notModified(request, etag)) {
+			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).eTag(etag).cacheControl(Etags.NO_CACHE).build();
+		}
+		return ResponseEntity.ok()
+			.eTag(etag)
+			.cacheControl(Etags.NO_CACHE)
+			.contentType(HTML)
+			.body(theme.render(template, page.get()));
 	}
 
 	private Pages pages(HttpServletRequest request) {

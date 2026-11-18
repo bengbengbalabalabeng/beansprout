@@ -4,6 +4,7 @@ import dev.danvega.beansprout.feed.Feeds;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,8 @@ public class FeedController {
 
 	private final @Nullable String siteUrl;
 
+	private final Etags etags = new Etags();
+
 	/**
 	 * Creates the controller.
 	 *
@@ -35,12 +38,21 @@ public class FeedController {
 
 	@GetMapping("/feed.xml")
 	public ResponseEntity<String> feed(HttpServletRequest request) {
-		return ResponseEntity.ok().contentType(ATOM).body(feeds.atom(site(request)));
+		return respond(feeds.atom(site(request)), ATOM, request);
 	}
 
 	@GetMapping("/sitemap.xml")
 	public ResponseEntity<String> sitemap(HttpServletRequest request) {
-		return ResponseEntity.ok().contentType(XML).body(feeds.sitemap(site(request)));
+		return respond(feeds.sitemap(site(request)), XML, request);
+	}
+
+	/** The body with its ETag, or a 304 when the request already has it. */
+	private ResponseEntity<String> respond(String body, MediaType type, HttpServletRequest request) {
+		String etag = etags.of(body);
+		if (Etags.notModified(request, etag)) {
+			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).eTag(etag).cacheControl(Etags.NO_CACHE).build();
+		}
+		return ResponseEntity.ok().eTag(etag).cacheControl(Etags.NO_CACHE).contentType(type).body(body);
 	}
 
 	private String site(HttpServletRequest request) {
