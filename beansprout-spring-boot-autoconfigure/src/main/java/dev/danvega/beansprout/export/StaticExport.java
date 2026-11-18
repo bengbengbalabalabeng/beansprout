@@ -407,6 +407,14 @@ public final class StaticExport {
 					follow(CSS_IMPORT, css, link.address());
 				}
 			}
+			// Crawlers read robots.txt at the root. With a context path the app serves none. A post
+			// that links to it has had it fetched already.
+			if (seen.add("/robots.txt")) {
+				Response robots = fetch("/robots.txt");
+				if (robots.status == 200) {
+					add(files, "robots.txt", robots.body, "/robots.txt");
+				}
+			}
 		}
 
 		private boolean neverFetched(String address) {
