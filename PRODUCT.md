@@ -59,11 +59,6 @@ Done when:
   and Dan's own blog would be the first entries.
 - **Changelogs** (not now): the same engine fits dated, versioned entries with Quoin as a theme.
   A good second release, not the first.
-- **Static site export** (not now, planned for the second release): one command renders every
-  blog page to HTML for GitHub Pages, Netlify or Cloudflare Pages, so a blog needs no JVM host.
-  Write and preview in the app, publish as files. Scheduled posts then need a rebuild on their
-  date (a daily CI job), and the MCP server does not apply. It stays second because static-only
-  users already have Hugo, Jekyll and JBake. Beansprout's edge is living inside a Spring app.
 - **Spring Boot 3** (not now): Boot 3.5 is past open source support, and JTE ships a separate
   starter per Boot generation.
 - **A standalone, hosted blog platform** (outside this project's purpose): that is Halo's and
@@ -73,6 +68,16 @@ Done when:
 
 ## Decisions
 
+- **Static site export, now** (Dan, 17 November 2026), from danvega/beansprout#1. This moves it
+  out of Non-goals, where it waited for the second release. One run of the app writes every
+  blog page, the feed, the sitemap, a `404.html` and the files they use, for GitHub Pages,
+  Netlify or Cloudflare Pages. Write and preview in the app, publish as files. Scheduled posts
+  then need a rebuild on their date (a daily CI job), and the MCP server does not apply.
+  Context, still true: static-only users already have Hugo, Jekyll and JBake, and Beansprout's
+  edge is living inside a Spring app. The export lets someone who only wants a blog start with
+  Beansprout and grow it into an app later. Spec: `specs/static-export.md`, approved with its
+  12 choices as recommended: a `beansprout.export.enabled` property on the app, output in
+  `target/blog`, `site-url` required, and context-path links in post bodies fixed live too.
 - **The name is Beansprout** (Dan, 15 November 2026). A coffee bean (Java) sprouting
   (Spring), and a character that works as a mascot. Open on GitHub (89 repos, none above
   4 stars) and Maven Central. Domains as of 15 November 2026: `beansprout.dev`, `.io` and
@@ -222,7 +227,7 @@ Goals 1, 2, 3 and 4 are built, verified and committed (344644d specs, 4c31aad co
   app built from the guide, a packaged jar, and the dev reload tip were all run and checked.
   The Railway steps were not run: Beansprout is not on Maven Central yet.
 - Not done: page overrides and theme choice (rest of goal 8), MCP (goal 7), the rest of goal 6.
-  Later: Thymeleaf and FreeMarker, static export (second release).
+  Later: Thymeleaf and FreeMarker. Static export is built (`specs/static-export.md`, EXPORT-1 to 35, /attack PASS).
 
 Gate note: the commit hook runs `verify` on the working tree, not on the staged files. So a
 spec-only commit passes the hook while its code sits uncommitted beside it, which is how

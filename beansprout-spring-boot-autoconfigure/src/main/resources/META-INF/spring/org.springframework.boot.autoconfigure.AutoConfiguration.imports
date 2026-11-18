@@ -2,3 +2,4 @@ dev.danvega.beansprout.autoconfigure.BeansproutAutoConfiguration
 dev.danvega.beansprout.autoconfigure.BeansproutJteAutoConfiguration
 dev.danvega.beansprout.autoconfigure.BeansproutWebAutoConfiguration
 dev.danvega.beansprout.autoconfigure.BeansproutMcpAutoConfiguration
+dev.danvega.beansprout.autoconfigure.BeansproutExportAutoConfiguration

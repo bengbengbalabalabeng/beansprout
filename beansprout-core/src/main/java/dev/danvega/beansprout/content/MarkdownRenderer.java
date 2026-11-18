@@ -42,17 +42,19 @@ final class MarkdownRenderer {
 	}
 
 	Rendered render(String markdown) {
-		return render(markdown, null);
+		return render(markdown, "", null);
 	}
 
 	/**
 	 * Renders a post's body.
 	 *
+	 * @param root the app's context path, like {@code /app}, or empty. A link or image that starts
+	 *     with one {@code /} gets it in front, the way a {@code picture:} does.
 	 * @param images for a post that is a folder, the address its images are served under, ending in
 	 *     {@code /}. An image linked by a relative path, like {@code shots/a.png}, gets it in front.
 	 *     Null for a post that is a single file, whose links stay as written.
 	 */
-	Rendered render(String markdown, @Nullable String images) {
+	Rendered render(String markdown, String root, @Nullable String images) {
 		Node document = parser.parse(markdown);
 
 		IdentityHashMap<Node, String> ids = new IdentityHashMap<>();
@@ -85,22 +87,62 @@ final class MarkdownRenderer {
 			.build();
 
 		String body = html.render(document);
+		// The context path first: a bundle's images get the bundle's address, which already holds it.
+		body = withRoot(body, root);
 		return new Rendered(images == null ? body : inFolder(body, images), headings, firstParagraph(document),
 				countWords(text.render(document)));
 	}
 
+	/** The tags whose address gets the context path, each with the attribute that holds it. */
+	private static final String[][] LINKS = { { "a", "href" }, { "link", "href" }, { "img", "src" },
+			{ "source", "src" }, { "video", "src" }, { "audio", "src" } };
+
+	/**
+	 * Puts the context path in front of every link and image whose address starts with one
+	 * {@code /}, in Markdown and in raw HTML alike. An address starting with {@code //} or
+	 * {@code /\} points at another host, so it stays as written.
+	 */
+	private static String withRoot(String html, String root) {
+		if (root.isEmpty()) {
+			return html;
+		}
+		String out = html;
+		for (String[] link : LINKS) {
+			out = rewrite(out, link[0], link[1], value -> {
+				String address = value.strip();
+				boolean inApp = address.startsWith("/")
+						&& (address.length() == 1 || (address.charAt(1) != '/' && address.charAt(1) != '\\'));
+				return inApp ? root + address : null;
+			}, true);
+		}
+		return out;
+	}
+
 	/**
 	 * Puts a bundle's address in front of every image that points at a file in its folder, in
-	 * Markdown images and in raw HTML alike. Each {@code <img>} tag's attributes are read one by one,
-	 * so a quoted value may hold {@code >} or {@code src=}. Code is escaped by then, so an
-	 * {@code <img>} shown in code is not touched.
+	 * Markdown images and in raw HTML alike.
 	 */
 	private static String inFolder(String html, String images) {
+		return rewrite(html, "img", "src", value -> Bundles.inFolder(value) ? images + Bundles.tidy(value) : null, false);
+	}
+
+	/**
+	 * Changes one attribute on every tag of one name. Each tag's attributes are read one by one, so
+	 * a quoted value may hold {@code >} or the attribute's name. Code is escaped by then, so a tag
+	 * shown in code is not touched.
+	 *
+	 * @param change gets the attribute's value as a browser reads it, and gives the new value, or
+	 *     null to leave it as written
+	 * @param keepUnread true to pass a value this cannot read to {@code change} as written, and
+	 *     write the new value back the same way. False leaves such a value alone.
+	 */
+	private static String rewrite(String html, String tag, String attribute,
+			java.util.function.Function<String, @Nullable String> change, boolean keepUnread) {
 		StringBuilder out = new StringBuilder(html.length());
 		int done = 0;
-		int at = indexOfImg(html, 0);
+		int at = indexOfTag(html, 0, tag);
 		while (at >= 0) {
-			int p = at + 4;
+			int p = at + 1 + tag.length();
 			while (p < html.length() && html.charAt(p) != '>') {
 				char c = html.charAt(p);
 				if (Character.isWhitespace(c) || c == '/') {
@@ -133,18 +175,24 @@ final class MarkdownRenderer {
 					}
 					next = valueEnd;
 				}
-				String value = unescape(html.substring(valueStart, valueEnd));
-				if (name.equalsIgnoreCase("src") && value != null && Bundles.inFolder(value)) {
+				String written = html.substring(valueStart, valueEnd);
+				String value = unescape(written);
+				// A value with an & this cannot read, like a bare & in a query, is changed as written.
+				boolean asWritten = value == null && keepUnread;
+				String read = value != null ? value : asWritten ? written : null;
+				String changed = name.equalsIgnoreCase(attribute) && read != null ? change.apply(read) : null;
+				if (changed != null) {
 					out.append(html, done, nameStart)
-						.append("src=\"")
-						.append(images)
-						.append(Bundles.tidy(value).replace("&", "&amp;").replace("\"", "&quot;"))
+						.append(attribute)
+						.append("=\"")
+						.append(asWritten ? changed.replace("\"", "&quot;")
+								: changed.replace("&", "&amp;").replace("\"", "&quot;"))
 						.append('"');
 					done = next;
 				}
 				p = next;
 			}
-			at = indexOfImg(html, p);
+			at = indexOfTag(html, p, tag);
 		}
 		return out.append(html, done, html.length()).toString();
 	}
@@ -206,11 +254,12 @@ final class MarkdownRenderer {
 		};
 	}
 
-	/** Where the next {@code <img} tag starts, in any case, or -1. */
-	private static int indexOfImg(String html, int from) {
-		for (int i = html.indexOf('<', from); i >= 0 && i + 4 <= html.length(); i = html.indexOf('<', i + 1)) {
-			if (html.regionMatches(true, i + 1, "img", 0, 3)
-					&& (i + 4 == html.length() || Character.isWhitespace(html.charAt(i + 4)) || "/>".indexOf(html.charAt(i + 4)) >= 0)) {
+	/** Where the next tag of this name starts, in any case, or -1. */
+	private static int indexOfTag(String html, int from, String tag) {
+		int after = tag.length() + 1;
+		for (int i = html.indexOf('<', from); i >= 0 && i + after <= html.length(); i = html.indexOf('<', i + 1)) {
+			if (html.regionMatches(true, i + 1, tag, 0, tag.length()) && (i + after == html.length()
+					|| Character.isWhitespace(html.charAt(i + after)) || "/>".indexOf(html.charAt(i + after)) >= 0)) {
 				return i;
 			}
 		}

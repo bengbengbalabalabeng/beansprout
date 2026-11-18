@@ -33,6 +33,9 @@ public final class PostParser {
 	/** The blog's path, like {@code /blog}, for a bundle's picture. Pages add the context path. */
 	private final String base;
 
+	/** The app's context path, like {@code /app}, or empty, for links in a post's body. */
+	private final String root;
+
 	/**
 	 * Creates a parser for one blog that highlights code with the built-in highlighter.
 	 *
@@ -65,7 +68,8 @@ public final class PostParser {
 		this.zone = zone;
 		this.markdown = new MarkdownRenderer(highlighter);
 		this.base = base.endsWith("/") ? base.substring(0, base.length() - 1) : base;
-		this.address = (root.endsWith("/") ? root.substring(0, root.length() - 1) : root) + this.base;
+		this.root = root.endsWith("/") ? root.substring(0, root.length() - 1) : root;
+		this.address = this.root + this.base;
 	}
 
 	/**
@@ -122,7 +126,7 @@ public final class PostParser {
 		}
 
 		String images = address + "/" + slug + "/";
-		MarkdownRenderer.Rendered rendered = markdown.render(frontmatter.body(), folder == null ? null : images);
+		MarkdownRenderer.Rendered rendered = markdown.render(frontmatter.body(), root, folder == null ? null : images);
 		String summary = frontmatter.text("summary");
 		String lede = summary != null ? summary.strip() : "";
 

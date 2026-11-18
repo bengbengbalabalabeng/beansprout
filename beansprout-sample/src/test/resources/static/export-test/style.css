@@ -1,0 +1,5 @@
+@import "more.css";
+@font-face { font-family: "Test"; src: url("fonts/test.woff2") format("woff2"); }
+body { background: url(../export-test/bg.svg) no-repeat; }
+.inline { background-image: url(data:image/gif;base64,R0lGODlhAQABAAAAACw=); }
+.remote { background-image: url('https://cdn.example.org/far.png'); }

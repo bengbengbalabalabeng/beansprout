@@ -1,2 +1,3 @@
 org.springframework.boot.EnvironmentPostProcessor=\
-dev.danvega.beansprout.autoconfigure.McpDefaultsEnvironmentPostProcessor
+dev.danvega.beansprout.autoconfigure.McpDefaultsEnvironmentPostProcessor,\
+dev.danvega.beansprout.autoconfigure.ExportDefaultsEnvironmentPostProcessor

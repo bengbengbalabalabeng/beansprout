@@ -11,8 +11,10 @@
         <h1 id="nh">Nothing is printed at this address</h1>
       </div>
       <dl class="wwn">
-        <dt>What happened</dt>
-        <dd><p>You asked for <span class="code404">${page.path()}</span>, and there is no page there.</p></dd>
+        @if(!page.path().isEmpty())
+          <dt>What happened</dt>
+          <dd><p>You asked for <span class="code404">${page.path()}</span>, and there is no page there.</p></dd>
+        @endif
         <dt>What it means now</dt>
         <dd><p>The address may have a typo, or the post was renamed.</p></dd>
         <dt>What to do next</dt>

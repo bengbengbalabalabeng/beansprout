@@ -8,7 +8,9 @@
     <section class="panel" aria-labelledby="panel-title">
       <p class="status status-neutral">404 · Page not found</p>
       <h1 class="panel-title" id="panel-title">There’s no page at this address</h1>
-      <p class="panel-text">Nothing lives at <code class="panel-path">${page.path()}</code>. The link may have a typo, or the post was renamed.</p>
+      @if(!page.path().isEmpty())
+        <p class="panel-text">Nothing lives at <code class="panel-path">${page.path()}</code>. The link may have a typo, or the post was renamed.</p>
+      @endif
       @if(!page.recent().isEmpty())
         <h2 class="panel-subtitle">Latest posts</h2>
         <ul class="mini-posts mini-posts-side">
