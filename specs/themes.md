@@ -60,13 +60,19 @@ records and must match the core it runs with.
 | THEME-17 | When an app defines its own `ThemeRenderer` bean, the system shall start whatever theme jars are on the classpath, without checking `beansprout.theme`. |
 | THEME-18 | The system shall publish a `beansprout-bom` that manages the version of every published Beansprout artifact. |
 | THEME-19 | When an app imports `beansprout-bom`, the system shall let it add the starter and any theme with no version. |
+| THEME-20 | The system shall provide the themes `plainsong`, `onionskin` and `calling-card`. |
+| THEME-21 | The plainsong index shall list each post as its title, date and summary, with no picture. |
+| THEME-22 | The onionskin index shall show each post as a memo with Date, Subject, Filed and Length lines. |
+| THEME-23 | On its first page, the calling-card index shall show every tag with its post count. |
 
 ## Out of scope
 
 - Fork Join, Night Desk and Octavo. They are personal sites with a writing section, not blogs.
 - Search, subscribe, series, about and author pages, in any theme. Beansprout has no data for
   them yet. Each can come later, for every theme at once.
-- Dark versions of themes designed light only. Only Longhand switches schemes (`specs/dark-mode.md`).
+- Dark versions of the ported themes designed light only. Longhand switches schemes
+  (`specs/dark-mode.md`), and so do Plainsong, Onionskin and Calling Card, which were designed
+  light and dark from the start.
 - Replacing one page of a theme from the app. That is its own open question in PRODUCT.md.
 - Thymeleaf and FreeMarker versions. JTE only for now.
 
@@ -78,6 +84,9 @@ Approved by Dan on 17 November 2026.
 - The property `beansprout.theme`, and the theme names in the table above.
 - The artifacts `beansprout-theme-dateline`, `-linocut`, `-marginalia` and `-small-machines`.
 - The artifact `beansprout-bom`.
+- Added 18 November 2026, approved by Dan in chat: the theme names `plainsong`, `onionskin` and
+  `calling-card`, and the artifacts `beansprout-theme-plainsong`, `-onionskin` and
+  `-calling-card`. These three are Beansprout's own designs, not Pressworks ports.
 - The stylesheet addresses `/beansprout/<theme>/<theme>.css`.
 - No theme is picked for you when there are two. Starting with two and no `beansprout.theme`
   fails, rather than quietly choosing one.
