@@ -126,6 +126,10 @@ Things to know:
   `og:image:alt` and the article dates.
 - **Set `beansprout.site-url` in production.** Without it the canonical link comes from the
   request, which can say `http` behind a proxy that handles HTTPS.
+- **Show only what is in `page`.** Each page's ETag comes from the `page` record, so a 304 can skip
+  your template. If a template also shows something else, such as a value from your own bean or
+  the time, a reader can keep an old copy until the app restarts. See
+  [Search engines and AI crawlers](search-engines.md#pages-that-have-not-changed).
 - **`/beansprout/code.css` colors code blocks.** Code is highlighted on the server, so link the
   stylesheet, or write your own for the Prism class names. `page.site.root` is the app's context
   path, empty at the root, so the link works under any context path.
@@ -235,4 +239,4 @@ with no host.
   and its numbered pages, and the archive.
   Serve those addresses too, or search engines find pages that answer 404.
 - **Want no Beansprout routes at all?** Set `beansprout.web.enabled: false`. That turns off the
-  feed and the sitemap as well, and `Pages` and `Posts` stay as beans you can call.
+  feed, the sitemap and robots.txt as well, and `Pages` and `Posts` stay as beans you can call.

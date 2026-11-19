@@ -43,6 +43,8 @@ You get:
 - `404.html`, the theme's not-found page
 - `index.html`, which sends a reader at `/` to `/blog`
 - `.nojekyll`, so GitHub Pages serves the files as they are
+- `robots.txt`, the same file the app serves (see [Search engines and AI crawlers](search-engines.md)).
+  A project site with a context path gets none, since crawlers read it only at the root
 
 Drafts and posts dated in the future are left out.
 

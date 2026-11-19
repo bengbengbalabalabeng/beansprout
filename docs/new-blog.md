@@ -206,6 +206,9 @@ You do not have to do anything, but three things make it better:
 - Set `beansprout.site-url` in production, such as `https://blog.example.com`. Links in the
   tags, the feed and the sitemap use it.
 
+Beansprout also serves a robots.txt, and lets crawlers skip pages that have not changed. To keep
+AI training crawlers out of the blog, see [Search engines and AI crawlers](search-engines.md).
+
 To put your photo above the blog's name, add `photo: /images/me.png` under `beansprout:`.
 
 ## See edits without a restart

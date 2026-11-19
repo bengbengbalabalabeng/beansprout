@@ -29,6 +29,7 @@ the third choice: add a dependency to the app you already have.
 - [Publish as static files](docs/static-export.md): GitHub Pages, Netlify or Cloudflare Pages, with no Java host.
 - [Use your own templates](docs/own-templates.md): your site's look instead of a theme.
 - [Write with an agent over MCP](docs/mcp.md): let Claude Code or another agent read your posts and start drafts.
+- [Search engines and AI crawlers](docs/search-engines.md): robots.txt, keeping AI training crawlers out, and ETags.
 
 ## Tested with
 
@@ -149,6 +150,9 @@ beansprout:
     enabled: true                   # false turns the pages off. Posts and Pages stay as beans.
   code:
     highlight: true                 # false shows code fences as plain code
+  robots:
+    enabled: true                   # false serves no robots.txt. Off with a context path, or when the app has its own
+    ai-training: allow              # block keeps AI training crawlers out of the blog. Search crawlers still read it
   mcp:
     token: ...                      # with the MCP starter: lets other machines call /mcp. Default: same machine only.
                                     # Keep it out of the repo: set BEANSPROUT_MCP_TOKEN instead
