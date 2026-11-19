@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ThemesTests {
 
-	private static final List<String> THEMES = List.of("longhand", "dateline", "linocut", "marginalia", "small-machines");
+	private static final List<String> THEMES = List.of("longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card");
 
 	private static final Pattern LINK = Pattern.compile("\\s(?:href|src)=\"([^\"]*)\"");
 
@@ -95,7 +95,7 @@ class ThemesTests {
 	}
 
 	@ParameterizedTest(name = "{0}")
-	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines" })
+	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card" })
 	@DisplayName("THEME-5 each theme's stylesheet is served at /beansprout/<theme>/, and its pages link only their own")
 	void ownStylesheet(String theme) throws Exception {
 		HttpResponse<String> css = get(base(theme) + "/beansprout/" + theme + "/" + theme + ".css");
@@ -111,7 +111,7 @@ class ThemesTests {
 	}
 
 	@ParameterizedTest(name = "{0}")
-	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines" })
+	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card" })
 	@DisplayName("THEME-7 each theme renders the index, post, tag, archive and not-found pages from the same posts")
 	void everyPage(String theme) throws Exception {
 		assertThat(body(page(theme, "/blog"))).contains(TITLE);
@@ -125,7 +125,7 @@ class ThemesTests {
 	}
 
 	@ParameterizedTest(name = "{0}")
-	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines" })
+	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card" })
 	@DisplayName("THEME-8 each theme links only to addresses the app answers with 200")
 	void linksWork(String theme) throws Exception {
 		String base = base(theme);
@@ -154,7 +154,7 @@ class ThemesTests {
 	}
 
 	@ParameterizedTest(name = "{0}")
-	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines" })
+	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card" })
 	@DisplayName("THEME-9 each theme puts the title, description, canonical link, Open Graph tags and JSON-LD in its head")
 	void head(String theme) throws Exception {
 		for (String path : PAGES) {
@@ -174,14 +174,14 @@ class ThemesTests {
 	}
 
 	@ParameterizedTest(name = "{0}")
-	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines" })
+	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card" })
 	@DisplayName("THEME-10 each theme shows a post's title, date and tags")
 	void titleDateTags(String theme) throws Exception {
 		assertThat(body(page(theme, "/blog/rich"))).contains(TITLE, "10 November 2026", "a&amp;b", "/blog/tags/java");
 	}
 
 	@ParameterizedTest(name = "{0}")
-	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines" })
+	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card" })
 	@DisplayName("THEME-11 each theme shows a post's picture with its alt text")
 	void picture(String theme) throws Exception {
 		// Inside an attribute, a > may stay as it is. The & and < must be escaped.
@@ -189,21 +189,21 @@ class ThemesTests {
 	}
 
 	@ParameterizedTest(name = "{0}")
-	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines" })
+	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card" })
 	@DisplayName("THEME-12 each theme shows a post's caption with the picture")
 	void caption(String theme) throws Exception {
 		assertThat(page(theme, "/blog/rich")).contains("Cap &lt;u&gt;tion&lt;/u&gt; &amp; more");
 	}
 
 	@ParameterizedTest(name = "{0}")
-	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines" })
+	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card" })
 	@DisplayName("THEME-13 each theme shows a post's updated date")
 	void updated(String theme) throws Exception {
 		assertThat(page(theme, "/blog/rich")).contains("12 November 2026");
 	}
 
 	@ParameterizedTest(name = "{0}")
-	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines" })
+	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card" })
 	@DisplayName("THEME-14 each theme links /beansprout/code.css")
 	void codeColors(String theme) throws Exception {
 		for (String path : PAGES) {
@@ -212,7 +212,7 @@ class ThemesTests {
 	}
 
 	@ParameterizedTest(name = "{0}")
-	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines" })
+	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card" })
 	@DisplayName("THEME-15 in each color scheme, text, headings, secondary text and links have 4.5:1 contrast on the background")
 	void contrast(String theme) throws Exception {
 		String css = get(base(theme) + "/beansprout/" + theme + "/" + theme + ".css").body();
@@ -250,7 +250,7 @@ class ThemesTests {
 	}
 
 	@ParameterizedTest(name = "{0}")
-	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines" })
+	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card" })
 	@DisplayName("THEME-16 each theme escapes every value it shows, except the post body and the JSON-LD")
 	void escaping(String theme) throws Exception {
 		for (String path : PAGES) {

@@ -1,0 +1,292 @@
+/* Onionskin, a blog typed like a memo. No build step, no JavaScript and no webfont.
+
+   Everything is set in the system's monospace font, on one 70ch column of plain paper. Each
+   post on a list is a memo: Date, Subject, Filed and Length over its summary, with a dashed
+   rule between memos. The one owned touch is a yellow highlighter: on the current menu item,
+   and on any link the reader hovers or focuses. Onionskin follows the reader's light or dark
+   setting. */
+
+:root {
+  color-scheme: light dark;
+  /* The colors Beansprout checks for contrast (THEME-15): each one against the background. */
+  --theme-background: #f6f6f3;
+  --theme-text: #1f2340;
+  --theme-heading: #141830;
+  --theme-muted: #555a73;
+  --theme-link: #1f2340;
+  /* The highlighter, and the text that sits on it. */
+  --hl: #fff176;
+  --hl-text: #1f2340;
+  /* A faint tint behind inline code. */
+  --tint: #ebebe4;
+  /* Code is monochrome: Beansprout's code.css reads these, so code uses the page colors. */
+  --bs-code-bg: #f6f6f3;
+  --bs-code-fg: #1f2340;
+  --bs-code-comment: #555a73;
+  --bs-code-keyword: #141830;
+  --bs-code-string: #1f2340;
+  --bs-code-function: #1f2340;
+  --bs-code-constant: #1f2340;
+  --bs-code-type: #141830;
+  --bs-code-variable: #1f2340;
+  --bs-code-tag: #141830;
+  --bs-code-attr: #1f2340;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --theme-background: #17181c;
+    --theme-text: #dfe1ea;
+    --theme-heading: #f4f5fa;
+    --theme-muted: #a2a6b8;
+    --theme-link: #f5dc5a;
+    --hl: #4a3f00;
+    --hl-text: #f5dc5a;
+    --tint: #24262c;
+    --bs-code-bg: #17181c;
+    --bs-code-fg: #dfe1ea;
+    --bs-code-comment: #a2a6b8;
+    --bs-code-keyword: #f4f5fa;
+    --bs-code-string: #dfe1ea;
+    --bs-code-function: #dfe1ea;
+    --bs-code-constant: #dfe1ea;
+    --bs-code-type: #f4f5fa;
+    --bs-code-variable: #dfe1ea;
+    --bs-code-tag: #f4f5fa;
+    --bs-code-attr: #dfe1ea;
+  }
+}
+
+/* The rest reads the colors above, so a rebrand only touches those two blocks. */
+
+:root {
+  --mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  --rule: 1px dashed var(--theme-muted);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--theme-background);
+  color: var(--theme-text);
+  font: 1rem/1.7 var(--mono);
+  font-variant-numeric: slashed-zero tabular-nums;
+  overflow-wrap: break-word;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+h1, h2, h3, h4 { color: var(--theme-heading); font-size: 1rem; font-weight: 700; line-height: 1.4; }
+
+code, pre, kbd, samp { font: inherit; }
+
+/* Links: underlined ink, and the highlighter on hover and focus. */
+a { color: var(--theme-link); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a:hover,
+a:focus-visible {
+  background: var(--hl);
+  color: var(--hl-text);
+  text-decoration: none;
+}
+a:focus-visible {
+  outline: 2px solid var(--theme-text);
+  outline-offset: 2px;
+}
+pre:focus-visible { outline: 2px solid var(--theme-text); outline-offset: 2px; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  padding: .25rem .75ch;
+  background: var(--hl);
+  color: var(--hl-text);
+  z-index: 10;
+}
+.skip:focus { top: 1rem; }
+
+/* The sheet ---------------------------------------------------------------------------- */
+
+.site { max-width: 70ch; margin: 0 auto; padding: 2.75rem 1.5rem 4rem; }
+
+.masthead { margin-bottom: 2rem; }
+.masthead-line { margin: 0; color: var(--theme-heading); font-weight: 700; }
+.masthead-link { color: inherit; text-decoration: none; }
+.masthead-tagline { color: var(--theme-muted); font-weight: 400; }
+
+.nav-list { display: flex; flex-wrap: wrap; gap: 0 2ch; margin: .4rem 0 0; padding: 0; list-style: none; }
+.nav-link[aria-current="page"] {
+  background: var(--hl);
+  color: var(--hl-text);
+  text-decoration: none;
+  padding: 0 .4ch;
+}
+
+.footer {
+  margin-top: 2.5rem;
+  border-top: var(--rule);
+  padding-top: .75rem;
+  color: var(--theme-muted);
+}
+.footer p { margin: 0; }
+.footer a { color: var(--theme-muted); }
+.footer a:hover, .footer a:focus-visible { color: var(--hl-text); }
+
+/* Page heads ---------------------------------------------------------------------------- */
+
+.page-title { font-size: 1.375rem; line-height: 1.3; margin: 0 0 .5rem; }
+.page-intro { margin: 0 0 1.5rem; color: var(--theme-muted); }
+
+/* Memos: the header block and its summary ----------------------------------------------- */
+
+.memo-list { margin: 0; padding: 0; list-style: none; }
+
+.memo { border-top: var(--rule); padding: 1.1rem 0 .4rem; }
+.memo p { margin: 0 0 .6rem; }
+
+.memo-head {
+  display: grid;
+  grid-template-columns: 9ch minmax(0, 1fr);
+  margin: 0 0 .5rem;
+}
+.memo-head dt { color: var(--theme-muted); }
+.memo-head dd { margin: 0; }
+
+.memo-subject { margin: 0; font-size: 1rem; line-height: inherit; }
+.memo-subject a { color: var(--theme-heading); }
+.memo-subject a:hover, .memo-subject a:focus-visible { color: var(--hl-text); }
+
+.memo-none { color: var(--theme-muted); }
+.memo-also { color: var(--theme-muted); }
+
+/* Tags as a comma list. The commas are drawn, so a screen reader hears a plain list. */
+.inline-list { display: inline; margin: 0; padding: 0; list-style: none; }
+.inline-list li { display: inline; }
+.inline-list li:not(:last-child)::after { content: ", "; }
+
+.empty { border-top: var(--rule); padding-top: 1rem; color: var(--theme-muted); }
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .25rem 2ch;
+  margin-top: 1.5rem;
+  border-top: var(--rule);
+  padding-top: .75rem;
+}
+.pager p { margin: 0; }
+.pager-status { color: var(--theme-muted); }
+.pager-links { display: flex; flex-wrap: wrap; gap: 0 2ch; }
+
+/* The tag page's list of the other tags. */
+.files { margin-top: 2rem; border-top: var(--rule); padding-top: .75rem; }
+.files-title { display: inline; margin: 0; color: var(--theme-muted); font-weight: 400; }
+.files-title::after { content: ": "; }
+.files-count { color: var(--theme-muted); }
+
+/* The post ------------------------------------------------------------------------------ */
+
+.entry-title { font-size: 1.375rem; line-height: 1.3; margin: 1.4rem 0 .5rem; }
+.entry-lede { margin: 0 0 1.25rem; color: var(--theme-muted); }
+
+.entry-figure { margin: 1.25rem 0; border: var(--rule); padding: .5rem; }
+.entry-picture { width: 100%; }
+.entry-caption { margin-top: .4rem; color: var(--theme-muted); font-size: .9rem; }
+
+.prose { counter-reset: sec; }
+.prose > * + * { margin-top: 1rem; }
+.prose p, .prose ul, .prose ol, .prose blockquote, .prose pre, .prose table, .prose figure { margin-bottom: 0; }
+.prose > :first-child { margin-top: 0; }
+.prose h2 { margin: 2rem 0 .25rem; counter-increment: sec; }
+.prose h2::before { content: counter(sec) ". "; color: var(--theme-muted); }
+.prose h3 { margin: 1.5rem 0 .25rem; }
+.prose h2 + *, .prose h3 + * { margin-top: .25rem; }
+.prose ul, .prose ol { padding-left: 3ch; }
+.prose li + li { margin-top: .25rem; }
+.prose ul { list-style: "- "; }
+.prose blockquote { margin-left: 0; margin-right: 0; padding-left: 2ch; border-left: 2px solid var(--theme-muted); }
+.prose hr { border: 0; border-top: var(--rule); margin: 2rem 0; }
+.prose img { margin: 0 auto; }
+.prose table { border-collapse: collapse; display: block; overflow-x: auto; }
+.prose th, .prose td { border: var(--rule); padding: .2rem 1ch; text-align: left; vertical-align: top; }
+
+.prose :not(pre) > code { background: var(--tint); padding: 0 .4ch; }
+
+/* Code blocks: the page colors, a dashed border, no panel. */
+.prose pre {
+  border: var(--rule);
+  background: transparent;
+  color: var(--theme-text);
+  padding: .75rem 1.75ch;
+  overflow-x: auto;
+  font-size: .9rem;
+  line-height: 1.6;
+}
+.prose pre .token.keyword,
+.prose pre .token.important { font-weight: 700; }
+.prose pre .token.comment { font-style: normal; }
+
+.entry-foot {
+  display: grid;
+  gap: .25rem;
+  margin-top: 1.75rem;
+  border-top: var(--rule);
+  padding-top: .75rem;
+}
+.entry-foot p { margin: 0; }
+.entry-foot-end { color: var(--theme-muted); }
+
+/* The archive: one line per post, like a directory listing ------------------------------ */
+
+.year { margin-top: 1.5rem; }
+.year-title { margin: 0 0 .25rem; border-bottom: var(--rule); }
+.year-count { color: var(--theme-muted); font-weight: 400; }
+
+.listing { margin: 0; padding: 0; list-style: none; }
+.listing-row {
+  display: grid;
+  grid-template-columns: 11ch 8ch minmax(0, 1fr);
+  align-items: baseline;
+}
+.listing-date, .listing-reading { color: var(--theme-muted); }
+
+/* Not found ----------------------------------------------------------------------------- */
+
+.onionskin-path { background: var(--tint); padding: 0 .4ch; overflow-wrap: anywhere; }
+
+.recent { margin-top: 2rem; }
+.recent-title { margin: 0 0 .25rem; border-bottom: var(--rule); }
+.recent .listing-row { grid-template-columns: 11ch minmax(0, 1fr) auto; gap: 0 2ch; }
+
+/* Phones: a narrower gutter, and the listings drop the reading time. */
+@media (max-width: 34rem) {
+  .site { padding: 1.75rem 1rem 3rem; }
+  .listing-row, .recent .listing-row { grid-template-columns: 11ch minmax(0, 1fr); }
+  .listing-reading { display: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a { transition: background-color .12s ease; }
+}
+
+/* The not-found page says 404, with or without the address. */
+.page-status {
+  margin: 0;
+  color: var(--theme-muted);
+}

@@ -19,10 +19,11 @@ class ExportThemesTests {
 	/** The element each theme puts the requested address in. */
 	private static final Map<String, String> ADDRESS = Map.of("longhand", "class=\"panel-path\"", "dateline",
 			"class=\"path\"", "linocut", "class=\"code404\"", "marginalia", "class=\"address\"", "small-machines",
-			"class=\"code404\"");
+			"class=\"code404\"", "plainsong", "class=\"plainsong-path\"", "onionskin",
+			"class=\"onionskin-path\"", "calling-card", "class=\"card-path\"");
 
 	@ParameterizedTest(name = "{0}")
-	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines" })
+	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card" })
 	@DisplayName("EXPORT-26 with an empty address each theme's not-found page leaves out the line that names it")
 	void noAddressLine(String theme) {
 		try (ConfigurableApplicationContext app = new SpringApplicationBuilder(SampleApplication.class)

@@ -72,6 +72,21 @@
 				<artifactId>beansprout-theme-small-machines</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-theme-plainsong</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-theme-onionskin</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-theme-calling-card</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

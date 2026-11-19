@@ -60,6 +60,9 @@ Pick the theme you like. Each one is free.
 | Linocut | `beansprout-theme-linocut` | Bold and playful, black ink on warm paper with one red. |
 | Marginalia | `beansprout-theme-marginalia` | A link blog kept like a notebook. Short entries. |
 | Small Machines | `beansprout-theme-small-machines` | A lot of personality. The site is dressed as an old desktop. |
+| Plainsong | `beansprout-theme-plainsong` | A plain list of posts in black and white, no pictures. Light and dark. |
+| Onionskin | `beansprout-theme-onionskin` | Every post typed like a memo, in monospace. Light and dark. |
+| Calling Card | `beansprout-theme-calling-card` | You first: your name in poster-sized type, your photo, your topics. Light and dark. |
 
 To change your mind later, swap the artifact and restart. Keep one theme in your `pom.xml`. If
 you want several on hand, name the one to use in `application.yaml` with `beansprout.theme`,
@@ -191,8 +194,8 @@ theme works too. To turn it off, set `beansprout.code.highlight: false`.
 
 ## Light and dark
 
-Longhand follows the reader's system: a light page by day, a dark one at night, with no
-JavaScript and nothing to set. Dateline is always dark. Linocut, Marginalia and Small Machines
+Longhand, Plainsong, Onionskin and Calling Card follow the reader's system: a light page by day,
+a dark one at night, with no JavaScript and nothing to set. Dateline is always dark. Linocut, Marginalia and Small Machines
 are always light. Every theme keeps its text readable, at a contrast of at least 4.5 to 1.
 
 ## What search engines see

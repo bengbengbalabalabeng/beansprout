@@ -1,0 +1,463 @@
+/* Calling Card, the author first, in poster-sized type. No build step and no JavaScript.
+
+   The first page of the index opens on one solid indigo block: the menu, the blog's name in
+   poster-sized type, the description as a short bio and the writer's photo. Below it come
+   Topics (every tag with its count) and Writing (title and date rows). Every other page drops
+   the block for a thin bar with the name, and keeps one calm column of grotesk text. The
+   not-found page has the block in a short form. Light and dark follow the reader's system. */
+
+:root {
+  color-scheme: light dark;
+  /* The colours Beansprout checks for contrast (THEME-15): each one against the background. */
+  --theme-background: #ffffff;
+  --theme-text: #1f2128;
+  --theme-heading: #101218;
+  --theme-muted: #5a5f6b;
+  --theme-link: #3036a6;
+  /* The indigo block. Its text and muted text are checked against the block colour. */
+  --block: #2b2f8f;
+  --block-text: #ffffff;
+  --block-muted: #c9cbf2;
+  /* Lines, tile borders and code. */
+  --line: #e2e3ea;
+  --line-strong: #c8cad6;
+  --code-bg: #f3f3f8;
+  /* Beansprout's code.css reads these. Code sits on the soft code background, so the comment
+     colour is a little darker than code.css's own to keep 4.5:1. */
+  --bs-code-bg: #f3f3f8;
+  --bs-code-fg: #1f2328;
+  --bs-code-comment: #5a6370;
+  /* Inter if the reader has it, then the grotesks most systems ship. Nothing is fetched. */
+  --sans: Inter, Roboto, "Helvetica Neue", "Arial Nova", "Nimbus Sans", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --page: 44rem;
+  --column: 38rem;
+  --gutter: 1.75rem;
+  --radius: 6px;
+  --radius-lg: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --theme-background: #121318;
+    --theme-text: #dcdee6;
+    --theme-heading: #f4f5fa;
+    --theme-muted: #9da2b0;
+    --theme-link: #a9adff;
+    --block: #262a73;
+    --block-text: #f4f5ff;
+    --block-muted: #c3c6f0;
+    --line: #2a2c36;
+    --line-strong: #3a3d4a;
+    --code-bg: #1b1d25;
+    --bs-code-bg: #1b1d25;
+    --bs-code-fg: #e6edf3;
+    --bs-code-comment: #8b949e;
+  }
+}
+
+/* Base */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--theme-background);
+  color: var(--theme-text);
+  font: 1.125rem/1.65 var(--sans);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; height: auto; }
+
+a { color: var(--theme-link); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+
+a:focus-visible, pre:focus-visible {
+  outline: 2px solid var(--theme-link);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+h1, h2, h3, h4 { color: var(--theme-heading); }
+
+code, pre, kbd { font-family: var(--mono); }
+
+.card-skip {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 10;
+  padding: .5rem .9rem;
+  background: var(--theme-heading);
+  color: var(--theme-background);
+  border-radius: var(--radius);
+  font-weight: 600;
+  text-decoration: none;
+}
+.card-skip:focus { top: 1rem; }
+
+.card-inner {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.card-main .card-inner { padding-top: 2.5rem; padding-bottom: 1rem; }
+
+/* Menu: the same three links in the block and in the bar. */
+
+.card-nav-list { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; margin: 0; padding: 0; list-style: none; font-size: .95rem; }
+.card-nav-link { color: var(--theme-muted); text-decoration: none; }
+.card-nav-link:hover { color: var(--theme-heading); text-decoration: underline; }
+.card-nav-link[aria-current="page"] { color: var(--theme-heading); font-weight: 700; }
+
+/* The indigo block: index page 1, and short on the not-found page. */
+
+.card-block { background: var(--block); color: var(--block-text); }
+
+.card-block-inner {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 2.75rem var(--gutter) 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.5rem;
+  align-items: end;
+}
+
+.card-block .card-nav,
+.card-block-top { grid-column: 1 / -1; }
+
+.card-block-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1.25rem; align-items: baseline; }
+
+.card-block-home { margin: 0; font-weight: 700; }
+.card-block-home-link { color: var(--block-text); text-decoration: none; }
+.card-block-home-link:hover { text-decoration: underline; }
+
+.card-block .card-nav-link { color: var(--block-text); text-decoration: underline; text-decoration-color: transparent; }
+.card-block .card-nav-link:hover { text-decoration-color: currentColor; }
+.card-block .card-nav-link[aria-current="page"] { text-decoration-color: currentColor; }
+.card-block a:focus-visible { outline-color: var(--block-text); }
+
+.card-block-text { min-width: 0; }
+
+.card-name {
+  margin: 1.9rem 0 .9rem;
+  color: var(--block-text);
+  font-size: clamp(3rem, 1.5rem + 5vw, 5.4rem);
+  line-height: .95;
+  font-weight: 800;
+  letter-spacing: -.03em;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+.card-bio { margin: 0; max-width: 28rem; color: var(--block-muted); }
+
+.card-photo {
+  display: block;
+  width: 9rem;
+  height: 9rem;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--block-muted);
+}
+
+.card-block-short .card-block-inner { padding-top: 1.5rem; padding-bottom: 2rem; }
+.card-block-short .card-name { font-size: clamp(2.6rem, 1.4rem + 4vw, 4.2rem); margin-top: 2.25rem; }
+
+/* The thin bar on every other page. */
+
+.card-bar { border-bottom: 1px solid var(--line); }
+
+.card-bar-inner {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: .9rem var(--gutter);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: .4rem 1.25rem;
+}
+
+.card-bar-name { margin: 0; font-weight: 700; }
+.card-bar-home { color: var(--theme-heading); text-decoration: none; }
+.card-bar-home:hover { text-decoration: underline; }
+
+/* Section labels and page heads. */
+
+.card-section { margin: 0 0 2.5rem; }
+
+.card-label {
+  margin: 0 0 .75rem;
+  color: var(--theme-muted);
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.card-head { margin: 0 0 2rem; }
+
+.card-page-title {
+  margin: 0 0 .4rem;
+  font-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+  line-height: 1.05;
+  font-weight: 750;
+  letter-spacing: -.02em;
+}
+
+.card-page-sub { margin: 0; color: var(--theme-muted); }
+
+.card-empty { margin: 0; padding: 1rem 0; color: var(--theme-muted); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+
+/* Topics: every tag with its bare count. */
+
+.card-topics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: .5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card-topic {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: .75rem;
+  height: 100%;
+  padding: .6rem .75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--theme-heading);
+  font-weight: 600;
+  text-decoration: none;
+}
+.card-topic:hover { border-color: var(--theme-link); }
+.card-topic:hover .card-topic-name { text-decoration: underline; }
+.card-topic-name { min-width: 0; overflow-wrap: anywhere; }
+.card-topic-count { color: var(--theme-muted); font-weight: 400; font-variant-numeric: tabular-nums; }
+
+/* Rows: a title and its date. */
+
+.card-rows { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: .75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.card-row-title { min-width: 0; color: var(--theme-heading); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+.card-row-title:hover { text-decoration: underline; }
+.card-row-date { flex: none; color: var(--theme-muted); font-size: .95rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+.card-pager { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .5rem 1rem; margin: 1.5rem 0 0; }
+.card-pager-status { margin: 0; color: var(--theme-muted); font-size: .95rem; }
+.card-pager-links { display: flex; gap: .5rem; margin: 0; }
+.card-pager-link {
+  padding: .35rem .9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--theme-heading);
+  font-size: .95rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.card-pager-link:hover { border-color: var(--theme-link); color: var(--theme-link); }
+
+/* Tag page: the name at poster size, the other topics as a strip. */
+
+.card-poster {
+  margin: 0;
+  font-size: clamp(3rem, 1.5rem + 5vw, 5.4rem);
+  line-height: .95;
+  font-weight: 800;
+  letter-spacing: -.03em;
+  overflow-wrap: anywhere;
+}
+
+.card-poster-count { margin: .75rem 0 0; color: var(--theme-muted); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+
+.card-strip { margin: 0 0 2.5rem; }
+.card-strip-list { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.card-strip-link {
+  display: inline-flex;
+  gap: .5rem;
+  padding: .2rem .8rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--theme-heading);
+  font-size: .9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.card-strip-link:hover { border-color: var(--theme-link); }
+.card-strip-count { color: var(--theme-muted); font-weight: 400; font-variant-numeric: tabular-nums; }
+
+/* Archive: each year as a big muted numeral, stacked on phones, beside its rows when wide. */
+
+.card-year { margin: 0 0 2.5rem; }
+
+.card-year-num {
+  margin: 0 0 .5rem;
+  color: var(--theme-muted);
+  font-size: 4rem;
+  line-height: .9;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-year-body { min-width: 0; }
+.card-year-count { margin: 0 0 .5rem; color: var(--theme-muted); font-size: .95rem; }
+
+@media (min-width: 48rem) {
+  .card-year { display: grid; grid-template-columns: auto 1fr; gap: 1.75rem; align-items: start; }
+  .card-year-num { font-size: 6rem; margin: 0; }
+  .card-year-body { padding-top: .6rem; }
+}
+
+/* Wide screens: the years hang in the margin, so the rows keep the full column. */
+@media (min-width: 80rem) {
+  .card-year { grid-template-columns: 15rem 1fr; margin-left: -16.75rem; }
+  .card-year-num { text-align: right; }
+}
+
+/* Post */
+
+.card-post-head { margin: 0 0 1.6rem; }
+
+.card-crumb { margin: 0 0 .5rem; font-size: .95rem; }
+.card-crumb-link { font-weight: 600; text-decoration: none; }
+.card-crumb-link:hover { text-decoration: underline; }
+
+.card-title {
+  margin: 0 0 .9rem;
+  font-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+  line-height: 1.05;
+  font-weight: 750;
+  letter-spacing: -.02em;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+.card-lede { margin: 0 0 .75rem; max-width: var(--column); font-size: 1.3rem; line-height: 1.5; text-wrap: pretty; }
+
+.card-meta { margin: 0; color: var(--theme-muted); font-size: .95rem; }
+
+.card-figure { margin: 0 0 1.75rem; }
+.card-picture { display: block; width: 100%; border-radius: var(--radius-lg); }
+.card-caption { margin-top: .4rem; color: var(--theme-muted); font-size: .95rem; }
+
+.card-prose { max-width: var(--column); overflow-wrap: break-word; }
+.card-prose > :first-child { margin-top: 0; }
+.card-prose p { margin: 0 0 1.1rem; text-wrap: pretty; }
+.card-prose ul, .card-prose ol, .card-prose blockquote, .card-prose pre, .card-prose figure, .card-prose table { margin: 0 0 1.25rem; }
+.card-prose ul, .card-prose ol { padding-left: 1.4rem; }
+.card-prose li + li { margin-top: .3rem; }
+.card-prose h2 { margin: 2.1rem 0 .5rem; font-size: 1.5rem; line-height: 1.25; font-weight: 700; letter-spacing: -.01em; }
+.card-prose h3 { margin: 1.6rem 0 .4rem; font-size: 1.2rem; line-height: 1.3; font-weight: 700; }
+.card-prose blockquote { padding-left: 1.1rem; border-left: 3px solid var(--block); color: var(--theme-text); }
+.card-prose hr { margin: 2rem 0; border: 0; border-top: 1px solid var(--line); }
+.card-prose img { border-radius: var(--radius-lg); }
+.card-prose figcaption { margin-top: .4rem; color: var(--theme-muted); font-size: .95rem; }
+.card-prose code { font-size: .85em; padding: .1em .35em; border-radius: 4px; background: var(--code-bg); }
+.card-prose pre {
+  padding: .9rem 1rem;
+  border-radius: var(--radius-lg);
+  background: var(--bs-code-bg);
+  color: var(--bs-code-fg);
+  font-size: .85rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  tab-size: 4;
+}
+.card-prose pre code { padding: 0; background: none; font-size: inherit; white-space: pre; }
+.card-prose table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; font-size: .95rem; }
+.card-prose th, .card-prose td { padding: .4rem .6rem; text-align: left; border-bottom: 1px solid var(--line); }
+
+.card-pills { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.9rem 0 0; padding: 0; list-style: none; }
+.card-pill {
+  display: inline-block;
+  padding: .1rem .8rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--theme-heading);
+  font-size: .9rem;
+  text-decoration: none;
+}
+.card-pill:hover { border-color: var(--theme-link); color: var(--theme-link); }
+
+.card-near { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1.4rem 0 0; }
+.card-near-link {
+  display: block;
+  padding: .75rem .9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  color: var(--theme-heading);
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.card-near-link:hover { border-color: var(--theme-link); }
+.card-near-link:hover .card-near-title { text-decoration: underline; }
+.card-near-older { grid-column: 2; text-align: right; }
+.card-near-label { display: block; margin-bottom: .15rem; color: var(--theme-muted); font-size: .85rem; font-weight: 400; }
+
+/* Not-found */
+
+.card-lost { margin: 0 0 2rem; font-size: 1.15rem; }
+.card-path {
+  font-family: var(--mono);
+  font-size: .9em;
+  padding: .1em .4em;
+  border-radius: 4px;
+  background: var(--code-bg);
+  color: var(--theme-heading);
+  overflow-wrap: anywhere;
+}
+.card-more { margin: .9rem 0 0; color: var(--theme-muted); font-size: .95rem; }
+
+/* Footer */
+
+.card-footer { color: var(--theme-muted); font-size: .95rem; }
+.card-footer .card-inner { padding-top: 1.25rem; padding-bottom: 3rem; }
+.card-footer p { margin: 0; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+
+/* Phones: a 16px gutter, the photo under the name, rows and boxes stacked. */
+@media (max-width: 37.5rem) {
+  :root { --gutter: 1rem; }
+  body { font-size: 1.0625rem; }
+  .card-block-inner { grid-template-columns: 1fr; padding-top: 1.5rem; padding-bottom: 2rem; }
+  .card-name { margin-top: 1.5rem; }
+  .card-photo { width: 7rem; height: 7rem; }
+  .card-row { flex-direction: column; gap: .1rem; }
+  .card-near { grid-template-columns: 1fr; }
+  .card-near-older { grid-column: auto; text-align: left; }
+}
+
+/* Larger screens get the bigger square photo. */
+@media (min-width: 60rem) {
+  .card-photo { width: 12rem; height: 12rem; }
+}
+
+/* The not-found page says 404, with or without the address. */
+.card-kicker {
+  margin: 1.5rem 0 0;
+  color: var(--block-muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}

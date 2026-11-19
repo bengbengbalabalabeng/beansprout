@@ -13,7 +13,7 @@ Add a Markdown blog to the Spring Boot app you already run.
 
 You write posts as Markdown files. Beansprout turns them into a blog inside your app: an index,
 a page per post, tag pages, an archive, an Atom feed and a sitemap. Every page carries the tags
-search engines and social sites read. Code is highlighted on the server. Pick one of five free
+search engines and social sites read. Code is highlighted on the server. Pick one of eight free
 themes, or use your own templates. No controllers, no database.
 
 ## Why
@@ -89,8 +89,9 @@ Start your app and open `http://localhost:8080/blog`.
 
 Every theme is free. Swap the theme dependency to change the look.
 
-The themes come from [Pressworks](https://pressworks.dev), where they started as blog templates.
-Thank you, Pressworks, for giving them to Beansprout.
+Five of the themes come from [Pressworks](https://pressworks.dev), where they started as blog
+templates. Thank you, Pressworks, for giving them to Beansprout. Plainsong, Onionskin and Calling
+Card are Beansprout's own.
 
 | Theme | Artifact | Look |
 | --- | --- | --- |
@@ -99,6 +100,9 @@ Thank you, Pressworks, for giving them to Beansprout.
 | `linocut` | `beansprout-theme-linocut` | Bold and playful, black ink on warm paper with one red. |
 | `marginalia` | `beansprout-theme-marginalia` | A link blog kept like a notebook. Short entries. |
 | `small-machines` | `beansprout-theme-small-machines` | A lot of personality. The site is dressed as an old desktop. |
+| `plainsong` | `beansprout-theme-plainsong` | A plain list of posts in black and white, no pictures. Light and dark. |
+| `onionskin` | `beansprout-theme-onionskin` | Every post typed like a memo, in monospace. Light and dark. |
+| `calling-card` | `beansprout-theme-calling-card` | You first: your name in poster-sized type, your photo, your topics. Light and dark. |
 
 Here is the sample app's blog in each theme, with the same posts:
 

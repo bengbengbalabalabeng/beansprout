@@ -7,7 +7,8 @@ central.sonatype.com until you press **Publish**, so nothing goes live by accide
 These artifacts are published: `beansprout-parent`, `beansprout-bom`, `beansprout-core`,
 `beansprout-spring-boot-autoconfigure`, `beansprout-spring-boot-starter`,
 `beansprout-mcp-spring-boot-starter`, and the themes
-`beansprout-theme-longhand`, `-dateline`, `-linocut`, `-marginalia` and `-small-machines`. The
+`beansprout-theme-longhand`, `-dateline`, `-linocut`, `-marginalia`, `-small-machines`,
+`-plainsong`, `-onionskin` and `-calling-card`. The
 sample and the verification module are not.
 
 ## One-time setup
