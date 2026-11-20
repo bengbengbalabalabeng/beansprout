@@ -57,7 +57,10 @@ class ThemesTests {
 				name -> new SpringApplicationBuilder(SampleApplication.class).run("--server.port=0",
 						"--beansprout.theme=" + name, "--beansprout.posts.location=classpath:test-posts-themes/",
 						// One post a page, so every theme draws its pager and the link check follows it.
-						"--beansprout.page-size=1"));
+						"--beansprout.page-size=1",
+						// A menu link with markup in its label, so THEME-16 checks it is escaped and
+						// THEME-8 follows it. The query keeps it apart from the theme's own Archive link.
+						"--beansprout.links[0].label=" + MENU_LABEL, "--beansprout.links[0].href=" + MENU_HREF));
 		return "http://localhost:" + app.getEnvironment().getProperty("local.server.port");
 	}
 
@@ -80,6 +83,10 @@ class ThemesTests {
 			"/blog/tags/java/page/2", "/blog/archive", "/blog/no-such-post");
 
 	private static final String TITLE = "Rich &amp; &lt;strong&gt;post&lt;/strong&gt;";
+
+	private static final String MENU_LABEL = "Shop & <em>more</em>";
+
+	private static final String MENU_HREF = "/blog/archive?from=menu";
 
 	/** What a reader sees: the page after its head. */
 	private static String body(String html) {
@@ -255,7 +262,23 @@ class ThemesTests {
 	void escaping(String theme) throws Exception {
 		for (String path : PAGES) {
 			assertThat(page(theme, path)).as(theme + " " + path)
-				.doesNotContain("<strong>post</strong>", "<b>text</b>", "<u>tion</u>", "<i>mary</i>");
+				.doesNotContain("<strong>post</strong>", "<b>text</b>", "<u>tion</u>", "<i>mary</i>", "<em>more</em>");
+		}
+	}
+
+	@ParameterizedTest(name = "{0}")
+	@ValueSource(strings = { "longhand", "dateline", "linocut", "marginalia", "small-machines", "plainsong", "onionskin", "calling-card" })
+	@DisplayName("THEME-24 each theme shows the app's links in its main menu, after its own items")
+	void menuLinks(String theme) throws Exception {
+		String link = "href=\"" + MENU_HREF + "\">Shop &amp; &lt;em&gt;more&lt;/em&gt;</a>";
+		for (String path : List.of("/blog", "/blog/archive", "/blog/tags/java")) {
+			String html = page(theme, path);
+			int start = html.indexOf("aria-label=\"Main\"");
+			assertThat(start).as(theme + " " + path + " has a main menu").isGreaterThan(0);
+			String menu = html.substring(start, html.indexOf("</nav>", start));
+			assertThat(menu).as(theme + " " + path).contains(link);
+			assertThat(menu.indexOf(link)).as(theme + " " + path + ": after the theme's own Archive link")
+				.isGreaterThan(menu.indexOf("/blog/archive\""));
 		}
 	}
 

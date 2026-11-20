@@ -126,6 +126,9 @@ Things to know:
   `og:image:alt` and the article dates.
 - **Set `beansprout.site-url` in production.** Without it the canonical link comes from the
   request, which can say `http` behind a proxy that handles HTTPS.
+- **`page.site.links` holds `beansprout.links`**, each with a `label` and an `href` that already
+  has the context path in front. Your own header probably links to the rest of your site
+  already, so you can ignore them. The themes show them in their menus.
 - **Show only what is in `page`.** Each page's ETag comes from the `page` record, so a 304 can skip
   your template. If a template also shows something else, such as a value from your own bean or
   the time, a reader can keep an old copy until the app restarts. See

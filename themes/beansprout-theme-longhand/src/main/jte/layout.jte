@@ -47,6 +47,7 @@
           <ul class="nav-list">
             <li><a class="nav-link" href="${site.home()}" aria-current="${site.section().equals("latest") ? "page" : null}">Latest</a></li>
             <li><a class="nav-link" href="${site.archive()}" aria-current="${site.section().equals("archive") ? "page" : null}">Archive</a></li>
+            @for(var link : site.links())<li><a class="nav-link" href="${link.href()}">${link.label()}</a></li>@endfor
           </ul>
         </nav>
         <button class="button menu-button" type="button" popovertarget="menu">Menu</button>
@@ -58,6 +59,7 @@
           <ul class="menu-list">
             <li><a class="menu-link" href="${site.home()}" aria-current="${site.section().equals("latest") ? "page" : null}">Latest</a></li>
             <li><a class="menu-link" href="${site.archive()}" aria-current="${site.section().equals("archive") ? "page" : null}">Archive</a></li>
+            @for(var link : site.links())<li><a class="menu-link" href="${link.href()}">${link.label()}</a></li>@endfor
           </ul>
           @if(!site.tags().isEmpty())
             <div class="menu-tags">

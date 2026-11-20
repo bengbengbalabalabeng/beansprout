@@ -267,7 +267,8 @@ public final class Pages {
 			.toList();
 		return new Site(settings.title(), settings.description(),
 				String.valueOf(LocalDate.now(posts.clock()).getYear()), links.home(), links.archive(), links.feed(),
-				links.root(), links.picture(settings.photo()), section, tags);
+				links.root(), links.picture(settings.photo()), section, tags,
+				settings.links().stream().map(link -> new NavLink(link.label(), links.inApp(link.href()))).toList());
 	}
 
 	private static String reading(dev.danvega.beansprout.content.Post post) {

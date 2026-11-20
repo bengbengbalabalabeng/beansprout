@@ -72,6 +72,11 @@ Done when:
 
 ## Decisions
 
+- **Menu links, in 0.3.1** (Dan, 20 November 2026). `beansprout.links` adds links to every
+  theme's main menu, after its own items, so a blog inside a bigger site links back to the rest
+  of it. Pressworks needs it for its blog. It ships in 0.3.1 with the rest of "keep readers
+  around", not as its own release. Spec rows THEME-24 to 27 in `specs/themes.md`.
+
 - **Three new themes of Beansprout's own: Plainsong, Onionskin and Calling Card** (Dan,
   18 November 2026), picked from four directions in `reports/Personal blog design inspiration.md`
   and the mockups in `.shipit/prototype/new-theme/` (Galley was not picked). All three follow the

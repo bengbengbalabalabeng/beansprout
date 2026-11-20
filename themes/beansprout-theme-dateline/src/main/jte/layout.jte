@@ -44,6 +44,7 @@
         <nav class="mast-nav" aria-label="Main">
           <a href="${site.home()}" aria-current="${site.section().equals("latest") ? "page" : null}">Latest</a>
           <a href="${site.archive()}" aria-current="${site.section().equals("archive") ? "page" : null}">Archive</a>
+          @for(var link : site.links())<a href="${link.href()}">${link.label()}</a>@endfor
         </nav>
       </div>
       <div class="mast-strip">

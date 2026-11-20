@@ -1,6 +1,7 @@
 package dev.danvega.beansprout.autoconfigure;
 
 import java.time.ZoneId;
+import java.util.List;
 
 import org.jspecify.annotations.Nullable;
 
@@ -29,6 +30,8 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  * @param mcp who may call the MCP server, when the app adds the MCP starter
  * @param export the static export: the blog written as files for a static host
  * @param robots the robots.txt served at the site's root
+ * @param links links every theme adds to its main menu, after its own items, such as a way back
+ *     to the rest of the site
  */
 @ConfigurationProperties("beansprout")
 public record BeansproutProperties(
@@ -46,7 +49,8 @@ public record BeansproutProperties(
 		@DefaultValue CodeSettings code,
 		@DefaultValue McpSettings mcp,
 		@DefaultValue ExportSettings export,
-		@DefaultValue RobotsSettings robots) {
+		@DefaultValue RobotsSettings robots,
+		@DefaultValue List<LinkSettings> links) {
 
 	public BeansproutProperties {
 		if (siteUrl != null && !siteUrl.isBlank()) {
@@ -131,6 +135,16 @@ public record BeansproutProperties(
 			return aiTraining.equals("block");
 		}
 
+	}
+
+	/**
+	 * One link in every theme's main menu.
+	 *
+	 * @param label the text the reader sees
+	 * @param href a path starting with {@code /}, which gets the context path in front, or a full
+	 *     http or https address
+	 */
+	public record LinkSettings(@Nullable String label, @Nullable String href) {
 	}
 
 }

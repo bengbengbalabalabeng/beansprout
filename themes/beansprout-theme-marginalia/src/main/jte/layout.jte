@@ -48,6 +48,7 @@
             <li><a class="nav-link" href="${site.home()}" aria-current="${site.section().equals("latest") ? "page" : null}">Notebook</a></li>
             <li><a class="nav-link" href="${site.archive()}" aria-current="${site.section().equals("archive") ? "page" : null}">Archive</a></li>
             <li><a class="nav-link" href="${site.feed()}">Atom feed</a></li>
+            @for(var link : site.links())<li><a class="nav-link" href="${link.href()}">${link.label()}</a></li>@endfor
           </ul>
         </nav>
       </header>

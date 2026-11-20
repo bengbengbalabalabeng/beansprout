@@ -15,6 +15,8 @@ import java.util.List;
  * @param photo the writer's picture, or empty
  * @param section the menu item this page belongs to: {@code latest}, {@code archive}, or empty
  * @param tags every tag with its count, most used first
+ * @param links links the app adds to the main menu, after the theme's own items, or none. A path
+ *     already has the context path in front.
  */
 public record Site(
 		String name,
@@ -26,5 +28,6 @@ public record Site(
 		String root,
 		String photo,
 		String section,
-		List<TagCount> tags) {
+		List<TagCount> tags,
+		List<NavLink> links) {
 }

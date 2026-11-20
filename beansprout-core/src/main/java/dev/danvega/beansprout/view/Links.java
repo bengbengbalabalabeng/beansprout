@@ -63,6 +63,14 @@ public final class Links {
 	 * front, a full address is used as written, and empty stays empty.
 	 */
 	public String picture(String address) {
+		return inApp(address);
+	}
+
+	/**
+	 * An address the app set, such as a menu link: a path starting with {@code /} gets the context
+	 * path in front, and a full address stays as it is.
+	 */
+	public String inApp(String address) {
 		return address.startsWith("/") ? root + address : address;
 	}
 

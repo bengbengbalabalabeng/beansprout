@@ -43,6 +43,7 @@
         <nav class="nav" aria-label="Main">
           <a href="${site.home()}" aria-current="${site.section().equals("latest") ? "page" : null}">Posts</a>
           <a href="${site.archive()}" aria-current="${site.section().equals("archive") ? "page" : null}">Archive</a>
+          @for(var link : site.links())<a href="${link.href()}">${link.label()}</a>@endfor
         </nav>
         <a class="btn feed" href="${site.feed()}">Atom feed</a>
       </div>

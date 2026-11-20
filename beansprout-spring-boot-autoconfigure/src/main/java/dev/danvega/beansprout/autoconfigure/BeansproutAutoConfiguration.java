@@ -2,6 +2,7 @@ package dev.danvega.beansprout.autoconfigure;
 
 import java.time.Clock;
 import java.time.ZoneId;
+import java.util.Objects;
 
 import dev.danvega.beansprout.code.CodeHighlighter;
 import dev.danvega.beansprout.code.PrismHighlighter;
@@ -10,6 +11,7 @@ import dev.danvega.beansprout.content.PostSource;
 import dev.danvega.beansprout.content.Posts;
 import dev.danvega.beansprout.feed.Feeds;
 import dev.danvega.beansprout.view.BlogSettings;
+import dev.danvega.beansprout.view.NavLink;
 import dev.danvega.beansprout.view.Links;
 import dev.danvega.beansprout.view.Pages;
 
@@ -63,7 +65,8 @@ public class BeansproutAutoConfiguration {
 	@ConditionalOnMissingBean
 	Pages beansproutPages(Posts posts, Links links, BeansproutProperties properties) {
 		return new Pages(posts, links, new BlogSettings(properties.title(), properties.description(), properties.pageSize(),
-				properties.author(), properties.photo()));
+				properties.author(), properties.photo(),
+				properties.links().stream().map(link -> new NavLink(Objects.requireNonNullElse(link.label(), ""), Objects.requireNonNullElse(link.href(), ""))).toList()));
 	}
 
 	@Bean

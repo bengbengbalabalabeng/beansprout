@@ -64,6 +64,14 @@ records and must match the core it runs with.
 | THEME-21 | The plainsong index shall list each post as its title, date and summary, with no picture. |
 | THEME-22 | The onionskin index shall show each post as a memo with Date, Subject, Filed and Length lines. |
 | THEME-23 | On its first page, the calling-card index shall show every tag with its post count. |
+| THEME-24 | When `beansprout.links` lists links, each theme shall show them in its main menu, after its own items, in the order given. |
+| THEME-25 | The system shall put the app's context path in front of a link whose href starts with `/`, and leave a full http or https address as it is. |
+| THEME-26 | If a link in `beansprout.links` has no label, or an href that is neither a path starting with `/` nor an http or https address, then the system shall fail to start with a message that names the setting. |
+| THEME-27 | When `beansprout.links` is not set, each theme shall show its menu with no extra links. |
+
+THEME-24 to 27 are menu links (Dan, 20 November 2026). A blog inside a bigger site needs a way
+back to the rest of it, and the themes' menus had only their own pages. Pressworks asked for it,
+for its blog at `/blog`. A link's label and href are escaped like every other value (THEME-16).
 
 ## Out of scope
 

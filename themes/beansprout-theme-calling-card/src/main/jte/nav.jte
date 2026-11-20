@@ -5,5 +5,6 @@
     <li><a class="card-nav-link" href="${site.home()}" aria-current="${site.section().equals("latest") ? "page" : null}">Writing</a></li>
     <li><a class="card-nav-link" href="${site.archive()}" aria-current="${site.section().equals("archive") ? "page" : null}">Archive</a></li>
     <li><a class="card-nav-link" href="${site.feed()}">Feed</a></li>
+    @for(var link : site.links())<li><a class="card-nav-link" href="${link.href()}">${link.label()}</a></li>@endfor
   </ul>
 </nav>

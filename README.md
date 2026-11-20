@@ -147,6 +147,9 @@ beansprout:
   page-size: 10                     # default: 10
   site-url: https://example.com     # for canonical links, previews, feed and sitemap. Default: the request
   time-zone: Europe/Amsterdam       # default: the server's zone
+  links:                            # extra links in every theme's main menu, after its own. Default: none
+    - label: Shop
+      href: /shop                   # a path gets the context path in front. Or a full https:// address
   posts:
     location: classpath:posts/      # or a folder on disk, like file:./posts/
     reload: false                   # true re-reads posts on every request, for development
