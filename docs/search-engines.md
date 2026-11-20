@@ -1,7 +1,7 @@
 # Search engines and AI crawlers
 
 Beansprout tells crawlers what they may read, and lets them skip pages that have not changed.
-You get both with no setup. This needs Beansprout 0.4.0 or newer.
+You get both with no setup. This needs Beansprout 0.3.1 or newer.
 
 ## What every page has
 

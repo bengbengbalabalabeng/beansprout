@@ -61,12 +61,34 @@ Done when:
   A good second release, not the first.
 - **Spring Boot 3** (not now): Boot 3.5 is past open source support, and JTE ships a separate
   starter per Boot generation.
+- **Live posts and a Markdown twin** (no, Dan, 18 November 2026): picking up new posts from a
+  folder or volume without a deploy, and serving `/blog/{slug}.md` to agents. Dan: "i don't want
+  to do c at all". Publishing stays a commit and a deploy. The research is in
+  `reports/Live content reload in Java apps.md` for the record only.
 - **A standalone, hosted blog platform** (outside this project's purpose): that is Halo's and
   Ghost's ground, and it would turn a library into an operations business.
 - **Living inside the Pressworks repo** (outside this project's purpose): Pressworks sells view
   layers and never ships runnable apps. This starter is a separate product that uses its themes.
 
 ## Decisions
+
+- **Three new themes of Beansprout's own: Plainsong, Onionskin and Calling Card** (Dan,
+  18 November 2026), picked from four directions in `reports/Personal blog design inspiration.md`
+  and the mockups in `.shipit/prototype/new-theme/` (Galley was not picked). All three follow the
+  reader's light or dark setting and use system fonts. Spec rows THEME-20 to 23 in
+  `specs/themes.md`. `ThemesTests` pins the original five themes, so Dan extends its lists by hand.
+
+- **0.3.1 is "bring your blog with you" and "keep readers around"** (Dan, 18 November 2026).
+  Robots.txt and ETags alone are too small for a release. Migration: `aliases` with 301s,
+  Jekyll and Hugo frontmatter names, a `canonical` override, image size and loading hints, and a
+  migration guide. Reading: related posts, a feed per tag, reading time, a table of contents,
+  theme hook slots and an `unlisted` flag. One spec per feature, as usual. Reading time already
+  ships in every theme, so it is not new work. Table of contents goes to the three themes that lack
+  it. Dan's calls the same day, each the recommended option: `image:` is read as the picture when it
+  is a plain string (nested `image:` stays ignored, which changes the earlier "image stays
+  unknown" decision); a per-post `author` name is allowed (a name only: no author pages, so
+  "multiple authors" stays a non-goal); Hugo's TOML frontmatter is read for the same simple
+  shapes as YAML, with no new dependency.
 
 - **Static site export, now** (Dan, 17 November 2026), from danvega/beansprout#1. This moves it
   out of Non-goals, where it waited for the second release. One run of the app writes every
