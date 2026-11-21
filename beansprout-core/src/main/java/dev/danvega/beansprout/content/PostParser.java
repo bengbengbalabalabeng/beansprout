@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import dev.danvega.beansprout.code.CodeHighlighter;
 import dev.danvega.beansprout.code.PrismHighlighter;
@@ -25,6 +27,9 @@ public final class PostParser {
 	static final int SUMMARY_LIMIT = 200;
 
 	static final int WORDS_PER_MINUTE = 200;
+
+	/** A Jekyll name: a date, a dash, then the rest, like {@code 2026-03-14-hello}. */
+	private static final Pattern DATED_NAME = Pattern.compile("^(\\d{4}-\\d{2}-\\d{2})-(.+)$");
 
 	private final ZoneId zone;
 
@@ -97,41 +102,70 @@ public final class PostParser {
 
 		String title = frontmatter.text("title");
 		if (title == null || title.isBlank()) {
-			throw new InvalidPostException("it has no title. Add a line like title: My first post to its frontmatter.");
+			throw new InvalidPostException("it has no title. Add a line like "
+					+ (frontmatter.toml() ? "title = \"My first post\"" : "title: My first post") + " to its frontmatter.");
 		}
+
+		// A Jekyll post's name starts with its date, like 2026-03-14-hello.md. The date is the
+		// post's date when the frontmatter has none, and it is never part of the slug.
+		String folder = Bundles.folder(file.path());
+		String named = folder != null ? folder.substring(folder.lastIndexOf('/') + 1) : fileName(file.path());
+		Matcher dated = DATED_NAME.matcher(named);
+		boolean jekyll = dated.matches();
+
 		String dateText = frontmatter.text("date");
-		if (dateText == null) {
-			throw new InvalidPostException("it has no date. Add a line like date: 2026-11-16 to its frontmatter.");
+		ZonedDateTime date;
+		if (dateText != null) {
+			date = date("date", dateText);
 		}
-		ZonedDateTime date = date("date", dateText);
+		else if (jekyll) {
+			date = nameDate(dated.group(1), frontmatter.toml());
+		}
+		else {
+			throw new InvalidPostException("it has no date. Add a line like "
+					+ (frontmatter.toml() ? "date = 2026-11-16" : "date: 2026-11-16") + " to its frontmatter.");
+		}
+		// lastmod is checked whenever it is there. updated wins when both are.
 		String updatedText = frontmatter.text("updated");
-		ZonedDateTime modified = updatedText == null ? date : date("updated", updatedText);
+		String lastmodText = frontmatter.text("lastmod");
+		ZonedDateTime lastmod = lastmodText != null ? date("lastmod", lastmodText) : null;
+		ZonedDateTime modified = updatedText != null ? date("updated", updatedText) : lastmod != null ? lastmod : date;
 		boolean draft = draft(frontmatter.raw("draft"));
 
 		// A slug: line that is there but empty gives an empty slug, which Posts skips. Only a
 		// missing slug: line falls back to the file name.
 		Object chosen = frontmatter.raw("slug");
-		String folder = Bundles.folder(file.path());
-		String named = folder != null ? folder.substring(folder.lastIndexOf('/') + 1) : fileName(file.path());
-		String slug = Slugs.slugify(chosen == null ? named : chosen instanceof String text ? text : "");
+		String slug = Slugs.slugify(chosen == null ? (jekyll ? dated.group(2) : named) : chosen instanceof String text ? text : "");
 
+		// Jekyll's image: is the picture only as a single value. A list or a nested block is ignored.
+		String pictureKey = "picture";
 		String image = orEmpty(frontmatter.text("picture"));
+		if (frontmatter.raw("picture") == null && frontmatter.raw("image") instanceof String single) {
+			pictureKey = "image";
+			image = single.strip();
+		}
 		String inFolder = folder != null && !image.isEmpty() ? Bundles.relative(image) : null;
 		if (folder != null && inFolder != null) {
 			if (!exists.test(folder, inFolder)) {
-				throw new InvalidPostException("its picture '" + image + "' is not in its folder " + folder
+				throw new InvalidPostException("its " + pictureKey + " '" + image + "' is not in its folder " + folder
 						+ ". Put the file there, or fix the name.");
 			}
 			image = base + "/" + slug + "/" + Bundles.encode(inFolder);
 		}
 		else if (!image.isEmpty() && !Pictures.valid(image)) {
-			throw new InvalidPostException("its picture '" + image + "' is not a path starting with / or an http or https address.");
+			throw new InvalidPostException("its " + pictureKey + " '" + image
+					+ "' is not a path starting with / or an http or https address.");
 		}
 
 		String images = address + "/" + slug + "/";
 		MarkdownRenderer.Rendered rendered = markdown.render(frontmatter.body(), root, folder == null ? null : images);
-		String canonical = canonical(frontmatter.text("canonical"));
+		String canonical = frontmatter.raw("canonical") == null && frontmatter.raw("canonical_url") != null
+				? canonical("canonical_url", frontmatter.text("canonical_url"))
+				: canonical("canonical", frontmatter.text("canonical"));
 		String summary = frontmatter.text("summary");
+		if (summary == null) {
+			summary = frontmatter.text("description");
+		}
 		String lede = summary != null ? summary.strip() : "";
 
 		return new Post(slug, title.strip(), date, tags(frontmatter.list("tags")),
@@ -145,7 +179,7 @@ public final class PostParser {
 	 * Empty for none. Otherwise an absolute http or https address with a host. The host is read as
 	 * written, so a name with letters outside ASCII, like {@code bücher.de}, is kept.
 	 */
-	private static String canonical(@Nullable String text) {
+	private static String canonical(String key, @Nullable String text) {
 		if (text == null) {
 			return "";
 		}
@@ -161,8 +195,19 @@ public final class PostParser {
 		catch (URISyntaxException ignored) {
 			// not an address at all; the message below says what to write
 		}
-		throw new InvalidPostException("its canonical '" + value
+		throw new InvalidPostException("its " + key + " '" + value
 				+ "' is not an absolute http or https address. Write it like https://dev.to/you/the-post.");
+	}
+
+	/** The date a Jekyll name starts with, like {@code 2026-03-14}, at the start of that day. */
+	private ZonedDateTime nameDate(String text, boolean toml) {
+		try {
+			return LocalDate.parse(text).atStartOfDay(zone);
+		}
+		catch (DateTimeParseException ex) {
+			throw new InvalidPostException("its name starts with " + text + ", which is not a day on the calendar. Fix the name, or add a line like "
+					+ (toml ? "date = 2026-11-16" : "date: 2026-11-16") + " to its frontmatter.");
+		}
 	}
 
 	private ZonedDateTime date(String key, String text) {

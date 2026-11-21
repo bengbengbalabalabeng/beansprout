@@ -24,7 +24,20 @@ final class Frontmatter {
 
 	/** The keys Beansprout reads. Any other key is ignored, whatever its shape. */
 	static final Set<String> KNOWN_KEYS = Set.of("title", "date", "tags", "summary", "slug", "draft", "picture", "picture-alt", "caption", "updated",
-			"canonical");
+			"canonical", "description", "image", "lastmod", "canonical_url");
+
+	/** Known keys that are ignored when indented lines follow them, as Jekyll themes nest {@code image:}. The post is kept. */
+	private static final Set<String> NESTED_IGNORED = Set.of("image");
+
+	/**
+	 * Known keys whose indented lines go on with the value, as Jekyll folds a long
+	 * {@code description:} over lines. The lines are joined with spaces. An indented known key is
+	 * still a mistake.
+	 */
+	private static final Set<String> FOLDED = Set.of("description");
+
+	/** A YAML block indicator alone, like {@code >} or {@code |-}: the text starts on the next line. */
+	private static final Pattern BLOCK = Pattern.compile("^[>|][-+]?$");
 
 	/** The keys whose {@code [a, b]} value is a list. Anywhere else brackets are just text. */
 	static final Set<String> LIST_KEYS = Set.of("tags");
@@ -35,14 +48,22 @@ final class Frontmatter {
 
 	private final String body;
 
-	private Frontmatter(Map<String, Object> values, String body) {
+	private final boolean toml;
+
+	Frontmatter(Map<String, Object> values, String body, boolean toml) {
 		this.values = values;
 		this.body = body;
+		this.toml = toml;
 	}
 
 	/** The Markdown after the frontmatter. */
 	String body() {
 		return body;
+	}
+
+	/** True when the frontmatter was Hugo's TOML between {@code +++} lines, so hints use {@code key = value}. */
+	boolean toml() {
+		return toml;
 	}
 
 	/** A single value, or null when the key is missing or empty. A list gives its first item. */
@@ -78,6 +99,9 @@ final class Frontmatter {
 		if (lines.length > 0 && lines[0].startsWith("﻿")) {
 			lines[0] = lines[0].substring(1);
 		}
+		if (lines.length > 0 && lines[start].strip().equals("+++")) {
+			return TomlFrontmatter.parse(lines);
+		}
 		if (lines.length == 0 || !lines[start].strip().equals("---")) {
 			throw new InvalidPostException("it has no frontmatter. Start the file with a --- line, then title: and date:, then another --- line.");
 		}
@@ -88,7 +112,8 @@ final class Frontmatter {
 			String line = lines[i];
 			if (line.strip().equals("---")) {
 				String body = String.join("\n", java.util.Arrays.copyOfRange(lines, i + 1, lines.length));
-				return new Frontmatter(values, body);
+				dropBareBlocks(values);
+				return new Frontmatter(values, body, false);
 			}
 			if (line.isBlank() || line.strip().startsWith("#")) {
 				continue;
@@ -102,6 +127,18 @@ final class Frontmatter {
 				// An indented line belongs to the key above it. Under an unknown key it is ignored,
 				// whatever it says. Under a known key, or with no key above, it is a mistake.
 				if (lastKey != null && !KNOWN_KEYS.contains(lastKey)) {
+					continue;
+				}
+				Matcher indented = KEY_VALUE.matcher(line.strip());
+				boolean knownKey = indented.matches() && KNOWN_KEYS.contains(indented.group(1));
+				if (lastKey != null && FOLDED.contains(lastKey) && !knownKey) {
+					fold(values, lastKey, line.strip());
+					openList = null;
+					continue;
+				}
+				if (lastKey != null && NESTED_IGNORED.contains(lastKey)) {
+					values.remove(lastKey);
+					openList = null;
 					continue;
 				}
 				Matcher nested = KEY_VALUE.matcher(line.strip());
@@ -126,6 +163,30 @@ final class Frontmatter {
 			}
 		}
 		throw new InvalidPostException("its frontmatter has no closing --- line.");
+	}
+
+	/**
+	 * Adds one indented line to a folded value. A quoted value that closes on this line loses its
+	 * quotes, as on one line. A list of items under the key is left as it is.
+	 */
+	private static void fold(Map<String, Object> values, String key, String more) {
+		Object current = values.get(key);
+		if (current instanceof String text) {
+			String joined = BLOCK.matcher(text).matches() ? more : text + " " + more;
+			values.put(key, unquote(joined));
+		}
+		else if (current instanceof List<?> list && list.isEmpty()) {
+			values.put(key, more);
+		}
+	}
+
+	/** A folded key left with only its block indicator, like {@code >}, has no text. */
+	private static void dropBareBlocks(Map<String, Object> values) {
+		for (String key : FOLDED) {
+			if (values.get(key) instanceof String text && BLOCK.matcher(text).matches()) {
+				values.remove(key);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
