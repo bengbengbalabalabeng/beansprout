@@ -95,6 +95,17 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<!-- Test apps listen on 127.0.0.1 only. On every address, a random port can be one
+						     another program holds on 127.0.0.1, and a request to localhost reaches that program. -->
+						<server.address>127.0.0.1</server.address>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
