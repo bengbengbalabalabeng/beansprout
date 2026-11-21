@@ -1,5 +1,7 @@
 package dev.danvega.beansprout.content;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -9,6 +11,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.function.BiPredicate;
 
@@ -127,6 +130,7 @@ public final class PostParser {
 
 		String images = address + "/" + slug + "/";
 		MarkdownRenderer.Rendered rendered = markdown.render(frontmatter.body(), root, folder == null ? null : images);
+		String canonical = canonical(frontmatter.text("canonical"));
 		String summary = frontmatter.text("summary");
 		String lede = summary != null ? summary.strip() : "";
 
@@ -134,7 +138,31 @@ public final class PostParser {
 				!lede.isEmpty() ? lede : cut(rendered.firstParagraph()), rendered.html(),
 				rendered.headings(), Math.max(1, (rendered.words() + WORDS_PER_MINUTE - 1) / WORDS_PER_MINUTE), draft,
 				file.path(), image, orEmpty(frontmatter.text("picture-alt")), orEmpty(frontmatter.text("caption")), lede,
-				modified);
+				modified, canonical);
+	}
+
+	/**
+	 * Empty for none. Otherwise an absolute http or https address with a host. The host is read as
+	 * written, so a name with letters outside ASCII, like {@code bücher.de}, is kept.
+	 */
+	private static String canonical(@Nullable String text) {
+		if (text == null) {
+			return "";
+		}
+		String value = text.strip();
+		try {
+			URI uri = new URI(value);
+			String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.ROOT);
+			String authority = uri.getRawAuthority();
+			if ((scheme.equals("http") || scheme.equals("https")) && authority != null && !host(authority).isBlank()) {
+				return value;
+			}
+		}
+		catch (URISyntaxException ignored) {
+			// not an address at all; the message below says what to write
+		}
+		throw new InvalidPostException("its canonical '" + value
+				+ "' is not an absolute http or https address. Write it like https://dev.to/you/the-post.");
 	}
 
 	private ZonedDateTime date(String key, String text) {
@@ -192,6 +220,17 @@ public final class PostParser {
 	private static String fileName(String path) {
 		String name = path.substring(path.lastIndexOf('/') + 1);
 		return name.endsWith(".md") ? name.substring(0, name.length() - 3) : name;
+	}
+
+	/** The host in an address's authority: without a user before {@code @} or a port after {@code :}. */
+	private static String host(String authority) {
+		String host = authority.substring(authority.lastIndexOf('@') + 1);
+		if (host.startsWith("[")) {
+			int close = host.indexOf(']');
+			return close < 0 ? "" : host.substring(0, close + 1);
+		}
+		int colon = host.indexOf(':');
+		return colon < 0 ? host : host.substring(0, colon);
 	}
 
 	/** At most {@value #SUMMARY_LIMIT} characters, cut at a word, with an ellipsis when cut. */

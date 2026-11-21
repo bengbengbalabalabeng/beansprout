@@ -73,13 +73,13 @@ public final class Feeds {
 		return xml.toString();
 	}
 
-	/** A sitemap of every page the blog serves. */
+	/** A sitemap of every page the blog serves, less the posts that set a {@code canonical}. */
 	public String sitemap(String siteUrl) {
 		String site = trim(siteUrl);
 		StringBuilder xml = new StringBuilder();
 		xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		xml.append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
-		for (PageUrl url : pages.urls()) {
+		for (PageUrl url : pages.sitemapUrls()) {
 			xml.append("  <url><loc>").append(escape(site + url.path())).append("</loc>");
 			if (!url.lastModified().isEmpty()) {
 				xml.append("<lastmod>").append(escape(url.lastModified())).append("</lastmod>");

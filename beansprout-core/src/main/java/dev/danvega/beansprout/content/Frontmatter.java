@@ -23,7 +23,8 @@ final class Frontmatter {
 	private static final Pattern KEY_VALUE = Pattern.compile("^([^\\s:#][^:]*?)\\s*:(.*)$", Pattern.DOTALL);
 
 	/** The keys Beansprout reads. Any other key is ignored, whatever its shape. */
-	static final Set<String> KNOWN_KEYS = Set.of("title", "date", "tags", "summary", "slug", "draft", "picture", "picture-alt", "caption", "updated");
+	static final Set<String> KNOWN_KEYS = Set.of("title", "date", "tags", "summary", "slug", "draft", "picture", "picture-alt", "caption", "updated",
+			"canonical");
 
 	/** The keys whose {@code [a, b]} value is a list. Anywhere else brackets are just text. */
 	static final Set<String> LIST_KEYS = Set.of("tags");

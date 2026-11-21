@@ -24,6 +24,8 @@ import java.util.List;
  * @param modified when the post last changed: its {@code updated} frontmatter, or its date
  * @param lede the summary as written in frontmatter, or empty when the summary was taken from
  *     the body
+ * @param canonical the absolute http or https address where the post first appeared, or empty
+ *     when the post's own address is its canonical one
  */
 public record Post(
 		String slug,
@@ -40,7 +42,8 @@ public record Post(
 		String imageAlt,
 		String caption,
 		String lede,
-		ZonedDateTime modified) {
+		ZonedDateTime modified,
+		String canonical) {
 
 	public Post {
 		tags = List.copyOf(tags);

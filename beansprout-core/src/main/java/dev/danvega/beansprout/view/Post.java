@@ -5,6 +5,8 @@ import java.util.List;
 /**
  * One post on its own page.
  *
+ * @param url the post's own address on the blog, like {@code /blog/hello}, even when its
+ *     canonical link points to another site
  * @param lede the summary written in frontmatter, shown under the title, or empty
  * @param crumb the tag the breadcrumb leads back to: the post's first tag, or the index
  * @param date as the page shows it: 14 March 2026
@@ -24,6 +26,7 @@ import java.util.List;
  */
 public record Post(
 		String title,
+		String url,
 		String lede,
 		Tag crumb,
 		String author,

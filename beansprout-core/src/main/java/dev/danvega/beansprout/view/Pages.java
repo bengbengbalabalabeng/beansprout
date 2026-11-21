@@ -3,11 +3,13 @@ package dev.danvega.beansprout.view;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import dev.danvega.beansprout.content.Posts;
 import dev.danvega.beansprout.content.Slugs;
@@ -88,7 +90,7 @@ public final class Pages {
 				Tag crumb = tags.isEmpty() ? new Tag("Latest", links.home()) : tags.getFirst();
 				String picture = links.picture(post.image());
 				boolean laterDay = post.modified().toLocalDate().isAfter(post.date().toLocalDate());
-				Post view = new Post(post.title(), post.lede(), crumb, settings.author(), LONG_DATE.format(post.date()),
+				Post view = new Post(post.title(), links.post(post.slug()), post.lede(), crumb, settings.author(), LONG_DATE.format(post.date()),
 						isoDate(post.date().toLocalDate()), reading(post),
 						laterDay ? LONG_DATE.format(post.modified()) : "",
 						laterDay ? isoDate(post.modified().toLocalDate()) : "", tags, picture, post.imageAlt(),
@@ -147,7 +149,7 @@ public final class Pages {
 
 	/**
 	 * Every address the blog serves: the index pages, the archive, every post, and every tag
-	 * page. The sitemap is built from this, and so would a static export be.
+	 * page. The static export writes each one. The sitemap is built from {@link #sitemapUrls()}.
 	 */
 	public List<PageUrl> urls() {
 		List<dev.danvega.beansprout.content.Post> published = posts.published();
@@ -167,13 +169,28 @@ public final class Pages {
 		return urls;
 	}
 
+	/**
+	 * The addresses for the sitemap: every one in {@link #urls()}, less the posts that set a
+	 * {@code canonical}. A sitemap that lists a page whose canonical link points elsewhere gives
+	 * search engines two signals that disagree. The static export still writes those posts.
+	 */
+	public List<PageUrl> sitemapUrls() {
+		Set<String> elsewhere = new HashSet<>();
+		for (dev.danvega.beansprout.content.Post post : posts.published()) {
+			if (!post.canonical().isEmpty()) {
+				elsewhere.add(links.post(post.slug()));
+			}
+		}
+		return urls().stream().filter(url -> !elsewhere.contains(url.path())).toList();
+	}
+
 	private Meta pageMeta(String title, String description, String path) {
 		return new Meta(title, description, absolute(path), "website", settings.title(), photo(), "", "summary", "", "",
 				List.of(), "");
 	}
 
 	private Meta postMeta(dev.danvega.beansprout.content.Post post) {
-		String url = absolute(links.post(post.slug()));
+		String url = post.canonical().isEmpty() ? absolute(links.post(post.slug())) : post.canonical();
 		String picture = post.image().isEmpty() ? "" : absolutePicture(post.image());
 		String published = TIMESTAMP.format(post.date());
 		String modified = TIMESTAMP.format(post.modified());

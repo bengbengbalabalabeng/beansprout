@@ -2,7 +2,7 @@
 @import gg.jte.support.ForSupport
 @param PostPage page
 !{var post = page.post();}
-!{var address = page.meta().canonical();}
+!{var address = post.url();}
 !{var file = address.isEmpty() ? "post" : address.substring(address.lastIndexOf('/') + 1) + ".post";}
 @template.layout(
   site = page.site(),
