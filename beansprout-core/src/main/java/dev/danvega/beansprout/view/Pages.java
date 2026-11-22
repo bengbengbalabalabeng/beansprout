@@ -68,6 +68,11 @@ public final class Pages {
 		return settings;
 	}
 
+	/** The posts behind these pages, for {@link Aliases}. */
+	Posts posts() {
+		return posts;
+	}
+
 	/** Page n of the index. Page 1 always exists, even with no posts. */
 	public Optional<IndexPage> index(int page) {
 		List<dev.danvega.beansprout.content.Post> published = posts.published();

@@ -3,6 +3,7 @@ package dev.danvega.beansprout.web;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import dev.danvega.beansprout.view.Aliases;
 import dev.danvega.beansprout.view.Pages;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jspecify.annotations.Nullable;
@@ -31,6 +32,8 @@ public class BlogController {
 
 	private final @Nullable String siteUrl;
 
+	private final AliasRedirects aliases;
+
 	private final Etags etags = new Etags();
 
 	/**
@@ -39,18 +42,29 @@ public class BlogController {
 	 * @param siteUrl {@code beansprout.site-url}, or null to use the request's scheme, host and port
 	 */
 	public BlogController(Pages pages, ThemeRenderer theme, @Nullable String siteUrl) {
+		this(pages, theme, siteUrl, new AliasRedirects(new Aliases(pages), path -> Optional.empty()));
+	}
+
+	/**
+	 * Creates the controller.
+	 *
+	 * @param siteUrl {@code beansprout.site-url}, or null to use the request's scheme, host and port
+	 * @param aliases old paths under the blog that answer with a redirect, or the app's static file there, instead of a 404
+	 */
+	public BlogController(Pages pages, ThemeRenderer theme, @Nullable String siteUrl, AliasRedirects aliases) {
 		this.pages = pages;
 		this.theme = theme;
 		this.siteUrl = siteUrl;
+		this.aliases = aliases;
 	}
 
 	@GetMapping({ "", "/" })
-	public ResponseEntity<String> index(HttpServletRequest request) {
+	public ResponseEntity<?> index(HttpServletRequest request) {
 		return render("index", pages(request).index(1), request);
 	}
 
 	@GetMapping("/page/{number}")
-	public ResponseEntity<String> page(@PathVariable String number, HttpServletRequest request) {
+	public ResponseEntity<?> page(@PathVariable String number, HttpServletRequest request) {
 		if (number.equals("1")) {
 			return redirect(pages.links().home());
 		}
@@ -58,17 +72,17 @@ public class BlogController {
 	}
 
 	@GetMapping("/archive")
-	public ResponseEntity<String> archive(HttpServletRequest request) {
+	public ResponseEntity<?> archive(HttpServletRequest request) {
 		return render("archive", Optional.of(pages(request).archive()), request);
 	}
 
 	@GetMapping("/tags/{tag}")
-	public ResponseEntity<String> tag(@PathVariable String tag, HttpServletRequest request) {
+	public ResponseEntity<?> tag(@PathVariable String tag, HttpServletRequest request) {
 		return render("tag", pages(request).tag(tag, 1), request);
 	}
 
 	@GetMapping("/tags/{tag}/page/{number}")
-	public ResponseEntity<String> tagPage(@PathVariable String tag, @PathVariable String number,
+	public ResponseEntity<?> tagPage(@PathVariable String tag, @PathVariable String number,
 			HttpServletRequest request) {
 		if (number.equals("1")) {
 			return pages.tag(tag, 1).isPresent() ? redirect(pages.links().tag(tag)) : render("tag", Optional.empty(), request);
@@ -77,12 +91,20 @@ public class BlogController {
 	}
 
 	@GetMapping("/{slug}")
-	public ResponseEntity<String> post(@PathVariable String slug, HttpServletRequest request) {
+	public ResponseEntity<?> post(@PathVariable String slug, HttpServletRequest request) {
 		return render("post", pages(request).post(slug), request);
 	}
 
-	private ResponseEntity<String> render(String template, Optional<?> page, HttpServletRequest request) {
+	private ResponseEntity<?> render(String template, Optional<?> page, HttpServletRequest request) {
 		if (page.isEmpty()) {
+			Optional<String> moved = aliases.target(request);
+			if (moved.isPresent()) {
+				return redirect(moved.get());
+			}
+			Optional<ResponseEntity<byte[]>> file = aliases.staticFile(request);
+			if (file.isPresent()) {
+				return file.get();
+			}
 			String html = theme.render("not-found", pages(request).notFound(request.getRequestURI()));
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(HTML).body(html);
 		}

@@ -3,6 +3,7 @@ package dev.danvega.beansprout.export;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -28,6 +29,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import dev.danvega.beansprout.view.Alias;
+import dev.danvega.beansprout.view.Aliases;
 import dev.danvega.beansprout.view.Links;
 import dev.danvega.beansprout.view.PageUrl;
 import dev.danvega.beansprout.view.Pages;
@@ -38,7 +41,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Writes the blog as files for a static host. Every page in {@link Pages#urls()}, the feed and the
  * sitemap are fetched from the running app, and so is every file they point to: stylesheets,
- * pictures, fonts. Nothing is written until everything was fetched, so a failed fetch leaves the
+ * pictures, fonts. Each live alias gets a page that sends the reader on to its post. Nothing is written until everything was fetched, so a failed fetch leaves the
  * folder as it was. A failed write can leave it half written.
  */
 public final class StaticExport {
@@ -142,6 +145,38 @@ public final class StaticExport {
 				+ "<meta http-equiv=\"refresh\" content=\"0; url=" + home + "\">\n" + "<link rel=\"canonical\" href=\""
 				+ attribute(origin() + links.home()) + "\">\n</head>\n<body>\n<p><a href=\"" + home + "\">" + title
 				+ "</a></p>\n</body>\n</html>\n";
+	}
+
+	/**
+	 * The file an alias's page is written to: {@code /a/b.html} to {@code a/b.html}, {@code /a/b} to
+	 * {@code a/b.html} and {@code /a/b/} to {@code a/b/index.html}. Aliases checked them already: each
+	 * is a plain path, with no empty, {@code .} or {@code ..} segment.
+	 */
+	static String aliasFile(String path) {
+		String name = path.substring(1);
+		if (name.endsWith("/")) {
+			return name + "index.html";
+		}
+		return name.endsWith(".html") ? name : name + ".html";
+	}
+
+	/** A path as a request sends it: every character a URI cannot hold, a % too, written as %XX in UTF-8. */
+	static String pathAddress(String path) {
+		try {
+			return new URI(null, null, path, null).toASCIIString();
+		}
+		catch (URISyntaxException ex) {
+			throw new ExportException(path + " cannot be fetched as a path.", ex);
+		}
+	}
+
+	/** An alias's page: it sends the reader on at once, and tells search engines the post's address. */
+	private String aliasPage(String target) {
+		String address = attribute(target);
+		return "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Moved</title>\n"
+				+ "<meta http-equiv=\"refresh\" content=\"0; url=" + address + "\">\n<link rel=\"canonical\" href=\""
+				+ attribute(origin() + target) + "\">\n</head>\n<body>\n<p>This post has moved to <a href=\"" + address
+				+ "\">its new address</a>.</p>\n</body>\n</html>\n";
 	}
 
 	private String origin() {
@@ -312,10 +347,13 @@ public final class StaticExport {
 
 		private final byte[] body;
 
-		Response(int status, String type, byte[] body) {
+		private final String location;
+
+		Response(int status, String type, byte[] body, String location) {
 			this.status = status;
 			this.type = type.toLowerCase(Locale.ROOT);
 			this.body = body;
+			this.location = location;
 		}
 
 		boolean page() {
@@ -415,6 +453,32 @@ public final class StaticExport {
 					add(files, "robots.txt", robots.body, "/robots.txt");
 				}
 			}
+			aliases();
+		}
+
+		/**
+		 * A page at each live alias. The app is asked first: where its own mapping or static file
+		 * answers instead of the redirect, the static site has no alias page either.
+		 */
+		private void aliases() {
+			for (Alias alias : new Aliases(pages).all()) {
+				String name = aliasFile(alias.path());
+				// A page, the root page or the not-found page is there already. For an alias like
+				// /blog/hello.html that file is the post itself, so the old link still works.
+				if (files.containsKey(name) || name.equals("index.html") || name.equals("404.html")) {
+					LOG.warn("Beansprout's export wrote no page for the alias " + alias.path() + " of " + alias.target()
+							+ ": the export writes " + name + " already.");
+					continue;
+				}
+				Response answer = fetch(pathAddress(pages.links().root() + alias.path()));
+				if (answer.status != 301 || !answer.location.equals(alias.target())) {
+					LOG.info("Beansprout's export wrote no page for the alias " + alias.path() + " of " + alias.target()
+							+ ": the app answers that address itself.");
+					continue;
+				}
+				add(files, name, aliasPage(alias.target()).getBytes(StandardCharsets.UTF_8),
+						"the page for the alias " + alias.path());
+			}
 		}
 
 		private boolean neverFetched(String address) {
@@ -495,7 +559,7 @@ public final class StaticExport {
 			try {
 				HttpResponse<byte[]> response = http.send(request, HttpResponse.BodyHandlers.ofByteArray());
 				return new Response(response.statusCode(), response.headers().firstValue("Content-Type").orElse(""),
-						response.body());
+						response.body(), response.headers().firstValue("Location").orElse(""));
 			}
 			catch (IOException ex) {
 				throw new ExportException("Could not fetch " + address + " from the app (" + describe(ex) + ")", ex);

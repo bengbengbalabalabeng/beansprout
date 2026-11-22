@@ -168,11 +168,23 @@ public final class PostParser {
 		}
 		String lede = summary != null ? summary.strip() : "";
 
+		// Old paths for the post. A dated name that gave the slug keeps its old address too.
+		List<String> aliases = new ArrayList<>();
+		for (String key : List.of("aliases", "redirect_from")) {
+			frontmatter.list(key).stream().map(String::strip).filter(alias -> !alias.isEmpty()).forEach(aliases::add);
+		}
+		if (jekyll && chosen == null) {
+			String old = Slugs.slugify(named);
+			if (!old.isEmpty() && !old.equals(slug)) {
+				aliases.add(base + "/" + old);
+			}
+		}
+
 		return new Post(slug, title.strip(), date, tags(frontmatter.list("tags")),
 				!lede.isEmpty() ? lede : cut(rendered.firstParagraph()), rendered.html(),
 				rendered.headings(), Math.max(1, (rendered.words() + WORDS_PER_MINUTE - 1) / WORDS_PER_MINUTE), draft,
 				file.path(), image, orEmpty(frontmatter.text("picture-alt")), orEmpty(frontmatter.text("caption")), lede,
-				modified, canonical);
+				modified, canonical, aliases);
 	}
 
 	/**

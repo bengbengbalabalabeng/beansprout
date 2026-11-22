@@ -1,7 +1,11 @@
 package dev.danvega.beansprout.autoconfigure;
 
+import java.util.Optional;
+
 import dev.danvega.beansprout.content.Posts;
 import dev.danvega.beansprout.feed.Feeds;
+import dev.danvega.beansprout.view.Aliases;
+import dev.danvega.beansprout.web.AliasRedirects;
 import dev.danvega.beansprout.view.Pages;
 import dev.danvega.beansprout.web.BlogController;
 import dev.danvega.beansprout.web.BundleImageController;
@@ -16,6 +20,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 /**
@@ -29,11 +35,19 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 @ConditionalOnBooleanProperty(name = "beansprout.web.enabled", matchIfMissing = true)
 public class BeansproutWebAutoConfiguration {
 
+	/** Where a request for a post's alias goes: to the post, unless the app has a static file there. */
+	@Bean
+	@ConditionalOnMissingBean
+	AliasRedirects beansproutAliasRedirects(Aliases aliases, Environment environment, ResourceLoader resources) {
+		return new AliasRedirects(aliases, path -> Optional.ofNullable(StaticFiles.find(path, environment, resources)));
+	}
+
 	@Bean
 	@ConditionalOnBean(ThemeRenderer.class)
 	@ConditionalOnMissingBean
-	BlogController beansproutBlogController(Pages pages, ThemeRenderer theme, BeansproutProperties properties) {
-		return new BlogController(pages, theme, properties.siteUrl());
+	BlogController beansproutBlogController(Pages pages, ThemeRenderer theme, BeansproutProperties properties,
+			AliasRedirects aliases) {
+		return new BlogController(pages, theme, properties.siteUrl(), aliases);
 	}
 
 	/** The feed and the sitemap need no template, so they are served with or without a theme. */
@@ -68,8 +82,9 @@ public class BeansproutWebAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	BundleImageController beansproutBundleImageController(Posts posts, ResourcePatternResolver resolver,
-			BeansproutProperties properties) {
-		return new BundleImageController(posts, new ResourcePostSource(resolver, properties.posts().location()));
+			BeansproutProperties properties, AliasRedirects aliases) {
+		return new BundleImageController(posts, new ResourcePostSource(resolver, properties.posts().location()),
+				aliases);
 	}
 
 }

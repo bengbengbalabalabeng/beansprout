@@ -10,6 +10,7 @@ import dev.danvega.beansprout.content.PostParser;
 import dev.danvega.beansprout.content.PostSource;
 import dev.danvega.beansprout.content.Posts;
 import dev.danvega.beansprout.feed.Feeds;
+import dev.danvega.beansprout.view.Aliases;
 import dev.danvega.beansprout.view.BlogSettings;
 import dev.danvega.beansprout.view.NavLink;
 import dev.danvega.beansprout.view.Links;
@@ -59,6 +60,13 @@ public class BeansproutAutoConfiguration {
 	@ConditionalOnMissingBean
 	Links beansproutLinks(BeansproutProperties properties, Environment environment) {
 		return new Links(environment.getProperty("server.servlet.context-path", ""), properties.basePath());
+	}
+
+	/** The old paths of live posts, each answered with a redirect to its post. */
+	@Bean
+	@ConditionalOnMissingBean
+	Aliases beansproutAliases(Pages pages) {
+		return new Aliases(pages);
 	}
 
 	@Bean

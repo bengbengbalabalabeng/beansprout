@@ -26,6 +26,9 @@ import java.util.List;
  *     the body
  * @param canonical the absolute http or https address where the post first appeared, or empty
  *     when the post's own address is its canonical one
+ * @param aliases old paths that answer with a redirect to the post, as written in its
+ *     {@code aliases} and {@code redirect_from}, then the full name of a dated file whose slug left
+ *     the date out. Not checked here: {@code dev.danvega.beansprout.view.Aliases} checks them.
  */
 public record Post(
 		String slug,
@@ -43,11 +46,13 @@ public record Post(
 		String caption,
 		String lede,
 		ZonedDateTime modified,
-		String canonical) {
+		String canonical,
+		List<String> aliases) {
 
 	public Post {
 		tags = List.copyOf(tags);
 		headings = List.copyOf(headings);
+		aliases = List.copyOf(aliases);
 	}
 
 }

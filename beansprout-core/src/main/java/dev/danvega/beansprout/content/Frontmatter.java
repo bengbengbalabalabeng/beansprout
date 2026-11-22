@@ -24,7 +24,7 @@ final class Frontmatter {
 
 	/** The keys Beansprout reads. Any other key is ignored, whatever its shape. */
 	static final Set<String> KNOWN_KEYS = Set.of("title", "date", "tags", "summary", "slug", "draft", "picture", "picture-alt", "caption", "updated",
-			"canonical", "description", "image", "lastmod", "canonical_url");
+			"canonical", "description", "image", "lastmod", "canonical_url", "aliases", "redirect_from");
 
 	/** Known keys that are ignored when indented lines follow them, as Jekyll themes nest {@code image:}. The post is kept. */
 	private static final Set<String> NESTED_IGNORED = Set.of("image");
@@ -40,7 +40,7 @@ final class Frontmatter {
 	private static final Pattern BLOCK = Pattern.compile("^[>|][-+]?$");
 
 	/** The keys whose {@code [a, b]} value is a list. Anywhere else brackets are just text. */
-	static final Set<String> LIST_KEYS = Set.of("tags");
+	static final Set<String> LIST_KEYS = Set.of("tags", "aliases", "redirect_from");
 
 	private static final Pattern LIST_ITEM = Pattern.compile("^\\s*-\\s+(.*)$", Pattern.DOTALL);
 
