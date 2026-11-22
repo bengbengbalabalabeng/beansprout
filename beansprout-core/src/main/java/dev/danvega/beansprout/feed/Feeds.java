@@ -53,7 +53,8 @@ public final class Feeds {
 		xml.append("  <link rel=\"self\" href=\"").append(escape(site + links.feed())).append("\"/>\n");
 		element(xml, "  ", "id", site + links.home());
 		element(xml, "  ", "updated", TIMESTAMP.format(updated));
-		xml.append("  <author><name>").append(escape(pages.settings().title())).append("</name></author>\n");
+		String author = pages.settings().author().isEmpty() ? pages.settings().title() : pages.settings().author();
+		xml.append("  <author><name>").append(escape(author)).append("</name></author>\n");
 		for (Post post : recent) {
 			String url = site + links.post(post.slug());
 			xml.append("  <entry>\n");
@@ -62,6 +63,9 @@ public final class Feeds {
 			element(xml, "    ", "id", url);
 			element(xml, "    ", "published", TIMESTAMP.format(post.date()));
 			element(xml, "    ", "updated", TIMESTAMP.format(post.modified()));
+			if (!post.author().isEmpty()) {
+				xml.append("    <author><name>").append(escape(post.author())).append("</name></author>\n");
+			}
 			for (String tag : post.tags()) {
 				xml.append("    <category term=\"").append(escape(tag)).append("\"/>\n");
 			}

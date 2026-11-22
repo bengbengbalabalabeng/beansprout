@@ -95,7 +95,7 @@ public final class Pages {
 				Tag crumb = tags.isEmpty() ? new Tag("Latest", links.home()) : tags.getFirst();
 				String picture = links.picture(post.image());
 				boolean laterDay = post.modified().toLocalDate().isAfter(post.date().toLocalDate());
-				Post view = new Post(post.title(), links.post(post.slug()), post.lede(), crumb, settings.author(), LONG_DATE.format(post.date()),
+				Post view = new Post(post.title(), links.post(post.slug()), post.lede(), crumb, author(post), LONG_DATE.format(post.date()),
 						isoDate(post.date().toLocalDate()), reading(post),
 						laterDay ? LONG_DATE.format(post.modified()) : "",
 						laterDay ? isoDate(post.modified().toLocalDate()) : "", tags, picture, post.imageAlt(),
@@ -212,17 +212,26 @@ public final class Pages {
 		if (!picture.isEmpty()) {
 			json.put("image", picture);
 		}
-		if (!settings.author().isEmpty()) {
+		String name = author(post);
+		if (!name.isEmpty()) {
 			Map<String, Object> author = new LinkedHashMap<>();
 			author.put("@type", "Person");
-			author.put("name", settings.author());
-			author.put("url", absolute(links.home()));
+			author.put("name", name);
+			// The blog is the writer's home page, not a guest's.
+			if (name.equals(settings.author())) {
+				author.put("url", absolute(links.home()));
+			}
 			json.put("author", author);
 		}
 
 		return new Meta(post.title(), post.summary(), url, "article", settings.title(),
 				picture.isEmpty() ? photo() : picture, picture.isEmpty() ? "" : post.imageAlt(),
 				picture.isEmpty() ? "summary" : "summary_large_image", published, modified, post.tags(), JsonLd.object(json));
+	}
+
+	/** The post's own author, or the blog's when it has none. Empty when neither is set. */
+	private String author(dev.danvega.beansprout.content.Post post) {
+		return post.author().isEmpty() ? settings.author() : post.author();
 	}
 
 	/** A site address without spaces around it or slashes at its end. */

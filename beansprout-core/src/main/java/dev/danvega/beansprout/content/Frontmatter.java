@@ -24,10 +24,13 @@ final class Frontmatter {
 
 	/** The keys Beansprout reads. Any other key is ignored, whatever its shape. */
 	static final Set<String> KNOWN_KEYS = Set.of("title", "date", "tags", "summary", "slug", "draft", "picture", "picture-alt", "caption", "updated",
-			"canonical", "description", "image", "lastmod", "canonical_url", "aliases", "redirect_from");
+			"canonical", "description", "image", "lastmod", "canonical_url", "aliases", "redirect_from", "author");
 
-	/** Known keys that are ignored when indented lines follow them, as Jekyll themes nest {@code image:}. The post is kept. */
-	private static final Set<String> NESTED_IGNORED = Set.of("image");
+	/**
+	 * Known keys that are ignored when indented lines follow them, as Jekyll themes nest
+	 * {@code image:} and jekyll-seo-tag nests {@code author:}. The post is kept.
+	 */
+	private static final Set<String> NESTED_IGNORED = Set.of("image", "author");
 
 	/**
 	 * Known keys whose indented lines go on with the value, as Jekyll folds a long

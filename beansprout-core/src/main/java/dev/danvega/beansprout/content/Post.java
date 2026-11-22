@@ -29,6 +29,7 @@ import java.util.List;
  * @param aliases old paths that answer with a redirect to the post, as written in its
  *     {@code aliases} and {@code redirect_from}, then the full name of a dated file whose slug left
  *     the date out. Not checked here: {@code dev.danvega.beansprout.view.Aliases} checks them.
+ * @param author the writer's name from the post's {@code author}, or empty to use the blog's
  */
 public record Post(
 		String slug,
@@ -47,7 +48,8 @@ public record Post(
 		String lede,
 		ZonedDateTime modified,
 		String canonical,
-		List<String> aliases) {
+		List<String> aliases,
+		String author) {
 
 	public Post {
 		tags = List.copyOf(tags);

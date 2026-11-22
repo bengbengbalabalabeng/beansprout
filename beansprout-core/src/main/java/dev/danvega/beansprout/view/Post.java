@@ -15,7 +15,7 @@ import java.util.List;
  * @param updated the day the post last changed, like 2 April 2026, when that is a later day than
  *     its date, or empty
  * @param updatedDateTime the same day as 2026-04-02, or empty
- * @param author the writer's name, or empty
+ * @param author the post's own {@code author}, or {@code beansprout.author} when it has none, or empty
  * @param picture the lead picture's address, or empty
  * @param pictureAlt the picture's alt text, or empty
  * @param caption a line under the picture, or empty. Always empty when there is no picture.

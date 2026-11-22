@@ -180,11 +180,14 @@ public final class PostParser {
 			}
 		}
 
+		// A name only. A list of - items or a nested block, like jekyll-seo-tag's, is ignored.
+		String author = frontmatter.raw("author") instanceof String name ? name.strip() : "";
+
 		return new Post(slug, title.strip(), date, tags(frontmatter.list("tags")),
 				!lede.isEmpty() ? lede : cut(rendered.firstParagraph()), rendered.html(),
 				rendered.headings(), Math.max(1, (rendered.words() + WORDS_PER_MINUTE - 1) / WORDS_PER_MINUTE), draft,
 				file.path(), image, orEmpty(frontmatter.text("picture-alt")), orEmpty(frontmatter.text("caption")), lede,
-				modified, canonical, aliases);
+				modified, canonical, aliases, author);
 	}
 
 	/**
