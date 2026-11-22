@@ -1,5 +1,8 @@
 package dev.danvega.beansprout.content;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
@@ -13,6 +16,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -98,6 +102,35 @@ public final class PostParser {
 	 *     the parser can read, or names a picture that is not there
 	 */
 	public Post parse(MarkdownFile file, BiPredicate<String, String> exists) {
+		return parse(file, exists, (folder, path) -> null);
+	}
+
+	/**
+	 * Reads one file from where it came from: a bundle's relative picture is checked against the
+	 * files next to it, and the size of each picture in its folder is read from the file's header.
+	 *
+	 * @throws InvalidPostException when the frontmatter is missing or broken, has no title or date
+	 *     the parser can read, or names a picture that is not there
+	 */
+	public Post parse(MarkdownFile file, PostSource source) {
+		return parse(file, source::contains, (folder, path) -> size(source, folder, path));
+	}
+
+	/** A picture's size, or null when it is not an image a bundle serves, or it cannot be read. */
+	private static @Nullable ImageSize size(PostSource source, String folder, String path) {
+		if (Bundles.imageType(path) == null) {
+			return null;
+		}
+		try (InputStream in = source.open(folder, path)) {
+			return in == null ? null : ImageSize.read(in);
+		}
+		catch (IOException | UncheckedIOException ex) {
+			return null;
+		}
+	}
+
+	private Post parse(MarkdownFile file, BiPredicate<String, String> exists,
+			BiFunction<String, String, @Nullable ImageSize> size) {
 		Frontmatter frontmatter = Frontmatter.parse(file.text());
 
 		String title = frontmatter.text("title");
@@ -145,12 +178,14 @@ public final class PostParser {
 			image = single.strip();
 		}
 		String inFolder = folder != null && !image.isEmpty() ? Bundles.relative(image) : null;
+		ImageSize imageSize = null;
 		if (folder != null && inFolder != null) {
 			if (!exists.test(folder, inFolder)) {
 				throw new InvalidPostException("its " + pictureKey + " '" + image + "' is not in its folder " + folder
 						+ ". Put the file there, or fix the name.");
 			}
 			image = base + "/" + slug + "/" + Bundles.encode(inFolder);
+			imageSize = size.apply(folder, inFolder);
 		}
 		else if (!image.isEmpty() && !Pictures.valid(image)) {
 			throw new InvalidPostException("its " + pictureKey + " '" + image
@@ -158,7 +193,9 @@ public final class PostParser {
 		}
 
 		String images = address + "/" + slug + "/";
-		MarkdownRenderer.Rendered rendered = markdown.render(frontmatter.body(), root, folder == null ? null : images);
+		String bundle = folder;
+		MarkdownRenderer.Rendered rendered = markdown.render(frontmatter.body(), root, bundle == null ? null : images,
+				!image.isEmpty(), path -> bundle == null ? null : size.apply(bundle, path));
 		String canonical = frontmatter.raw("canonical") == null && frontmatter.raw("canonical_url") != null
 				? canonical("canonical_url", frontmatter.text("canonical_url"))
 				: canonical("canonical", frontmatter.text("canonical"));
@@ -187,7 +224,8 @@ public final class PostParser {
 				!lede.isEmpty() ? lede : cut(rendered.firstParagraph()), rendered.html(),
 				rendered.headings(), Math.max(1, (rendered.words() + WORDS_PER_MINUTE - 1) / WORDS_PER_MINUTE), draft,
 				file.path(), image, orEmpty(frontmatter.text("picture-alt")), orEmpty(frontmatter.text("caption")), lede,
-				modified, canonical, aliases, author);
+				modified, canonical, aliases, author, imageSize == null ? 0 : imageSize.width(),
+				imageSize == null ? 0 : imageSize.height());
 	}
 
 	/**

@@ -82,17 +82,25 @@ public final class Bundles {
 	 * out of the folder are not.
 	 */
 	static boolean inFolder(String written) {
+		return file(written) != null;
+	}
+
+	/**
+	 * The file in the post's folder that an image's {@code src} points at, decoded, like
+	 * {@code shots/my pic.png}, or null when {@link #inFolder(String)} says it is not one.
+	 */
+	static @Nullable String file(String written) {
 		String src = trim(written);
 		if (src.startsWith("/") || src.startsWith("#") || src.startsWith("?") || SCHEME.matcher(src).find()) {
-			return false;
+			return null;
 		}
 		List<String> segments = segments(src.substring(0, pathEnd(src)));
 		if (segments == null) {
-			return false;
+			return null;
 		}
 		List<String> decoded = new ArrayList<>();
 		segments.forEach(segment -> decoded.add(decode(segment)));
-		return relative(String.join("/", decoded)) != null;
+		return relative(String.join("/", decoded));
 	}
 
 	/**
@@ -207,8 +215,11 @@ public final class Bundles {
 				i += 2;
 			}
 			else {
-				byte[] encoded = String.valueOf(c).getBytes(StandardCharsets.UTF_8);
+				// A whole code point, so a character outside the BMP, like an emoji, is not split.
+				int point = text.codePointAt(i);
+				byte[] encoded = Character.toString(point).getBytes(StandardCharsets.UTF_8);
 				bytes.write(encoded, 0, encoded.length);
+				i += Character.charCount(point) - 1;
 			}
 		}
 		return bytes.toString(StandardCharsets.UTF_8);

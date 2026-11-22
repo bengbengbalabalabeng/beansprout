@@ -7,6 +7,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import dev.danvega.beansprout.code.CodeHighlighter;
 import org.commonmark.Extension;
@@ -14,6 +16,9 @@ import org.commonmark.ext.gfm.tables.TablesExtension;
 import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.Code;
 import org.commonmark.node.HardLineBreak;
+import org.commonmark.node.HtmlBlock;
+import org.commonmark.node.HtmlInline;
+import org.commonmark.node.Image;
 import org.commonmark.node.Node;
 import org.commonmark.node.Paragraph;
 import org.commonmark.node.SoftLineBreak;
@@ -27,6 +32,15 @@ import org.jspecify.annotations.Nullable;
 final class MarkdownRenderer {
 
 	private static final List<Extension> EXTENSIONS = List.of(TablesExtension.create());
+
+	/** An {@code <img>} tag written as raw HTML. */
+	private static final Pattern RAW_IMG = Pattern.compile("(?i)<img(\\s|/|>|$)");
+
+	/**
+	 * An HTML comment, which shows nothing: the empty {@code <!-->} and {@code <!--->}, one closed by
+	 * {@code -->} or {@code --!>}, or one running to the end.
+	 */
+	private static final Pattern COMMENT = Pattern.compile("(?s)<!--(?:>|->|.*?(?:--!?>|$))");
 
 	private final Parser parser = Parser.builder().extensions(EXTENSIONS).build();
 
@@ -55,7 +69,23 @@ final class MarkdownRenderer {
 	 *     Null for a post that is a single file, whose links stay as written.
 	 */
 	Rendered render(String markdown, String root, @Nullable String images) {
+		return render(markdown, root, images, false, path -> null);
+	}
+
+	/**
+	 * Renders a post's body, with loading hints on each Markdown image. Every one is decoded off the
+	 * main thread and loaded lazily, except the body's first picture when the post has no lead
+	 * picture: it may be the first thing a reader sees. An image written as raw HTML is left as it is.
+	 *
+	 * @param root the app's context path, like {@code /app}, or empty
+	 * @param images for a post that is a folder, the address its images are served under, or null
+	 * @param picture true when the post has a lead picture above its body
+	 * @param size the size of a file in the post's folder, by its decoded path, or null when unknown
+	 */
+	Rendered render(String markdown, String root, @Nullable String images, boolean picture,
+			Function<String, @Nullable ImageSize> size) {
 		Node document = parser.parse(markdown);
+		@Nullable Image eager = picture ? null : firstImage(document);
 
 		IdentityHashMap<Node, String> ids = new IdentityHashMap<>();
 		List<Heading> headings = new ArrayList<>();
@@ -82,7 +112,18 @@ final class MarkdownRenderer {
 				if (id != null) {
 					attributes.put("id", id);
 				}
-
+				if (node instanceof Image image && tagName.equals("img")) {
+					String file = images == null ? null : Bundles.file(image.getDestination());
+					ImageSize known = file == null ? null : size.apply(file);
+					if (known != null) {
+						attributes.put("width", Integer.toString(known.width()));
+						attributes.put("height", Integer.toString(known.height()));
+					}
+					if (!node.equals(eager)) {
+						attributes.put("loading", "lazy");
+					}
+					attributes.put("decoding", "async");
+				}
 			})
 			.build();
 
@@ -272,6 +313,46 @@ final class MarkdownRenderer {
 			i++;
 		}
 		return i;
+	}
+
+	/**
+	 * The first Markdown image, when it is the first picture in the body, or null. An {@code <img>}
+	 * written as raw HTML before it is the first picture instead.
+	 */
+	private static @Nullable Image firstImage(Node document) {
+		class First extends AbstractVisitor {
+
+			boolean seen;
+
+			@Nullable Image image;
+
+			@Override
+			public void visit(Image node) {
+				if (!seen) {
+					seen = true;
+					image = node;
+				}
+			}
+
+			@Override
+			public void visit(HtmlInline node) {
+				seen |= rawImage(node.getLiteral());
+			}
+
+			@Override
+			public void visit(HtmlBlock node) {
+				seen |= rawImage(node.getLiteral());
+			}
+
+		}
+		First first = new First();
+		document.accept(first);
+		return first.image;
+	}
+
+	/** True when raw HTML shows an {@code <img>}: one inside a comment does not count. */
+	private static boolean rawImage(String html) {
+		return RAW_IMG.matcher(COMMENT.matcher(html).replaceAll("")).find();
 	}
 
 	private String firstParagraph(Node document) {

@@ -99,6 +99,8 @@ public final class Pages {
 						isoDate(post.date().toLocalDate()), reading(post),
 						laterDay ? LONG_DATE.format(post.modified()) : "",
 						laterDay ? isoDate(post.modified().toLocalDate()) : "", tags, picture, post.imageAlt(),
+						picture.isEmpty() || post.imageWidth() == 0 ? "" : Integer.toString(post.imageWidth()),
+						picture.isEmpty() || post.imageHeight() == 0 ? "" : Integer.toString(post.imageHeight()),
 						picture.isEmpty() ? "" : post.caption(), post.html(),
 						post.headings().stream().map(h -> new Heading(h.id(), h.text())).toList(), newer, older);
 				return Optional.of(new PostPage(site("", ""), postMeta(post), view));

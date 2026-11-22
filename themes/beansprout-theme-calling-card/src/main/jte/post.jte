@@ -20,7 +20,7 @@
       </header>
       @if(!post.picture().isEmpty())
         <figure class="card-figure">
-          <img class="card-picture" src="${post.picture()}" alt="${post.pictureAlt()}" width="1200" height="600">
+          <img class="card-picture" src="${post.picture()}" alt="${post.pictureAlt()}" width="${post.pictureWidth().isEmpty() ? "1200" : post.pictureWidth()}" height="${post.pictureHeight().isEmpty() ? "600" : post.pictureHeight()}">
           @if(!post.caption().isEmpty())<figcaption class="card-caption">${post.caption()}</figcaption>@endif
         </figure>
       @endif

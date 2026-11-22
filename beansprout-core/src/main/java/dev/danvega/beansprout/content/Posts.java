@@ -151,7 +151,7 @@ public final class Posts {
 				continue;
 			}
 			try {
-				Post post = parser.parse(file, source::contains);
+				Post post = parser.parse(file, source);
 				if (post.slug().isEmpty()) {
 					problems.add(problem(file.path(), "its slug is empty. Give it a slug: made of letters or digits."));
 					continue;

@@ -22,7 +22,7 @@
       </header>
       @if(!post.picture().isEmpty())
         <figure class="hero">
-          <img src="${post.picture()}" alt="${post.pictureAlt()}" width="1200" height="600">
+          <img src="${post.picture()}" alt="${post.pictureAlt()}" width="${post.pictureWidth().isEmpty() ? "1200" : post.pictureWidth()}" height="${post.pictureHeight().isEmpty() ? "600" : post.pictureHeight()}">
           @if(!post.caption().isEmpty())<figcaption>${post.caption()}</figcaption>@endif
         </figure>
       @endif

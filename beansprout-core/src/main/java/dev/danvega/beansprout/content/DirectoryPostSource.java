@@ -1,12 +1,15 @@
 package dev.danvega.beansprout.content;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
+
+import org.jspecify.annotations.Nullable;
 
 /** Reads every {@code .md} file in a folder and its subfolders. */
 public final class DirectoryPostSource implements PostSource {
@@ -37,13 +40,28 @@ public final class DirectoryPostSource implements PostSource {
 
 	@Override
 	public boolean contains(String folder, String path) {
+		return find(folder, path) != null;
+	}
+
+	@Override
+	public @Nullable InputStream open(String folder, String path) throws IOException {
+		Path file = find(folder, path);
+		return file == null ? null : Files.newInputStream(file);
+	}
+
+	/** The file, when it is really in the folder: a link that leads out of it does not count. */
+	private @Nullable Path find(String folder, String path) {
 		try {
 			Path inside = root.toRealPath().resolve(folder).normalize();
 			Path file = inside.resolve(path).normalize();
-			return file.startsWith(inside) && Files.isRegularFile(file) && file.toRealPath().startsWith(inside.toRealPath());
+			if (!file.startsWith(inside) || !Files.isRegularFile(file)) {
+				return null;
+			}
+			Path real = file.toRealPath();
+			return real.startsWith(inside.toRealPath()) ? real : null;
 		}
 		catch (IOException | InvalidPathException ex) {
-			return false;
+			return null;
 		}
 	}
 

@@ -2,6 +2,7 @@ package dev.danvega.beansprout.autoconfigure;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -58,6 +59,12 @@ final class ResourcePostSource implements PostSource, BundleFiles {
 	@Override
 	public boolean contains(String folder, String path) {
 		return find(folder, path) != null;
+	}
+
+	@Override
+	public @Nullable InputStream open(String folder, String path) throws IOException {
+		Resource file = find(folder, path);
+		return file == null ? null : file.getInputStream();
 	}
 
 	/**

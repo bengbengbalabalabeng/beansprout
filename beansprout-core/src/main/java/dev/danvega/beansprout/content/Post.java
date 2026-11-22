@@ -30,6 +30,9 @@ import java.util.List;
  *     {@code aliases} and {@code redirect_from}, then the full name of a dated file whose slug left
  *     the date out. Not checked here: {@code dev.danvega.beansprout.view.Aliases} checks them.
  * @param author the writer's name from the post's {@code author}, or empty to use the blog's
+ * @param imageWidth the picture's width in pixels when it is in the post's folder and its header
+ *     could be read, or 0
+ * @param imageHeight the picture's height in pixels, or 0, like {@code imageWidth}
  */
 public record Post(
 		String slug,
@@ -49,7 +52,9 @@ public record Post(
 		ZonedDateTime modified,
 		String canonical,
 		List<String> aliases,
-		String author) {
+		String author,
+		int imageWidth,
+		int imageHeight) {
 
 	public Post {
 		tags = List.copyOf(tags);

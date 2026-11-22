@@ -37,7 +37,7 @@
       @if(!post.lede().isEmpty())<p class="entry-lede">${post.lede()}</p>@endif
       @if(!post.picture().isEmpty())
         <figure class="entry-figure">
-          <img class="entry-picture" src="${post.picture()}" alt="${post.pictureAlt()}" width="1200" height="600">
+          <img class="entry-picture" src="${post.picture()}" alt="${post.pictureAlt()}" width="${post.pictureWidth().isEmpty() ? "1200" : post.pictureWidth()}" height="${post.pictureHeight().isEmpty() ? "600" : post.pictureHeight()}">
           @if(!post.caption().isEmpty())<figcaption class="entry-caption">Fig. 1. ${post.caption()}</figcaption>@endif
         </figure>
       @endif

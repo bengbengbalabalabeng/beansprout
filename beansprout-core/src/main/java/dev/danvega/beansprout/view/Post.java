@@ -18,6 +18,9 @@ import java.util.List;
  * @param author the post's own {@code author}, or {@code beansprout.author} when it has none, or empty
  * @param picture the lead picture's address, or empty
  * @param pictureAlt the picture's alt text, or empty
+ * @param pictureWidth the picture's width in pixels, like {@code 1200}, when it is in the post's
+ *     folder and its size could be read, or empty
+ * @param pictureHeight the picture's height in pixels, or empty, like {@code pictureWidth}
  * @param caption a line under the picture, or empty. Always empty when there is no picture.
  * @param body the post as HTML. The only value a theme shows without escaping.
  * @param headings the post's {@code ##} headings, for "On this page"
@@ -38,6 +41,8 @@ public record Post(
 		List<Tag> tags,
 		String picture,
 		String pictureAlt,
+		String pictureWidth,
+		String pictureHeight,
 		String caption,
 		String body,
 		List<Heading> headings,
