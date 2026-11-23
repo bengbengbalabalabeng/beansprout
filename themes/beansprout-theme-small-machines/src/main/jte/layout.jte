@@ -38,6 +38,7 @@
     <link rel="stylesheet" href="${site.root()}/beansprout/small-machines/small-machines.css">
     <link rel="alternate" type="application/atom+xml" title="${site.name()}" href="${site.feed()}">
     @if(!tagFeed.isEmpty())<link rel="alternate" type="application/atom+xml" title="${tagFeedTitle}" href="${tagFeed}">@endif
+    $unsafe{site.slots().head()}
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -68,6 +69,7 @@
           <a href="${site.archive()}">Archive</a>
           <a href="${site.feed()}">Atom feed</a>
         </nav>
+        $unsafe{site.slots().footer()}
       </footer>
     </div>
   </body>

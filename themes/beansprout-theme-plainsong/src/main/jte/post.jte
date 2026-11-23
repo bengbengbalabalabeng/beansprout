@@ -29,6 +29,7 @@
         </figure>
       @endif
       <div class="prose">$unsafe{post.body()}</div>
+      $unsafe{page.site().slots().afterPost()}
       @if(!post.tags().isEmpty())
         <p class="tags">Tagged @for(var t : ForSupport.of(post.tags()))<a href="${t.get().url()}">${t.get().name()}</a>@if(!t.isLast()), @endif@endfor</p>
       @endif

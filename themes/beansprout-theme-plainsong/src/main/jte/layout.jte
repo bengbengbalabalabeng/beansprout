@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="${site.root()}/beansprout/plainsong/plainsong.css">
     <link rel="alternate" type="application/atom+xml" title="${site.name()}" href="${site.feed()}">
     @if(!tagFeed.isEmpty())<link rel="alternate" type="application/atom+xml" title="${tagFeedTitle}" href="${tagFeed}">@endif
+    $unsafe{site.slots().head()}
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -62,6 +63,7 @@
       </main>
       <footer class="footer">
         <p>© <span class="footer-year">${site.year()}</span> <span class="footer-owner">${site.name()}</span> · <a href="${site.archive()}">Archive</a> · <a href="${site.feed()}">Atom feed</a> · Built with Beansprout</p>
+        $unsafe{site.slots().footer()}
       </footer>
     </div>
   </body>

@@ -17,6 +17,8 @@ import java.util.List;
  * @param tags every tag with its count, most used first
  * @param links links the app adds to the main menu, after the theme's own items, or none. A path
  *     already has the context path in front.
+ * @param slots the app's own HTML for the head, after a post and the footer, each empty when the
+ *     app has none
  */
 public record Site(
 		String name,
@@ -29,5 +31,6 @@ public record Site(
 		String photo,
 		String section,
 		List<TagCount> tags,
-		List<NavLink> links) {
+		List<NavLink> links,
+		Slots slots) {
 }

@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="${site.root()}/beansprout/calling-card/calling-card.css">
     <link rel="alternate" type="application/atom+xml" title="${site.name()}" href="${site.feed()}">
     @if(!tagFeed.isEmpty())<link rel="alternate" type="application/atom+xml" title="${tagFeedTitle}" href="${tagFeed}">@endif
+    $unsafe{site.slots().head()}
   </head>
   <body>
     <a class="card-skip" href="#main">Skip to content</a>
@@ -52,6 +53,7 @@
       <div class="card-inner">
         <p>© <span class="card-footer-year">${site.year()}</span> <span class="card-footer-owner">${site.name()}</span> · <a href="${site.feed()}">Atom feed</a> · Built with Beansprout</p>
       </div>
+      $unsafe{site.slots().footer()}
     </footer>
   </body>
 </html>

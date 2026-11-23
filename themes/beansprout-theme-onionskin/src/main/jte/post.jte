@@ -52,6 +52,7 @@
         </nav>
       @endif
       <div class="prose">$unsafe{post.body()}</div>
+      $unsafe{page.site().slots().afterPost()}
       @if(!post.related().isEmpty())
         <section class="related" aria-labelledby="related-posts">
           <h2 class="related-title" id="related-posts">related memos</h2>

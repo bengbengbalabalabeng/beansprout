@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="${site.root()}/beansprout/longhand/longhand.css">
     <link rel="alternate" type="application/atom+xml" title="${site.name()}" href="${site.feed()}">
     @if(!tagFeed.isEmpty())<link rel="alternate" type="application/atom+xml" title="${tagFeedTitle}" href="${tagFeed}">@endif
+    $unsafe{site.slots().head()}
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -97,6 +98,7 @@
           <li><a class="footer-link" href="${site.feed()}">Atom feed</a></li>
         </ul>
         <p class="footer-copyright">© <span class="footer-year">${site.year()}</span> <span class="footer-owner">${site.name()}</span></p>
+        $unsafe{site.slots().footer()}
       </footer>
     </div>
   </body>

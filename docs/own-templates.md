@@ -119,8 +119,10 @@ Things to know:
   another record, or now and then a flag such as `TagCount.current`. A missing string is an empty
   string, never null. In Thymeleaf an empty string counts as true, so test with
   `isEmpty()`, as the "Older posts" link does.
-- **Escape everything except two values.** `post.body` is HTML that Beansprout rendered from
-  Markdown, and `meta.jsonLd` is JSON. Use `th:utext` for those two, and `th:text` for the rest.
+- **Escape everything except the HTML Beansprout or you wrote.** `post.body` is HTML that
+  Beansprout rendered from Markdown, and `meta.jsonLd` is JSON. If you use the app's slot files,
+  `page.site.slots` holds them as `head`, `afterPost` and `footer`, your own HTML. Use
+  `th:utext` for those, and `th:text` for the rest.
 - **`page.meta` holds the SEO tags**: title, description, canonical link, Open Graph values and
   JSON-LD. The head above uses the main ones. Longhand's
   [layout](../themes/beansprout-theme-longhand/src/main/jte/layout.jte) shows the rest, such as

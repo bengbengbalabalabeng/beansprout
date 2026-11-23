@@ -35,6 +35,7 @@
         </figure>
       @endif
       <div class="post-body">$unsafe{post.body()}</div>
+      $unsafe{page.site().slots().afterPost()}
     </article>
     @if(!post.related().isEmpty())
       <section class="related" aria-labelledby="related-posts">

@@ -37,16 +37,28 @@ public final class Pages {
 
 	private final BlogSettings settings;
 
+	private final Slots slots;
+
 	private final String siteUrl;
 
 	public Pages(Posts posts, Links links, BlogSettings settings) {
-		this(posts, links, settings, "");
+		this(posts, links, settings, Slots.NONE);
 	}
 
-	private Pages(Posts posts, Links links, BlogSettings settings, String siteUrl) {
+	/**
+	 * Pages with the app's own HTML in every theme.
+	 *
+	 * @param slots the app's slot files, read once when the app starts
+	 */
+	public Pages(Posts posts, Links links, BlogSettings settings, Slots slots) {
+		this(posts, links, settings, slots, "");
+	}
+
+	private Pages(Posts posts, Links links, BlogSettings settings, Slots slots, String siteUrl) {
 		this.posts = posts;
 		this.links = links;
 		this.settings = settings;
+		this.slots = slots;
 		this.siteUrl = tidy(siteUrl);
 	}
 
@@ -55,7 +67,7 @@ public final class Pages {
 	 * data. The site's address is {@code https://example.com}, with or without a trailing slash.
 	 */
 	public Pages forSite(String siteUrl) {
-		return new Pages(posts, links, settings, siteUrl);
+		return new Pages(posts, links, settings, slots, siteUrl);
 	}
 
 	/** The links this blog uses. */
@@ -361,7 +373,8 @@ public final class Pages {
 		return new Site(settings.title(), settings.description(),
 				String.valueOf(LocalDate.now(posts.clock()).getYear()), links.home(), links.archive(), links.feed(),
 				links.root(), links.picture(settings.photo()), section, tags,
-				settings.links().stream().map(link -> new NavLink(link.label(), links.inApp(link.href()))).toList());
+				settings.links().stream().map(link -> new NavLink(link.label(), links.inApp(link.href()))).toList(),
+				slots);
 	}
 
 	private static String reading(dev.danvega.beansprout.content.Post post) {

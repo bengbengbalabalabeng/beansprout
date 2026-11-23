@@ -18,7 +18,8 @@ import java.util.List;
  * @param modifiedTime a post's last change, or empty on other pages
  * @param tags a post's tags, or none
  * @param jsonLd a post's BlogPosting structured data as JSON, safe to put in a script element, or
- *     empty. The only value a theme writes without escaping, besides a post's body.
+ *     empty. A theme writes it without escaping. It writes a post's body and the app's
+ *     {@link Slots} without escaping too, and nothing else.
  * @param robots what the page tells search engines to do with it, for a robots meta tag: {@code noindex}
  *     on an unlisted post's page, or empty to leave the tag out
  */

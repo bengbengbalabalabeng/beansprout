@@ -21,6 +21,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 /**
@@ -71,11 +72,11 @@ public class BeansproutAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	Pages beansproutPages(Posts posts, Links links, BeansproutProperties properties) {
+	Pages beansproutPages(Posts posts, Links links, BeansproutProperties properties, ResourceLoader resources) {
 		return new Pages(posts, links, new BlogSettings(properties.title(), properties.description(), properties.pageSize(),
 				properties.author(), properties.photo(),
 				properties.links().stream().map(link -> new NavLink(Objects.requireNonNullElse(link.label(), ""), Objects.requireNonNullElse(link.href(), ""))).toList(),
-				properties.relatedPosts()));
+				properties.relatedPosts()), SlotFiles.read(resources));
 	}
 
 	@Bean

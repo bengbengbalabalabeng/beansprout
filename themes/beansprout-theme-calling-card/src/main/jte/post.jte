@@ -35,6 +35,7 @@
         </nav>
       @endif
       <div class="card-prose">$unsafe{post.body()}</div>
+      $unsafe{page.site().slots().afterPost()}
       @if(!post.tags().isEmpty())
         <ul class="card-pills" aria-label="Tags">
           @for(var t : post.tags())

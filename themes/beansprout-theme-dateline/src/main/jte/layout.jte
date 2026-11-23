@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="${site.root()}/beansprout/dateline/dateline.css">
     <link rel="alternate" type="application/atom+xml" title="${site.name()}" href="${site.feed()}">
     @if(!tagFeed.isEmpty())<link rel="alternate" type="application/atom+xml" title="${tagFeedTitle}" href="${tagFeed}">@endif
+    $unsafe{site.slots().head()}
   </head>
   <body>
     <a class="skip" href="#main">Skip to the page</a>
@@ -68,6 +69,7 @@
           <a href="${site.archive()}">Archive</a>
         </nav>
       </div>
+      $unsafe{site.slots().footer()}
     </footer>
   </body>
 </html>

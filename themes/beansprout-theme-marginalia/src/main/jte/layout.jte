@@ -38,6 +38,7 @@
     <link rel="stylesheet" href="${site.root()}/beansprout/marginalia/marginalia.css">
     <link rel="alternate" type="application/atom+xml" title="${site.name()}" href="${site.feed()}">
     @if(!tagFeed.isEmpty())<link rel="alternate" type="application/atom+xml" title="${tagFeedTitle}" href="${tagFeed}">@endif
+    $unsafe{site.slots().head()}
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -65,6 +66,7 @@
           <li><a href="${site.archive()}">Archive</a></li>
           <li><a href="${site.feed()}">Atom feed</a></li>
         </ul>
+        $unsafe{site.slots().footer()}
       </footer>
     </div>
   </body>

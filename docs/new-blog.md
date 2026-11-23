@@ -215,6 +215,21 @@ AI training crawlers out of the blog, see [Search engines and AI crawlers](searc
 
 To put your photo above the blog's name, add `photo: /images/me.png` under `beansprout:`.
 
+## Your own HTML on every page
+
+Analytics, a newsletter form and comments each need a few lines of HTML. Put them in files under
+`src/main/resources/beansprout/`, and every theme adds them for you:
+
+| File | Where it goes |
+| --- | --- |
+| `head.html` | At the end of every page's `<head>`, such as an analytics script |
+| `after-post.html` | After the body of every post, such as a signup form or comments |
+| `footer.html` | In every page's footer |
+
+Leave out any file you don't need. Each file is your own HTML, so Beansprout writes it as it is,
+without escaping it. Save each one as UTF-8. The files are read once, when the app starts, so a
+change needs a restart. The static export writes them into every page too.
+
 ## See edits without a restart
 
 Posts are read once at startup. While you write, read them straight from the folder on disk

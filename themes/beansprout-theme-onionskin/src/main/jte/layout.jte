@@ -38,6 +38,7 @@
     <link rel="stylesheet" href="${site.root()}/beansprout/onionskin/onionskin.css">
     <link rel="alternate" type="application/atom+xml" title="${site.name()}" href="${site.feed()}">
     @if(!tagFeed.isEmpty())<link rel="alternate" type="application/atom+xml" title="${tagFeedTitle}" href="${tagFeed}">@endif
+    $unsafe{site.slots().head()}
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -58,6 +59,7 @@
       </main>
       <footer class="footer">
         <p>(c) <span class="footer-year">${site.year()}</span> <span class="footer-owner">${site.name()}</span>. Typed with Beansprout. <a href="${site.feed()}">Atom feed</a>.</p>
+        $unsafe{site.slots().footer()}
       </footer>
     </div>
   </body>
