@@ -78,6 +78,11 @@ public final class Links {
 		return prefix + "/feed.xml";
 	}
 
+	/** A tag's Atom feed. */
+	public String tagFeed(String slug) {
+		return tag(slug) + "/feed.xml";
+	}
+
 	public String sitemap() {
 		return prefix + "/sitemap.xml";
 	}

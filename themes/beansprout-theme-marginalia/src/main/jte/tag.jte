@@ -4,6 +4,8 @@
   site = page.site(),
   meta = page.meta(),
   title = page.name() + " · " + page.site().name(),
+  tagFeed = page.feed(),
+  tagFeedTitle = page.site().name() + ": " + page.name(),
   content = @`
     <div class="page-head spread">
       <p class="spread-margin"><span class="margin-label">Tag</span><span class="margin-line tag-count">${page.count()}</span>@if(!page.listing().pages().equals("1"))<span class="margin-line">Page ${page.listing().page()} of ${page.listing().pages()}</span>@endif</p>

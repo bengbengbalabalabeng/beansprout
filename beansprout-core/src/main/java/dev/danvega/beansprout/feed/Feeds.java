@@ -4,6 +4,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import dev.danvega.beansprout.content.Bundles;
 import dev.danvega.beansprout.content.Post;
@@ -38,20 +39,44 @@ public final class Feeds {
 	/** An Atom 1.0 feed of the newest published posts. */
 	public String atom(String siteUrl) {
 		String site = trim(siteUrl);
-		List<Post> recent = posts.published().stream().limit(FEED_SIZE).toList();
+		return atom(site, pages.settings().title(), links.home(), links.feed(), posts.published());
+	}
+
+	/**
+	 * An Atom 1.0 feed of the newest published posts with one tag, titled like {@code My Blog: Java},
+	 * or empty when no published post has it.
+	 *
+	 * @param tagSlug the tag as it appears in its page's address, like {@code spring-boot}
+	 */
+	public Optional<String> tagAtom(String tagSlug, String siteUrl) {
+		String site = trim(siteUrl);
+		return posts.tag(tagSlug)
+			.map(tag -> atom(site, pages.settings().title() + ": " + tag.name(), links.tag(tagSlug),
+					links.tagFeed(tagSlug), posts.tagged(tagSlug)));
+	}
+
+	/**
+	 * One feed. Every feed has the same entries for the same posts.
+	 *
+	 * @param home the page the feed stands for, which is also its id
+	 * @param self the feed's own address
+	 * @param newestFirst the published posts it may carry, newest first
+	 */
+	private String atom(String site, String title, String home, String self, List<Post> newestFirst) {
+		List<Post> recent = newestFirst.stream().limit(FEED_SIZE).toList();
 		ZonedDateTime updated = recent.stream().map(Post::modified).max(java.util.Comparator.naturalOrder())
 			.orElseGet(() -> posts.clock().instant().atZone(ZoneOffset.UTC));
 
 		StringBuilder xml = new StringBuilder();
 		xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		xml.append("<feed xmlns=\"http://www.w3.org/2005/Atom\">\n");
-		element(xml, "  ", "title", pages.settings().title());
+		element(xml, "  ", "title", title);
 		if (!pages.settings().description().isEmpty()) {
 			element(xml, "  ", "subtitle", pages.settings().description());
 		}
-		xml.append("  <link href=\"").append(escape(site + links.home())).append("\"/>\n");
-		xml.append("  <link rel=\"self\" href=\"").append(escape(site + links.feed())).append("\"/>\n");
-		element(xml, "  ", "id", site + links.home());
+		xml.append("  <link href=\"").append(escape(site + home)).append("\"/>\n");
+		xml.append("  <link rel=\"self\" href=\"").append(escape(site + self)).append("\"/>\n");
+		element(xml, "  ", "id", site + home);
 		element(xml, "  ", "updated", TIMESTAMP.format(updated));
 		String author = pages.settings().author().isEmpty() ? pages.settings().title() : pages.settings().author();
 		xml.append("  <author><name>").append(escape(author)).append("</name></author>\n");

@@ -123,6 +123,7 @@ public final class Aliases {
 		served.add(key(inApp(links.home() + "/page/1", links)));
 		for (TagSummary tag : pages.posts().tags()) {
 			served.add(key(inApp(links.tag(tag.slug()) + "/page/1", links)));
+			served.add(key(inApp(links.tagFeed(tag.slug()), links)));
 		}
 		served.add(key(inApp(links.feed(), links)));
 		served.add(key(inApp(links.sitemap(), links)));

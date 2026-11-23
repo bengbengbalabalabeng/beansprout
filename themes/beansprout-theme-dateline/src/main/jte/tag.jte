@@ -4,6 +4,8 @@
   site = page.site(),
   meta = page.meta(),
   title = page.name() + " · " + page.site().name(),
+  tagFeed = page.feed(),
+  tagFeedTitle = page.site().name() + ": " + page.name(),
   content = @`
     <div class="split">
       <div class="split-main">

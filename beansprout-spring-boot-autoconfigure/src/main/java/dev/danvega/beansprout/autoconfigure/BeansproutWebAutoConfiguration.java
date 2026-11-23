@@ -53,8 +53,8 @@ public class BeansproutWebAutoConfiguration {
 	/** The feed and the sitemap need no template, so they are served with or without a theme. */
 	@Bean
 	@ConditionalOnMissingBean
-	FeedController beansproutFeedController(Feeds feeds, BeansproutProperties properties) {
-		return new FeedController(feeds, properties.siteUrl());
+	FeedController beansproutFeedController(Feeds feeds, BeansproutProperties properties, AliasRedirects aliases) {
+		return new FeedController(feeds, properties.siteUrl(), aliases);
 	}
 
 	/**

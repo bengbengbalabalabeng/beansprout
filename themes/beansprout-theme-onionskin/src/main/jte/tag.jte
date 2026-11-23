@@ -4,6 +4,8 @@
   site = page.site(),
   meta = page.meta(),
   title = page.name() + " / " + page.site().name(),
+  tagFeed = page.feed(),
+  tagFeedTitle = page.site().name() + ": " + page.name(),
   content = @`
     <h1 class="page-title">Filed under: <span class="tag-title">${page.name()}</span></h1>
     <p class="page-intro"><span class="tag-count">${page.count()}</span>, newest first.@if(!page.listing().pages().equals("1")) Page ${page.listing().page()} of ${page.listing().pages()}.@endif</p>

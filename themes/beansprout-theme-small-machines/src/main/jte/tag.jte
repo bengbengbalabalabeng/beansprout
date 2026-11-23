@@ -4,6 +4,8 @@
   site = page.site(),
   meta = page.meta(),
   title = page.name() + " · " + page.site().name(),
+  tagFeed = page.feed(),
+  tagFeedTitle = page.site().name() + ": " + page.name(),
   content = @`
     <article class="w folder tint-sky">
       <div class="tb"><span class="t">Tags / ${page.name()}</span><span class="x" aria-hidden="true"><i>–</i><i>×</i></span></div>

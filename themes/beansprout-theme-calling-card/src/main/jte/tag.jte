@@ -6,6 +6,8 @@
   site = site,
   meta = page.meta(),
   title = page.name() + " · " + site.name(),
+  tagFeed = page.feed(),
+  tagFeedTitle = site.name() + ": " + page.name(),
   top = @`@template.bar(site = site)`,
   content = @`
     <header class="card-head">

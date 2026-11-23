@@ -120,7 +120,7 @@ public final class Pages {
 			.map(listing -> new TagPage(site(tagSlug, ""),
 					pageMeta(tag.get().name(), "Posts tagged " + tag.get().name() + " on " + settings.title() + ".",
 							links.tagPage(tagSlug, page)),
-					tag.get().name(), count(tagged.size()), listing));
+					tag.get().name(), count(tagged.size()), listing, links.tagFeed(tagSlug)));
 	}
 
 	/** Every published post by year, newest year first. */

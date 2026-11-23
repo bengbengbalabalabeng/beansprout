@@ -5,6 +5,8 @@
 @param Meta meta
 @param String title
 @param Content content
+@param String tagFeed = ""
+@param String tagFeedTitle = ""
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -34,6 +36,7 @@
     <link rel="stylesheet" href="${site.root()}/beansprout/code.css">
     <link rel="stylesheet" href="${site.root()}/beansprout/onionskin/onionskin.css">
     <link rel="alternate" type="application/atom+xml" title="${site.name()}" href="${site.feed()}">
+    @if(!tagFeed.isEmpty())<link rel="alternate" type="application/atom+xml" title="${tagFeedTitle}" href="${tagFeed}">@endif
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
