@@ -83,7 +83,10 @@ public final class Pages {
 			.map(listing -> new IndexPage(site("", "latest"), pageMeta(title, description, links.page(page)), listing));
 	}
 
-	/** A published post by its slug. */
+	/**
+	 * A live post by its slug. A published post links to its newer and older neighbours. An
+	 * unlisted post has its page too, but no neighbours, and no list links to it.
+	 */
 	public Optional<PostPage> post(String slug) {
 		List<dev.danvega.beansprout.content.Post> published = posts.published();
 		for (int i = 0; i < published.size(); i++) {
@@ -91,23 +94,35 @@ public final class Pages {
 			if (post.slug().equals(slug)) {
 				PostLink newer = i > 0 ? link(published.get(i - 1)) : PostLink.NONE;
 				PostLink older = i + 1 < published.size() ? link(published.get(i + 1)) : PostLink.NONE;
-				List<Tag> tags = tags(post);
-				Tag crumb = tags.isEmpty() ? new Tag("Latest", links.home()) : tags.getFirst();
-				String picture = links.picture(post.image());
-				boolean laterDay = post.modified().toLocalDate().isAfter(post.date().toLocalDate());
-				Post view = new Post(post.title(), links.post(post.slug()), post.lede(), crumb, author(post), LONG_DATE.format(post.date()),
-						isoDate(post.date().toLocalDate()), reading(post),
-						laterDay ? LONG_DATE.format(post.modified()) : "",
-						laterDay ? isoDate(post.modified().toLocalDate()) : "", tags, picture, post.imageAlt(),
-						picture.isEmpty() || post.imageWidth() == 0 ? "" : Integer.toString(post.imageWidth()),
-						picture.isEmpty() || post.imageHeight() == 0 ? "" : Integer.toString(post.imageHeight()),
-						picture.isEmpty() ? "" : post.caption(), post.html(),
-						post.headings().stream().map(h -> new Heading(h.id(), h.text())).toList(), newer, older,
-						related(post, published));
-				return Optional.of(new PostPage(site("", ""), postMeta(post), view));
+				return Optional.of(postPage(post, newer, older, published));
 			}
 		}
-		return Optional.empty();
+		return posts.find(slug)
+			.filter(dev.danvega.beansprout.content.Post::unlisted)
+			.map(post -> postPage(post, PostLink.NONE, PostLink.NONE, published));
+	}
+
+	/**
+	 * One post's page.
+	 *
+	 * @param published every published post, newest first, for the related posts
+	 */
+	private PostPage postPage(dev.danvega.beansprout.content.Post post, PostLink newer, PostLink older,
+			List<dev.danvega.beansprout.content.Post> published) {
+		List<Tag> tags = tags(post);
+		Tag crumb = tags.isEmpty() ? new Tag("Latest", links.home()) : tags.getFirst();
+		String picture = links.picture(post.image());
+		boolean laterDay = post.modified().toLocalDate().isAfter(post.date().toLocalDate());
+		Post view = new Post(post.title(), links.post(post.slug()), post.lede(), crumb, author(post), LONG_DATE.format(post.date()),
+				isoDate(post.date().toLocalDate()), reading(post),
+				laterDay ? LONG_DATE.format(post.modified()) : "",
+				laterDay ? isoDate(post.modified().toLocalDate()) : "", tags, picture, post.imageAlt(),
+				picture.isEmpty() || post.imageWidth() == 0 ? "" : Integer.toString(post.imageWidth()),
+				picture.isEmpty() || post.imageHeight() == 0 ? "" : Integer.toString(post.imageHeight()),
+				picture.isEmpty() ? "" : post.caption(), post.html(),
+				post.headings().stream().map(h -> new Heading(h.id(), h.text())).toList(), newer, older,
+				related(post, published));
+		return new PostPage(site("", ""), postMeta(post), view);
 	}
 
 	/** Page n of a tag, by the tag's slug. A tag no published post uses has no page. */
@@ -156,17 +171,17 @@ public final class Pages {
 	}
 
 	/**
-	 * Every address the blog serves: the index pages, the archive, every post, and every tag
-	 * page. The static export writes each one. The sitemap is built from {@link #sitemapUrls()}.
+	 * Every address the blog serves: the index pages, the archive, every live post, unlisted ones
+	 * included, and every tag page. The static export writes each one. The sitemap is built from
+	 * {@link #sitemapUrls()}.
 	 */
 	public List<PageUrl> urls() {
-		List<dev.danvega.beansprout.content.Post> published = posts.published();
 		List<PageUrl> urls = new ArrayList<>();
-		for (int n = 1; n <= pageCount(published.size()); n++) {
+		for (int n = 1; n <= pageCount(posts.published().size()); n++) {
 			urls.add(new PageUrl(links.page(n), ""));
 		}
 		urls.add(new PageUrl(links.archive(), ""));
-		for (dev.danvega.beansprout.content.Post post : published) {
+		for (dev.danvega.beansprout.content.Post post : posts.live()) {
 			urls.add(new PageUrl(links.post(post.slug()), isoDate(post.modified().toLocalDate())));
 		}
 		for (TagSummary tag : posts.tags()) {
@@ -178,18 +193,19 @@ public final class Pages {
 	}
 
 	/**
-	 * The addresses for the sitemap: every one in {@link #urls()}, less the posts that set a
-	 * {@code canonical}. A sitemap that lists a page whose canonical link points elsewhere gives
-	 * search engines two signals that disagree. The static export still writes those posts.
+	 * The addresses for the sitemap: every one in {@link #urls()}, less the unlisted posts and the
+	 * posts that set a {@code canonical}. A sitemap that lists a page whose canonical link points
+	 * elsewhere gives search engines two signals that disagree. The static export still writes
+	 * those posts.
 	 */
 	public List<PageUrl> sitemapUrls() {
-		Set<String> elsewhere = new HashSet<>();
-		for (dev.danvega.beansprout.content.Post post : posts.published()) {
-			if (!post.canonical().isEmpty()) {
-				elsewhere.add(links.post(post.slug()));
+		Set<String> leftOut = new HashSet<>();
+		for (dev.danvega.beansprout.content.Post post : posts.live()) {
+			if (post.unlisted() || !post.canonical().isEmpty()) {
+				leftOut.add(links.post(post.slug()));
 			}
 		}
-		return urls().stream().filter(url -> !elsewhere.contains(url.path())).toList();
+		return urls().stream().filter(url -> !leftOut.contains(url.path())).toList();
 	}
 
 	private Meta pageMeta(String title, String description, String path) {
@@ -229,7 +245,8 @@ public final class Pages {
 
 		return new Meta(post.title(), post.summary(), url, "article", settings.title(),
 				picture.isEmpty() ? photo() : picture, picture.isEmpty() ? "" : post.imageAlt(),
-				picture.isEmpty() ? "summary" : "summary_large_image", published, modified, post.tags(), JsonLd.object(json));
+				picture.isEmpty() ? "summary" : "summary_large_image", published, modified, post.tags(), JsonLd.object(json),
+				post.unlisted() ? "noindex" : "");
 	}
 
 	/** The post's own author, or the blog's when it has none. Empty when neither is set. */

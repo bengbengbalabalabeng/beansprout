@@ -16,7 +16,8 @@ import org.springframework.ai.mcp.annotation.McpToolParam;
 
 /**
  * What an agent may read: the blog as a reader sees it. Drafts and posts dated in the future are
- * never listed or read, the same as on the blog's pages.
+ * never listed or read, the same as on the blog's pages. An unlisted post is not listed, but it
+ * can be read by its slug, the way a reader with its address can.
  */
 public final class BlogTools {
 
@@ -43,7 +44,7 @@ public final class BlogTools {
 	}
 
 	@McpTool(name = "list_posts", description = "List the blog's published posts, newest first, with each one's slug,"
-			+ " title, date, tags, summary and address. Drafts and posts dated in the future are not listed.")
+			+ " title, date, tags, summary and address. Drafts, posts dated in the future and unlisted posts are not listed.")
 	public List<PostSummary> listPosts() {
 		return posts.published().stream().map(this::summary).toList();
 	}
@@ -61,8 +62,8 @@ public final class BlogTools {
 		return posts.tagged(Slugs.slugify(tag)).stream().map(this::summary).toList();
 	}
 
-	@McpTool(name = "read_post", description = "Read one published post by its slug: its title, date, updated date,"
-			+ " tags, summary, picture and its Markdown body as written.")
+	@McpTool(name = "read_post", description = "Read one published post by its slug, unlisted ones included: its title,"
+			+ " date, updated date, tags, summary, picture and its Markdown body as written.")
 	public PostText readPost(@McpToolParam(description = "The post's slug, as list_posts gives it", required = true) String slug) {
 		Post post = posts.find(slug.strip())
 			.orElseThrow(() -> new IllegalArgumentException("No published post has the slug '" + slug + "'."));

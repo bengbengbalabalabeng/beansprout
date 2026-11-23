@@ -163,7 +163,8 @@ public final class PostParser {
 		String lastmodText = frontmatter.text("lastmod");
 		ZonedDateTime lastmod = lastmodText != null ? date("lastmod", lastmodText) : null;
 		ZonedDateTime modified = updatedText != null ? date("updated", updatedText) : lastmod != null ? lastmod : date;
-		boolean draft = draft(frontmatter.raw("draft"));
+		boolean draft = flag("draft", frontmatter.raw("draft"));
+		boolean unlisted = flag("unlisted", frontmatter.raw("unlisted"));
 
 		// A slug: line that is there but empty gives an empty slug, which Posts skips. Only a
 		// missing slug: line falls back to the file name.
@@ -225,7 +226,7 @@ public final class PostParser {
 				rendered.headings(), Math.max(1, (rendered.words() + WORDS_PER_MINUTE - 1) / WORDS_PER_MINUTE), draft,
 				file.path(), image, orEmpty(frontmatter.text("picture-alt")), orEmpty(frontmatter.text("caption")), lede,
 				modified, canonical, aliases, author, imageSize == null ? 0 : imageSize.width(),
-				imageSize == null ? 0 : imageSize.height());
+				imageSize == null ? 0 : imageSize.height(), unlisted);
 	}
 
 	/**
@@ -285,8 +286,8 @@ public final class PostParser {
 		}
 	}
 
-	/** Missing means not a draft. Otherwise only the words true and false are read. */
-	private static boolean draft(@Nullable Object value) {
+	/** Missing means false. Otherwise only the words true and false are read. */
+	private static boolean flag(String key, @Nullable Object value) {
 		if (value == null || "false".equals(value)) {
 			return false;
 		}
@@ -294,7 +295,7 @@ public final class PostParser {
 			return true;
 		}
 		String shown = value instanceof List<?> list && list.isEmpty() ? "" : String.valueOf(value);
-		throw new InvalidPostException("its draft value '" + shown + "' is not true or false.");
+		throw new InvalidPostException("its " + key + " value '" + shown + "' is not true or false.");
 	}
 
 	private static List<String> tags(List<String> written) {

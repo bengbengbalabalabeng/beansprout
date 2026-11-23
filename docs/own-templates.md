@@ -79,6 +79,7 @@ must exist: a missing `not-found.html` turns every 404 into an error. Here is `p
   <title th:text="${page.meta.title}">Post</title>
   <meta name="description" th:content="${page.meta.description}">
   <link rel="canonical" th:href="${page.meta.canonical}">
+  <meta name="robots" th:unless="${page.meta.robots.isEmpty()}" th:content="${page.meta.robots}">
   <meta property="og:type" th:content="${page.meta.type}">
   <meta property="og:title" th:content="${page.meta.title}">
   <meta property="og:description" th:content="${page.meta.description}">
@@ -163,7 +164,8 @@ Add a blog to this Spring Boot app with Beansprout, in this site's own look.
    the records in dev.danvega.beansprout.view: IndexPage, PostPage, TagPage, ArchivePage and
    NotFoundPage.
 6. In every page's head, output the page.meta values: title, description, canonical link,
-   the Open Graph tags, twitter:card, and the JSON-LD in a script tag.
+   the robots tag when meta.robots is not empty, the Open Graph tags, twitter:card, and the
+   JSON-LD in a script tag.
 7. Escape every value except post.body and meta.jsonLd. A missing value is an empty string,
    never null, so test for empty strings.
 8. Link page.site.root + "/beansprout/code.css". Show the newer and older links when they

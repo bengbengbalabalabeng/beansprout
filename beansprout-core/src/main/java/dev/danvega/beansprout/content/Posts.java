@@ -55,8 +55,19 @@ public final class Posts {
 		this.reload = reload;
 	}
 
-	/** Published posts, newest first: not drafts, and not dated after now. */
+	/**
+	 * Published posts, newest first: not drafts, not dated after now, and not unlisted. These are
+	 * the posts the blog's lists, feeds and sitemap name.
+	 */
 	public List<Post> published() {
+		return live().stream().filter(post -> !post.unlisted()).toList();
+	}
+
+	/**
+	 * Live posts, newest first: not drafts and not dated after now. Unlisted posts are here: each
+	 * has its page, though no list names it.
+	 */
+	public List<Post> live() {
 		var now = clock.instant();
 		return snapshot().posts().stream()
 			.filter(post -> !post.draft())
@@ -64,9 +75,9 @@ public final class Posts {
 			.toList();
 	}
 
-	/** A published post by its slug. Drafts and future posts are not found. */
+	/** A live post by its slug, unlisted ones included. Drafts and future posts are not found. */
 	public Optional<Post> find(String slug) {
-		return published().stream().filter(post -> post.slug().equals(slug)).findFirst();
+		return live().stream().filter(post -> post.slug().equals(slug)).findFirst();
 	}
 
 	/** Published posts with a tag, by the tag's slug, newest first. */

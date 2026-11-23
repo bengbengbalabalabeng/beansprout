@@ -24,7 +24,8 @@ final class Frontmatter {
 
 	/** The keys Beansprout reads. Any other key is ignored, whatever its shape. */
 	static final Set<String> KNOWN_KEYS = Set.of("title", "date", "tags", "summary", "slug", "draft", "picture", "picture-alt", "caption", "updated",
-			"canonical", "description", "image", "lastmod", "canonical_url", "aliases", "redirect_from", "author");
+			"canonical", "description", "image", "lastmod", "canonical_url", "aliases", "redirect_from", "author",
+			"unlisted");
 
 	/**
 	 * Known keys that are ignored when indented lines follow them, as Jekyll themes nest

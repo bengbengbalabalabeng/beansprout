@@ -127,7 +127,7 @@ themes it found, rather than guessing. For your site's own look,
 [use your own templates](docs/own-templates.md).
 
 A post with `draft: true` stays hidden. A post dated in the future appears on that date, with no
-redeploy. A post can also be a folder, `posts/hello/index.md`, with its pictures next to it.
+redeploy. A post with `unlisted: true` has its page, but no list, feed or sitemap shows it. A post can also be a folder, `posts/hello/index.md`, with its pictures next to it.
 Add `picture: cover.png` for a picture on the card and the post, and `updated: 2026-12-02` when
 you change a post later.
 [Start a new blog](docs/new-blog.md) has every frontmatter option.

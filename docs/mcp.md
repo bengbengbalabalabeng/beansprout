@@ -29,6 +29,7 @@ Spring AI 2.0.2 and needs Beansprout 0.3.0 or newer.
 | `create_draft` | A new post file with `draft: true`. |
 
 An agent sees what a reader sees. Drafts and posts dated in the future are not listed or read.
+Unlisted posts are not listed, but `read_post` reads one by its slug.
 
 `create_draft` is there only when your posts are a folder on disk, as they are while you write:
 

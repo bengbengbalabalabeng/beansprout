@@ -16,6 +16,7 @@
     <title>${title}</title>
     <meta name="description" content="${meta.description()}">
     @if(!meta.canonical().isEmpty())<link rel="canonical" href="${meta.canonical()}">@endif
+    @if(!meta.robots().isEmpty())<meta name="robots" content="${meta.robots()}">@endif
     <meta property="og:type" content="${meta.type()}">
     <meta property="og:title" content="${meta.title()}">
     <meta property="og:description" content="${meta.description()}">

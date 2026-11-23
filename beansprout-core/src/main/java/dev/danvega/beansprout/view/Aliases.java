@@ -22,8 +22,9 @@ import dev.danvega.beansprout.content.TagSummary;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The old paths of live posts, each pointing to its post's address. They come from {@code aliases}
- * and {@code redirect_from}, and from a dated file name whose slug left the date out.
+ * The old paths of live posts, unlisted ones included, each pointing to its post's address. They
+ * come from {@code aliases} and {@code redirect_from}, and from a dated file name whose slug left
+ * the date out.
  *
  * <p>An alias's {@code %XX} escapes are read as UTF-8, the way a request's path is read, so
  * {@code /caf%C3%A9.html} and {@code /café.html} are one alias. An alias that is not a plain path from
@@ -71,7 +72,7 @@ public final class Aliases {
 	}
 
 	private Result resolve() {
-		List<Post> posts = new ArrayList<>(pages.posts().published());
+		List<Post> posts = new ArrayList<>(pages.posts().live());
 		if (posts.stream().allMatch(post -> post.aliases().isEmpty())) {
 			return NONE;
 		}

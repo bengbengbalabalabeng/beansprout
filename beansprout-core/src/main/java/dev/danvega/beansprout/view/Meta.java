@@ -19,6 +19,8 @@ import java.util.List;
  * @param tags a post's tags, or none
  * @param jsonLd a post's BlogPosting structured data as JSON, safe to put in a script element, or
  *     empty. The only value a theme writes without escaping, besides a post's body.
+ * @param robots what the page tells search engines to do with it, for a robots meta tag: {@code noindex}
+ *     on an unlisted post's page, or empty to leave the tag out
  */
 public record Meta(
 		String title,
@@ -32,5 +34,15 @@ public record Meta(
 		String publishedTime,
 		String modifiedTime,
 		List<String> tags,
-		String jsonLd) {
+		String jsonLd,
+		String robots) {
+
+	/** Meta with no robots value. */
+	public Meta(String title, String description, String canonical, String type, String siteName, String image,
+			String imageAlt, String twitterCard, String publishedTime, String modifiedTime, List<String> tags,
+			String jsonLd) {
+		this(title, description, canonical, type, siteName, image, imageAlt, twitterCard, publishedTime, modifiedTime, tags,
+				jsonLd, "");
+	}
+
 }

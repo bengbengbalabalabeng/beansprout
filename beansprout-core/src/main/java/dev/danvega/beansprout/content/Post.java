@@ -33,6 +33,8 @@ import java.util.List;
  * @param imageWidth the picture's width in pixels when it is in the post's folder and its header
  *     could be read, or 0
  * @param imageHeight the picture's height in pixels, or 0, like {@code imageWidth}
+ * @param unlisted true when frontmatter says {@code unlisted: true}: the post has its page, but no
+ *     list, feed or sitemap names it
  */
 public record Post(
 		String slug,
@@ -54,7 +56,8 @@ public record Post(
 		List<String> aliases,
 		String author,
 		int imageWidth,
-		int imageHeight) {
+		int imageHeight,
+		boolean unlisted) {
 
 	public Post {
 		tags = List.copyOf(tags);

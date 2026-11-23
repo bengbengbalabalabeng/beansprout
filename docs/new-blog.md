@@ -127,6 +127,7 @@ Open `http://localhost:8080/blog`.
 | To say you changed it later | `updated: 2026-12-02` |
 | A line under the picture | `caption: Taken in Ljubljana.` |
 | To keep it hidden | `draft: true` |
+| A page only people with the link find | `unlisted: true` |
 | To publish it later | a date in the future, like `date: 2026-12-01T09:00` |
 
 ## Posts with pictures
