@@ -301,3 +301,10 @@ code, pre, kbd { font-family: var(--mono); }
   .pager { padding-left: 0; }
   .page-title, .entry-title { font-size: 1.6rem; }
 }
+
+/* Related posts, after the post */
+.related { margin: 2.5rem 0 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+.related-title { margin: 0 0 .75rem; font-size: 1rem; color: var(--theme-heading); }
+.related-list { margin: 0; padding: 0; list-style: none; }
+.related-list li { margin: 0 0 .5rem; }
+.related-list a { color: var(--theme-link); }

@@ -16,6 +16,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  * @param description a line under the name, or empty
  * @param basePath where the blog lives, like {@code /blog}, with no trailing slash
  * @param pageSize posts per page on the index and on tag pages
+ * @param relatedPosts how many posts that share a tag a post page shows after the post. 0 for none.
  * @param siteUrl the site's address, like {@code https://example.com}, for the feed and the
  *     sitemap. When not set, the request's scheme, host and port are used.
  * @param timeZone the zone a post's plain date starts in. Defaults to the server's zone.
@@ -39,6 +40,7 @@ public record BeansproutProperties(
 		@DefaultValue("") String description,
 		@DefaultValue("/blog") String basePath,
 		@DefaultValue("10") int pageSize,
+		@DefaultValue("3") int relatedPosts,
 		@Nullable String siteUrl,
 		@Nullable ZoneId timeZone,
 		@DefaultValue("") String author,

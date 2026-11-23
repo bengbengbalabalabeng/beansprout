@@ -167,7 +167,7 @@ Add a blog to this Spring Boot app with Beansprout, in this site's own look.
 7. Escape every value except post.body and meta.jsonLd. A missing value is an empty string,
    never null, so test for empty strings.
 8. Link page.site.root + "/beansprout/code.css". Show the newer and older links when they
-   are not empty.
+   are not empty, and the post's related posts when it has any.
 9. Add src/main/resources/posts/hello.md with title, date and tags in its frontmatter and a
    fenced code block in its body.
 10. Start the app and check each page with curl. /blog, the post, its tag page, /blog/archive

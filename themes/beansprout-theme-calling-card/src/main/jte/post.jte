@@ -32,6 +32,16 @@
           @endfor
         </ul>
       @endif
+      @if(!post.related().isEmpty())
+        <section class="related" aria-labelledby="related-posts">
+          <h2 class="related-title" id="related-posts">Read next</h2>
+          <ul class="related-list">
+            @for(var r : post.related())
+              <li><a href="${r.url()}">${r.title()}</a></li>
+            @endfor
+          </ul>
+        </section>
+      @endif
       @if(!post.newer().url().isEmpty() || !post.older().url().isEmpty())
         <nav class="card-near" aria-label="Newer and older">
           @if(!post.newer().url().isEmpty())<a class="card-near-link card-near-newer" href="${post.newer().url()}"><span class="card-near-label">Newer</span> <span class="card-near-title">${post.newer().title()}</span></a>@endif

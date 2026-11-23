@@ -42,6 +42,16 @@
         </figure>
       @endif
       <div class="prose">$unsafe{post.body()}</div>
+      @if(!post.related().isEmpty())
+        <section class="related" aria-labelledby="related-posts">
+          <h2 class="related-title" id="related-posts">related memos</h2>
+          <ul class="related-list">
+            @for(var r : post.related())
+              <li><a href="${r.url()}">${r.title()}</a></li>
+            @endfor
+          </ul>
+        </section>
+      @endif
       <nav class="entry-foot" aria-label="Previous and next memo">
         @if(!post.older().url().isEmpty())<p><a class="entry-foot-older" href="${post.older().url()}"><span aria-hidden="true">&lt; </span>previous memo: ${post.older().title()}</a></p>@else<p class="entry-foot-end">This is the first memo.</p>@endif
         @if(!post.newer().url().isEmpty())<p><a class="entry-foot-newer" href="${post.newer().url()}"><span aria-hidden="true">&gt; </span>next memo: ${post.newer().title()}</a></p>@else<p class="entry-foot-end">This is the latest memo.</p>@endif

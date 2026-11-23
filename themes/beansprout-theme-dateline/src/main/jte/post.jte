@@ -37,6 +37,16 @@
       @endif
       <div class="prose">$unsafe{post.body()}</div>
     </article>
+    @if(!post.related().isEmpty())
+      <section class="related" aria-labelledby="related-posts">
+        <h2 class="related-title" id="related-posts">Related coverage</h2>
+        <ul class="related-list">
+          @for(var r : post.related())
+            <li><a href="${r.url()}">${r.title()}</a></li>
+          @endfor
+        </ul>
+      </section>
+    @endif
     <nav class="article-nav" aria-label="Older and newer posts">
       @if(!post.older().url().isEmpty())<a class="article-older" href="${post.older().url()}"><span class="nav-k"><span aria-hidden="true">←</span> Older</span> <span>${post.older().title()}</span></a>@endif
       @if(!post.newer().url().isEmpty())<a class="article-newer" href="${post.newer().url()}"><span class="nav-k">Newer <span aria-hidden="true">→</span></span> <span>${post.newer().title()}</span></a>@else<p class="article-newest">This is the newest post. <a href="${page.site().feed()}">The Atom feed</a> gets the next one.</p>@endif

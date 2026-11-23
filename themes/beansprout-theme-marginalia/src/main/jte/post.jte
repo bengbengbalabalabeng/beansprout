@@ -31,6 +31,16 @@
           </figure>
         @endif
         <div class="prose">$unsafe{post.body()}</div>
+        @if(!post.related().isEmpty())
+          <section class="related" aria-labelledby="related-posts">
+            <h2 class="related-title" id="related-posts">See also</h2>
+            <ul class="related-list">
+              @for(var r : post.related())
+                <li><a href="${r.url()}">${r.title()}</a></li>
+              @endfor
+            </ul>
+          </section>
+        @endif
         <nav class="entry-foot" aria-label="Newer and older">
           @if(!post.newer().url().isEmpty())<a class="entry-foot-link entry-foot-newer" href="${post.newer().url()}"><span class="entry-foot-label"><span aria-hidden="true">← </span>Newer</span> <span class="entry-foot-title">${post.newer().title()}</span></a>@else<p class="entry-foot-end entry-foot-newer">This is the newest entry.</p>@endif
           @if(!post.older().url().isEmpty())<a class="entry-foot-link entry-foot-older" href="${post.older().url()}"><span class="entry-foot-label">Older<span aria-hidden="true"> →</span></span> <span class="entry-foot-title">${post.older().title()}</span></a>@else<p class="entry-foot-end entry-foot-older">This is the oldest entry.</p>@endif

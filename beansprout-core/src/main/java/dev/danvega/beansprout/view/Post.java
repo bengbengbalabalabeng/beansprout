@@ -26,6 +26,8 @@ import java.util.List;
  * @param headings the post's {@code ##} headings, for "On this page"
  * @param newer the next newer post, or {@link PostLink#NONE}
  * @param older the next older post, or {@link PostLink#NONE}
+ * @param related other published posts that share a tag with this one, most shared tags first,
+ *     then newest first, up to {@code beansprout.related-posts}, or none
  */
 public record Post(
 		String title,
@@ -47,5 +49,11 @@ public record Post(
 		String body,
 		List<Heading> headings,
 		PostLink newer,
-		PostLink older) {
+		PostLink older,
+		List<PostLink> related) {
+
+	public Post {
+		related = List.copyOf(related);
+	}
+
 }

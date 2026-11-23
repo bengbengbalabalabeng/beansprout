@@ -145,6 +145,7 @@ beansprout:
   theme: longhand                   # needed only with more than one theme. Default: the only one
   base-path: /blog                  # default: /blog
   page-size: 10                     # default: 10
+  related-posts: 3                  # posts that share a tag, shown after each post. 0 for none. Default: 3
   site-url: https://example.com     # for canonical links, previews, feed and sitemap. Default: the request
   time-zone: Europe/Amsterdam       # default: the server's zone
   links:                            # extra links in every theme's main menu, after its own. Default: none

@@ -352,3 +352,10 @@ figcaption { margin-top: 8px; font: 13px/1.5 var(--mono); color: var(--ink-3); }
   .arow { grid-template-columns: 80px minmax(0, 1fr); }
   .arow-reading { grid-column: 2; text-align: left; }
 }
+
+/* Related posts, after the post */
+.related { margin: 2.5rem 0 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+.related-title { margin: 0 0 .75rem; font-size: 1rem; color: var(--theme-heading); }
+.related-list { margin: 0; padding: 0; list-style: none; }
+.related-list li { margin: 0 0 .5rem; }
+.related-list a { color: var(--theme-link); }

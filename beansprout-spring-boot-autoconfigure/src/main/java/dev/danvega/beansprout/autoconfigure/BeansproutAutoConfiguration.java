@@ -74,7 +74,8 @@ public class BeansproutAutoConfiguration {
 	Pages beansproutPages(Posts posts, Links links, BeansproutProperties properties) {
 		return new Pages(posts, links, new BlogSettings(properties.title(), properties.description(), properties.pageSize(),
 				properties.author(), properties.photo(),
-				properties.links().stream().map(link -> new NavLink(Objects.requireNonNullElse(link.label(), ""), Objects.requireNonNullElse(link.href(), ""))).toList()));
+				properties.links().stream().map(link -> new NavLink(Objects.requireNonNullElse(link.label(), ""), Objects.requireNonNullElse(link.href(), ""))).toList(),
+				properties.relatedPosts()));
 	}
 
 	@Bean

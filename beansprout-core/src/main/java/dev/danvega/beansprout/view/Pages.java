@@ -102,7 +102,8 @@ public final class Pages {
 						picture.isEmpty() || post.imageWidth() == 0 ? "" : Integer.toString(post.imageWidth()),
 						picture.isEmpty() || post.imageHeight() == 0 ? "" : Integer.toString(post.imageHeight()),
 						picture.isEmpty() ? "" : post.caption(), post.html(),
-						post.headings().stream().map(h -> new Heading(h.id(), h.text())).toList(), newer, older);
+						post.headings().stream().map(h -> new Heading(h.id(), h.text())).toList(), newer, older,
+						related(post, published));
 				return Optional.of(new PostPage(site("", ""), postMeta(post), view));
 			}
 		}
@@ -287,6 +288,48 @@ public final class Pages {
 
 	private List<Tag> tags(dev.danvega.beansprout.content.Post post) {
 		return post.tags().stream().map(tag -> new Tag(tag, links.tag(Slugs.slugify(tag)))).toList();
+	}
+
+	/**
+	 * The published posts that share a tag with this one, most shared tags first, then newest
+	 * first, up to {@code beansprout.related-posts}. Tags match by slug, as tag pages do.
+	 *
+	 * @param published every published post, newest first
+	 */
+	private List<PostLink> related(dev.danvega.beansprout.content.Post post,
+			List<dev.danvega.beansprout.content.Post> published) {
+		Set<String> mine = tagSlugs(post);
+		if (settings.relatedPosts() == 0 || mine.isEmpty()) {
+			return List.of();
+		}
+		record Match(dev.danvega.beansprout.content.Post post, int shared) {
+		}
+		List<Match> matches = new ArrayList<>();
+		for (dev.danvega.beansprout.content.Post other : published) {
+			if (other.slug().equals(post.slug())) {
+				continue;
+			}
+			Set<String> theirs = tagSlugs(other);
+			theirs.retainAll(mine);
+			if (!theirs.isEmpty()) {
+				matches.add(new Match(other, theirs.size()));
+			}
+		}
+		// A stable sort keeps the newest first among posts that share as many tags.
+		matches.sort(java.util.Comparator.comparingInt(Match::shared).reversed());
+		return matches.stream().limit(settings.relatedPosts()).map(match -> link(match.post())).toList();
+	}
+
+	/** A post's tags as slugs, each once. */
+	private static Set<String> tagSlugs(dev.danvega.beansprout.content.Post post) {
+		Set<String> slugs = new HashSet<>();
+		for (String tag : post.tags()) {
+			String slug = Slugs.slugify(tag);
+			if (!slug.isEmpty()) {
+				slugs.add(slug);
+			}
+		}
+		return slugs;
 	}
 
 	private PostLink link(dev.danvega.beansprout.content.Post post) {

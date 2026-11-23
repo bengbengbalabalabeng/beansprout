@@ -32,6 +32,16 @@
       @if(!post.tags().isEmpty())
         <p class="tags">Tagged @for(var t : ForSupport.of(post.tags()))<a href="${t.get().url()}">${t.get().name()}</a>@if(!t.isLast()), @endif@endfor</p>
       @endif
+      @if(!post.related().isEmpty())
+        <section class="related" aria-labelledby="related-posts">
+          <h2 class="related-title" id="related-posts">Read next</h2>
+          <ul class="related-list">
+            @for(var r : post.related())
+              <li><a href="${r.url()}">${r.title()}</a></li>
+            @endfor
+          </ul>
+        </section>
+      @endif
       @if(!post.newer().url().isEmpty() || !post.older().url().isEmpty())
         <nav class="near" aria-label="Newer and older posts">
           @if(!post.newer().url().isEmpty())<a class="near-newer" href="${post.newer().url()}">Newer: ${post.newer().title()}</a>@endif
