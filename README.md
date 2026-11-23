@@ -28,6 +28,7 @@ the third choice: add a dependency to the app you already have.
 - [Deploy it](docs/deploy.md): to Railway, or anywhere that runs Java or Docker.
 - [Publish as static files](docs/static-export.md): GitHub Pages, Netlify or Cloudflare Pages, with no Java host.
 - [Use your own templates](docs/own-templates.md): your site's look instead of a theme.
+- [Move a blog from Jekyll or Hugo](docs/migrate.md): copy the posts, keep the old links, fix the few that need it.
 - [Write with an agent over MCP](docs/mcp.md): let Claude Code or another agent read your posts and start drafts.
 - [Search engines and AI crawlers](docs/search-engines.md): robots.txt, keeping AI training crawlers out, and ETags.
 
