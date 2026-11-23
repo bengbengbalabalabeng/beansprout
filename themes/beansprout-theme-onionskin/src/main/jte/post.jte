@@ -41,6 +41,16 @@
           @if(!post.caption().isEmpty())<figcaption class="entry-caption">Fig. 1. ${post.caption()}</figcaption>@endif
         </figure>
       @endif
+      @if(!post.headings().isEmpty())
+        <nav class="toc" aria-label="On this page">
+          <p class="toc-title">On this page</p>
+          <ol class="toc-list">
+            @for(var h : post.headings())
+              <li><a href="#${h.id()}">${h.text()}</a></li>
+            @endfor
+          </ol>
+        </nav>
+      @endif
       <div class="prose">$unsafe{post.body()}</div>
       @if(!post.related().isEmpty())
         <section class="related" aria-labelledby="related-posts">

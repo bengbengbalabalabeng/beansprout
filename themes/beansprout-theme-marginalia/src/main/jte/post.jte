@@ -20,6 +20,16 @@
             @endfor
           </ul>
         @endif
+        @if(!post.headings().isEmpty())
+          <nav class="toc" aria-label="On this page">
+            <p class="toc-title">On this page</p>
+            <ol class="toc-list">
+              @for(var h : post.headings())
+                <li><a href="#${h.id()}">${h.text()}</a></li>
+              @endfor
+            </ol>
+          </nav>
+        @endif
       </div>
       <div class="spread-text">
         <h1 class="entry-title">${post.title()}</h1>
