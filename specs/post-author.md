@@ -1,6 +1,6 @@
 # Spec: post-author
 
-Part of 0.3.1, "bring your blog with you". A name only: "multiple authors" stays a non-goal
+Part of 0.4.0, "bring your blog with you". A name only: "multiple authors" stays a non-goal
 (PRODUCT.md, Dan, 18 November 2026).
 
 ## Why

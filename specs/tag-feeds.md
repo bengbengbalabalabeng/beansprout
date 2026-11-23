@@ -1,6 +1,6 @@
 # Spec: tag-feeds
 
-Rank 10 in `reports/Blog platform features for Beansprout.md`, and part of 0.3.1, "keep readers
+Rank 10 in `reports/Blog platform features for Beansprout.md`, and part of 0.4.0, "keep readers
 around".
 
 ## Why

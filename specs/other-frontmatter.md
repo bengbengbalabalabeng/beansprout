@@ -1,6 +1,6 @@
 # Spec: other-frontmatter
 
-Part of 0.3.1, "bring your blog with you". Read the frontmatter that Jekyll and Hugo posts already
+Part of 0.4.0, "bring your blog with you". Read the frontmatter that Jekyll and Hugo posts already
 use, so a folder of old posts mostly just works.
 
 ## Why

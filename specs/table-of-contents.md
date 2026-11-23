@@ -1,6 +1,6 @@
 # Spec: table-of-contents
 
-Part of 0.3.1, "keep readers around". Longhand, Plainsong and Small Machines already show one.
+Part of 0.4.0, "keep readers around". Longhand, Plainsong and Small Machines already show one.
 This brings the other five themes in line.
 
 ## Why

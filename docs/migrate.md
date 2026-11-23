@@ -2,7 +2,7 @@
 
 Beansprout reads Jekyll and Hugo posts as they are. You copy the files, start the app, and fix
 the few posts it tells you about. Old links keep working through redirects. This needs Beansprout
-0.3.1 or newer.
+0.4.0 or newer.
 
 If your app has no blog yet, [start a new blog](new-blog.md) first, then come back here.
 

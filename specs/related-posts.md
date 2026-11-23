@@ -1,6 +1,6 @@
 # Spec: related-posts
 
-From the second tier of `reports/Blog platform features for Beansprout.md`, and part of 0.3.1,
+From the second tier of `reports/Blog platform features for Beansprout.md`, and part of 0.4.0,
 "keep readers around".
 
 ## Why

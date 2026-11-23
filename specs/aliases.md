@@ -1,6 +1,6 @@
 # Spec: aliases
 
-Rank 4 in `reports/Blog platform features for Beansprout.md`, and part of 0.3.1, "bring your blog
+Rank 4 in `reports/Blog platform features for Beansprout.md`, and part of 0.4.0, "bring your blog
 with you".
 
 ## Why

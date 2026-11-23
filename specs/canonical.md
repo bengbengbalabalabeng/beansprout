@@ -1,6 +1,6 @@
 # Spec: canonical
 
-Part of 0.3.1, "bring your blog with you".
+Part of 0.4.0, "bring your blog with you".
 
 ## Why
 
