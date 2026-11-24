@@ -29,7 +29,7 @@ template engine. With Thymeleaf, that is three dependencies:
 <dependency>
     <groupId>dev.danvega</groupId>
     <artifactId>beansprout-spring-boot-starter</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
 </dependency>
 ```
 
@@ -154,7 +154,7 @@ Claude Code, or any coding agent, and paste this:
 ```text
 Add a blog to this Spring Boot app with Beansprout, in this site's own look.
 
-1. Add the dependency dev.danvega:beansprout-spring-boot-starter:0.3.0.
+1. Add the dependency dev.danvega:beansprout-spring-boot-starter:0.4.0.
    Do not add any beansprout-theme jar.
 2. Read option 1 of https://github.com/danvega/beansprout/blob/main/docs/own-templates.md
    and follow it.
