@@ -87,6 +87,11 @@
 				<artifactId>beansprout-theme-calling-card</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>dev.danvega</groupId>
+				<artifactId>beansprout-theme-kilntui</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

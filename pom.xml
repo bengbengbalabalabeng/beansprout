@@ -59,6 +59,7 @@
 		<module>themes/beansprout-theme-plainsong</module>
 		<module>themes/beansprout-theme-onionskin</module>
 		<module>themes/beansprout-theme-calling-card</module>
+		<module>themes/beansprout-theme-kilntui</module>
 		<module>beansprout-bom</module>
 		<module>beansprout-sample</module>
 		<!-- Last on purpose: it reads the whole repo after every module has built and tested. -->
