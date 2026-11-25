@@ -91,8 +91,8 @@ Start your app and open `http://localhost:8080/blog`.
 Every theme is free. Swap the theme dependency to change the look.
 
 Five of the themes come from [Pressworks](https://pressworks.dev), where they started as blog
-templates. Thank you, Pressworks, for giving them to Beansprout. Plainsong, Onionskin and Calling
-Card are Beansprout's own.
+templates. Thank you, Pressworks, for giving them to Beansprout. Plainsong, Onionskin, Calling
+Card and Kiln TUI are Beansprout's own.
 
 | Theme | Artifact | Look |
 | --- | --- | --- |
@@ -104,6 +104,7 @@ Card are Beansprout's own.
 | `plainsong` | `beansprout-theme-plainsong` | A plain list of posts in black and white, no pictures. Light and dark. |
 | `onionskin` | `beansprout-theme-onionskin` | Every post typed like a memo, in monospace. Light and dark. |
 | `calling-card` | `beansprout-theme-calling-card` | You first: your name in poster-sized type, your photo, your topics. Light and dark. |
+| `kilntui` | `beansprout-theme-kilntui` | A developer blog dressed as a terminal, amber on carbon black. Dark. |
 
 Here is the sample app's blog in each theme, with the same posts:
 
@@ -118,7 +119,7 @@ Here is the sample app's blog in each theme, with the same posts:
   </tr>
   <tr>
     <td width="50%"><img src="images/themes/marginalia.png" alt="A post in Marginalia: the date and tags in the margin, the title and text in a serif notebook column, and a dark code block"><br><b>Marginalia</b>, a post</td>
-    <td width="50%"></td>
+    <td width="50%"><img src="images/themes/kilntui.png" alt="The sample blog in Kiln TUI: a dark terminal with a command line above the tag filters, bordered post cards, and a pager"><br><b>Kiln TUI</b></td>
   </tr>
 </table>
 

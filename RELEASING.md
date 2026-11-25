@@ -8,7 +8,7 @@ These artifacts are published: `beansprout-parent`, `beansprout-bom`, `beansprou
 `beansprout-spring-boot-autoconfigure`, `beansprout-spring-boot-starter`,
 `beansprout-mcp-spring-boot-starter`, and the themes
 `beansprout-theme-longhand`, `-dateline`, `-linocut`, `-marginalia`, `-small-machines`,
-`-plainsong`, `-onionskin` and `-calling-card`. The
+`-plainsong`, `-onionskin`, `-calling-card` and `-kilntui`. The
 sample and the verification module are not.
 
 ## One-time setup

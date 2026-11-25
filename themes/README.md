@@ -22,6 +22,7 @@ Three more are Beansprout's own, drawn from what readers like about well-loved p
 | Plainsong | [beansprout-theme-plainsong](beansprout-theme-plainsong) | A plain list of posts in black and white, no pictures. Light and dark. |
 | Onionskin | [beansprout-theme-onionskin](beansprout-theme-onionskin) | Every post typed like a memo, in monospace. Light and dark. |
 | Calling Card | [beansprout-theme-calling-card](beansprout-theme-calling-card) | You first: your name in poster-sized type, your photo, your topics. Light and dark. |
+| Kiln TUI | [beansprout-theme-kilntui](beansprout-theme-kilntui) | A developer blog dressed as a terminal, amber on carbon black. Dark. |
 
 ## What a theme holds
 

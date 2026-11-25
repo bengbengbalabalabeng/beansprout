@@ -63,6 +63,7 @@ Pick the theme you like. Each one is free.
 | Plainsong | `beansprout-theme-plainsong` | A plain list of posts in black and white, no pictures. Light and dark. |
 | Onionskin | `beansprout-theme-onionskin` | Every post typed like a memo, in monospace. Light and dark. |
 | Calling Card | `beansprout-theme-calling-card` | You first: your name in poster-sized type, your photo, your topics. Light and dark. |
+| Kiln TUI | `beansprout-theme-kilntui` | A developer blog dressed as a terminal, amber on carbon black. Dark. |
 
 To change your mind later, swap the artifact and restart. Keep one theme in your `pom.xml`. If
 you want several on hand, name the one to use in `application.yaml` with `beansprout.theme`,
